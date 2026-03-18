@@ -1,13 +1,795 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="en">
-  <head>
-    <meta charset="UTF-8" />
-    <link rel="icon" type="image/svg+xml" href="/vite.svg" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>footnote-frontend</title>
-  </head>
-  <body>
-    <div id="root"></div>
-    <script type="module" src="/src/main.jsx"></script>
-  </body>
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>FootNote - The Architecture of Sound</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;1,300;1,400;1,500&family=DM+Sans:ital,wght@0,300;0,400;1,300;1,400&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --bg-primary: #FAFAF7;
+      --bg-secondary: #F0EDE6;
+      --navy: #0D1B2A;
+      --navy-deep: #0A1520;
+      --ink: #1A1A18;
+      --mist: #5C5C52;
+      --cream: #E8E4DC;
+      --gold: #C8B89A;
+      --overlay-dark: rgba(13, 27, 42, 0.38);
+    }
+
+    *, *::before, *::after {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    ::-webkit-scrollbar { width: 4px; }
+    ::-webkit-scrollbar-track { background: var(--bg-primary); }
+    ::-webkit-scrollbar-thumb { background: var(--gold); border-radius: 2px; }
+    ::selection { background: rgba(200, 184, 154, 0.3); color: var(--ink); }
+
+    html { scroll-behavior: smooth; }
+
+    body {
+      background-color: var(--bg-primary);
+      color: var(--ink);
+      font-family: 'DM Sans', sans-serif;
+      font-weight: 300;
+      font-size: 14px;
+      line-height: 1.85;
+      -webkit-font-smoothing: antialiased;
+      -moz-osx-font-smoothing: grayscale;
+      overflow-x: hidden;
+    }
+
+    a { text-decoration: none; color: inherit; position: relative; display: inline-flex; align-items: center; }
+
+    .container { max-width: 1200px; margin: 0 auto; }
+    
+    .text-center { text-align: center; }
+    .text-right { text-align: right; }
+    
+    .font-serif { font-family: 'Cormorant Garamond', serif; font-weight: 400; line-height: 1.1; }
+    .font-sans { font-family: 'DM Sans', sans-serif; font-weight: 300; }
+    .italic { font-style: italic; font-weight: 400; }
+    .normal { font-style: normal; font-weight: 400; }
+    .italic { font-style: italic; }
+    .normal { font-style: normal; font-weight: 300; }
+
+    .eyebrow {
+      font-family: 'DM Sans', sans-serif;
+      font-weight: 400;
+      text-transform: uppercase;
+      font-size: 9px;
+      letter-spacing: 0.15em;
+    }
+
+    /* Underline Animation for Links */
+    .link-underline {
+      font-family: 'DM Sans', sans-serif;
+      font-weight: 400;
+      text-transform: uppercase;
+      font-size: 10px;
+      letter-spacing: 0.12em;
+      position: relative;
+    }
+    .link-underline::after {
+      content: '';
+      position: absolute;
+      bottom: -4px;
+      left: 0;
+      width: 0%;
+      height: 1px;
+      background-color: var(--gold);
+      transition: width 300ms ease;
+    }
+    .link-underline:hover::after { width: 100%; }
+
+    .cta-text-anim {
+      font-family: 'DM Sans', sans-serif;
+      font-weight: 400;
+      text-transform: uppercase;
+      font-size: 10px;
+      letter-spacing: 0.1em;
+      color: var(--ink);
+      position: relative;
+      display: inline-block;
+    }
+    .cta-text-anim::after {
+      content: ''; position: absolute; bottom: -2px; left: 0;
+      width: 0%; height: 1px; background-color: var(--gold);
+      transition: width 300ms ease;
+    }
+    .cta-text-anim:hover::after { width: 100%; }
+
+    /* Animation Classes */
+    .anim-fade-up {
+      opacity: 0; transform: translateY(18px);
+      transition: opacity 750ms cubic-bezier(0.25, 0.46, 0.45, 0.94),
+                  transform 750ms cubic-bezier(0.25, 0.46, 0.45, 0.94);
+    }
+    .anim-fade-up.is-visible { opacity: 1; transform: translateY(0); }
+
+    .anim-slide-left {
+      opacity: 0; transform: translateX(-28px);
+      transition: opacity 750ms cubic-bezier(0.25, 0.46, 0.45, 0.94),
+                  transform 750ms cubic-bezier(0.25, 0.46, 0.45, 0.94);
+    }
+    .anim-slide-left.is-visible { opacity: 1; transform: translateX(0); }
+
+    .anim-slide-right {
+      opacity: 0; transform: translateX(28px);
+      transition: opacity 750ms cubic-bezier(0.25, 0.46, 0.45, 0.94),
+                  transform 750ms cubic-bezier(0.25, 0.46, 0.45, 0.94);
+    }
+    .anim-slide-right.is-visible { opacity: 1; transform: translateX(0); }
+
+    .anim-scale {
+      opacity: 0; transform: scale(0.97) translateY(18px);
+      transition: opacity 600ms cubic-bezier(0.25, 0.46, 0.45, 0.94),
+                  transform 600ms cubic-bezier(0.25, 0.46, 0.45, 0.94);
+    }
+    .anim-scale.is-visible { opacity: 1; transform: scale(1) translateY(0); }
+
+    .stagger-1 { transition-delay: 120ms; }
+    .stagger-2 { transition-delay: 240ms; }
+    .stagger-3 { transition-delay: 360ms; }
+
+    /* Onload animations */
+    .onload-fade-up {
+      opacity: 0; transform: translateY(60px);
+      animation: loadFadeUp 750ms cubic-bezier(0.25, 0.46, 0.45, 0.94) forwards;
+    }
+    @keyframes loadFadeUp { to { opacity: 1; transform: translateY(0); } }
+
+    .onload-delay-1 { animation-delay: 0ms; }
+    .onload-delay-2 { animation-delay: 200ms; }
+    .onload-delay-3 { animation-delay: 400ms; }
+    .onload-delay-4 { animation-delay: 600ms; }
+    .onload-delay-5 { animation-delay: 800ms; }
+    .onload-delay-6 { animation-delay: 1000ms; }
+    .onload-delay-7 { animation-delay: 1200ms; }
+
+    /* Section 1: Navigation */
+    .nav {
+      position: fixed; top: 0; left: 0; width: 100%;
+      height: 64px; padding: 0 48px;
+      display: flex; justify-content: space-between; align-items: center;
+      z-index: 100; background: transparent; transition: 0.5s ease;
+      opacity: 0; animation: fadeInNav 600ms ease forwards;
+    }
+    @keyframes fadeInNav { to { opacity: 1; } }
+
+    .nav.scrolled {
+      background: rgba(250, 250, 247, 0.95);
+      backdrop-filter: blur(12px);
+    }
+    .nav-logo { font-family: 'Cormorant Garamond', serif; font-weight: 400; font-size: 18px; color: var(--ink); }
+    .nav-center { display: flex; gap: 8px; align-items: center; }
+    .nav-link { color: var(--mist); transition: color 0.3s ease; }
+    .nav-link:hover { color: var(--ink); }
+    .nav-dot { color: var(--gold); font-size: 10px; margin: 0 4px; }
+    
+    .nav-btn {
+      font-family: 'DM Sans', sans-serif; font-weight: 400; text-transform: uppercase;
+      font-size: 10px; letter-spacing: 0.1em; padding: 8px 20px;
+      border: 1px solid var(--ink); background: transparent; color: var(--ink);
+      transition: all 0.3s ease;
+    }
+    .nav-btn:hover { background: var(--ink); color: var(--bg-primary); }
+
+    /* Curtain CSS */
+    #fn-curtain {
+      position: fixed;
+      top: 0; left: 0; width: 100%; height: 93vh;
+      background: #FAFAF7; z-index: 1000;
+      display: flex; align-items: center; justify-content: center;
+      cursor: pointer;
+      box-shadow: 0 12px 60px rgba(13, 27, 42, 0.18), 0 4px 20px rgba(13, 27, 42, 0.1);
+      transition: transform 1.4s cubic-bezier(0.76, 0, 0.24, 1),
+                  opacity 0.4s ease 1.1s;
+      transform: translateY(0);
+      animation: curtain-enter 0.9s cubic-bezier(0.25, 0.46, 0.45, 0.94) forwards;
+    }
+    #fn-curtain.is-lifting { transform: translateY(-100%); opacity: 0; }
+    #fn-curtain.is-gone { display: none; }
+    @keyframes curtain-enter {
+      from { opacity: 0; transform: translateY(-12px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+    #fn-curtain::after {
+      content: ''; position: absolute; bottom: 0; left: 0; right: 0; height: 1px;
+      background: linear-gradient(90deg, transparent 0%, rgba(200, 184, 154, 0.4) 20%, rgba(200, 184, 154, 0.7) 50%, rgba(200, 184, 154, 0.4) 80%, transparent 100%);
+    }
+
+    .curtain-inner { text-align: center; display: flex; flex-direction: column; align-items: center; justify-content: center; width: 100%; height: 100%; position: relative;}
+    .curtain-rule-top { width: 48px; height: 1px; background: var(--gold); position: absolute; top: 80px; left: 50%; transform: translateX(-50%); }
+    .curtain-wordmark { font-family: 'Cormorant Garamond', serif; font-weight: 400; font-size: 28px; letter-spacing: 0.06em; color: var(--ink); position: absolute; top: 105px; left: 50%; transform: translateX(-50%);}
+    .curtain-vol { font-family: 'DM Sans', sans-serif; text-transform: uppercase; font-weight: 400; font-size: 9px; letter-spacing: 0.2em; color: var(--mist); position: absolute; top: 153px; left: 50%; transform: translateX(-50%); width: 100%;}
+    
+    .curtain-headline { font-family: 'Cormorant Garamond', serif; font-weight: 400; text-align: center; line-height: 1.05; }
+    .curtain-line-1 { font-size: clamp(52px, 7vw, 88px); color: var(--ink); display: block; font-style: normal; }
+    .curtain-line-2 { font-size: clamp(52px, 7vw, 88px); color: var(--ink); display: block; font-style: italic; margin-left: 4vw; }
+    .curtain-rule-mid { width: 48px; height: 1px; background: var(--gold); margin: 40px auto; }
+    .curtain-subline { font-family: 'DM Sans', sans-serif; font-weight: 300; font-size: 13px; line-height: 1.85; color: var(--mist); max-width: 320px; text-align: center; margin: 0 auto;}
+
+    .curtain-hint { position: absolute; bottom: 36px; left: 50%; transform: translateX(-50%); display: flex; flex-direction: column; align-items: center; gap: 8px;}
+    .curtain-enter-text { font-family: 'DM Sans', sans-serif; text-transform: uppercase; font-size: 9px; letter-spacing: 0.2em; color: var(--mist); }
+    .curtain-enter-icon { color: var(--gold); font-size: 12px; }
+    @keyframes fn-nudge {
+      0%, 100% { transform: translateY(0); opacity: 0.5; }
+      50% { transform: translateY(5px); opacity: 1; }
+    }
+    .curtain-enter-hint { animation: fn-nudge 2.2s ease-in-out infinite; }
+
+    #fn-page {
+      transform: translateY(16px);
+      transition: transform 1.4s cubic-bezier(0.76, 0, 0.24, 1);
+    }
+    #fn-page.is-revealed { transform: translateY(0); }
+
+    /* Updated Nav - Kinfolk Style */
+    .nav {
+      position: fixed; top: 0; left: 0; width: 100%;
+      height: 64px; padding: 0 48px;
+      display: flex; justify-content: space-between; align-items: center;
+      z-index: 100; background: transparent; transition: 0.5s ease;
+      opacity: 0; animation: fadeInNav 600ms ease forwards;
+    }
+    .nav-logo { font-family: 'Cormorant Garamond', serif; font-weight: 400; font-size: 18px; color: var(--ink); letter-spacing: 0.08em; }
+    .nav-menu-btn { cursor: pointer; display: flex; flex-direction: column; gap: 5px; background: none; border: none; padding: 8px;}
+    .nav-menu-line { width: 22px; height: 1.5px; background: var(--ink); transition: 0.25s ease; }
+    .nav-menu-btn:hover .nav-menu-line:first-child { transform: translateY(-2px); }
+    .nav-menu-btn:hover .nav-menu-line:last-child { transform: translateY(2px); }
+
+    /* Section 2: Hero */
+    .hero {
+      height: 100vh; background: var(--bg-primary);
+      display: flex; flex-direction: column; align-items: center; justify-content: center;
+    }
+    .hero-eyebrow { letter-spacing: 0.15em; color: var(--mist); margin-bottom: 24px; }
+    .hero-headline { padding-top: 12px; }
+    .hero-h1 { font-family: 'Cormorant Garamond', serif; font-weight: 400; font-size: clamp(64px, 8vw, 96px); line-height: 1.05; color: var(--ink); text-align: center; }
+    .hero-line-1 { display: block; }
+    .hero-line-2 { display: block; font-style: italic; margin-left: 40px; }
+    .hero-rule { width: 60px; height: 1px; background: var(--gold); margin: 36px auto; }
+    .hero-body { font-size: 14px; line-height: 1.8; color: var(--mist); text-align: center; max-width: 380px; }
+    .hero-links { margin-top: 36px; display: flex; align-items: center; gap: 12px; }
+    .hero-sep { color: var(--gold); font-size: 10px; margin: 0 4px; }
+
+    /* Section 3: Dual Image Band */
+    .image-band { width: 100%; height: 480px; display: flex; overflow: hidden; }
+    .image-panel { width: 50%; height: 100%; position: relative; overflow: hidden; }
+    .img-library { background: linear-gradient(135deg, #1a2533 0%, #0d1b2a 40%, #2a1f10 100%); }
+    .img-music { background: linear-gradient(135deg, #2a1f10 0%, #1a1408 50%, #0d1b2a 100%); }
+    .image-panel::after {
+      content: ''; position: absolute; top:0; left:0; width:100%; height:100%;
+      background: var(--overlay-dark); pointer-events: none;
+    }
+    .image-text { position: absolute; bottom: 0; left: 0; padding: 32px; z-index: 2; }
+    .image-eyebrow { color: var(--gold); letter-spacing: 0.15em; font-size: 9px; margin-bottom: 8px; display: block; }
+    .image-title { font-family: 'Cormorant Garamond', serif; font-style: italic; font-size: 16px; color: var(--cream); }
+
+    /* Section 4: Two Column Mission */
+    .mission { padding: 120px 80px; background: var(--bg-primary); }
+    .mission-grid { display: flex; gap: 0; max-width: 1200px; margin: 0 auto; }
+    .mission-left { width: 40%; }
+    .mission-right { width: 60%; padding-left: 80px; }
+    .mission-statement {
+      font-family: 'Cormorant Garamond', serif; font-weight: 400; font-size: 48px;
+      line-height: 1.15; color: var(--ink);
+    }
+    .mission-l1, .mission-l2, .mission-l3 { display: block; }
+    .mission-l2 { font-style: italic; }
+    .mission-body { font-size: 14px; line-height: 1.9; color: var(--mist); max-width: 440px; margin-bottom: 24px; }
+
+    /* Section 5: Parchment Feature Panel */
+    .parchment { padding: 100px 80px; background: var(--bg-secondary); }
+    .parchment-grid { display: flex; align-items: flex-start; max-width: 1200px; margin: 0 auto; }
+    .parchment-left { width: 60%; }
+    .parchment-right { width: 40%; text-align: right; margin-left: auto; width: 45%; }
+    .parchment-eyebrow { color: var(--mist); margin-bottom: 20px; display: block; }
+    .parchment-headline {
+      font-family: 'Cormorant Garamond', serif; font-weight: 400; font-size: 56px; color: var(--ink);
+    }
+    .parchment-h2 { font-style: italic; display: block; }
+    .parchment-descriptor {
+      font-family: 'DM Sans', sans-serif; text-transform: uppercase; font-size: 10px;
+      letter-spacing: 0.1em; color: var(--ink); margin-bottom: 16px;
+    }
+    .parchment-rule { width: 100%; height: 1px; background: rgba(200,184,154,0.4); margin: 24px 0; }
+    .parchment-quote { font-size: 14px; color: var(--mist); display: flex; justify-content: flex-end; align-items: center; gap: 8px;}
+    .parchment-dash { font-family: 'DM Sans', sans-serif; font-size: 14px; color: var(--mist); }
+
+    /* Section 6: Full Bleed Dark Quote */
+    .quote-sec {
+      background: var(--navy); min-height: 70vh; width: 100%;
+      display: flex; flex-direction: column; align-items: center; justify-content: center;
+      padding: 100px 40px;
+    }
+    .quote-eyebrow { color: var(--gold); margin-bottom: 0px; display: block; text-align: center; }
+    .quote-mark { font-family: 'Cormorant Garamond', serif; font-size: 120px; line-height: 0.8; color: rgba(200, 184, 154, 0.3); text-align: center; margin-bottom: -10px; }
+    .pull-quote {
+      font-family: 'Cormorant Garamond', serif; font-style: italic; font-weight: 400;
+      font-size: 40px; line-height: 1.3; color: var(--cream);
+      text-align: center; max-width: 680px;
+    }
+    .pull-quote span { opacity: 0; transition: opacity 800ms ease; }
+    .quote-rule { width: 80px; height: 1px; background: var(--gold); margin: 40px auto; }
+    .quote-attr { font-size: 12px; color: var(--mist); text-align: center; }
+    .quote-sub { font-size: 11px; font-style: italic; color: var(--mist); text-align: center; max-width: 400px; margin: 12px auto 0; }
+
+    /* Section 7: Three Pillar Grid */
+    .pillars { padding: 100px 80px; background: var(--bg-primary); }
+    .pillars-container { max-width: 1200px; margin: 0 auto; }
+    .pillars-rule-top { width: 100%; height: 1px; background: var(--gold); margin-bottom: 60px; }
+    .pillars-grid { display: flex; gap: 60px; }
+    .pillar { flex: 1; display: flex; flex-direction: column; }
+    .pillar-accent { border-left: 2px solid var(--gold); height: 40px; margin-bottom: 24px; }
+    .pillar-eyebrow { color: var(--gold); margin-bottom: 16px; }
+    .pillar-title { font-family: 'Cormorant Garamond', serif; font-weight: 400; font-size: 22px; color: var(--ink); margin-bottom: 16px; }
+    .pillar-body { font-size: 13px; line-height: 1.85; color: var(--mist); max-width: 280px; }
+
+    /* Section 8: Dark Image CTA */
+    .cta-band {
+      background: radial-gradient(ellipse at center, #1a2d40 0%, #0a1520 70%);
+      height: 60vh; width: 100%;
+      display: flex; flex-direction: column; align-items: center; justify-content: center;
+    }
+    .cta-eyebrow { color: var(--gold); margin-bottom: 32px; }
+    .cta-headline {
+      font-family: 'Cormorant Garamond', serif; font-style: italic; font-weight: 400;
+      font-size: 64px; color: var(--cream); line-height: 1.1; text-align: center;
+    }
+    .cta-btn-main {
+      font-family: 'DM Sans', sans-serif; font-weight: 400; text-transform: uppercase;
+      font-size: 10px; letter-spacing: 0.1em; border: 1px solid var(--gold); color: var(--gold);
+      padding: 12px 32px; margin-top: 48px; transition: 300ms ease; background: transparent;
+    }
+    .cta-btn-main:hover { background: var(--gold); color: var(--navy-deep); }
+
+    /* Section 9: Pricing */
+    .pricing { padding: 100px 80px; background: var(--bg-primary); }
+    .pricing-container { max-width: 1200px; margin: 0 auto; }
+    .pricing-header { text-align: center; margin-bottom: 60px; }
+    .pricing-eyebrow { color: var(--mist); display: block; margin-bottom: 16px; letter-spacing: 0.15em; }
+    .pricing-headline { font-family: 'Cormorant Garamond', serif; font-weight: 400; font-size: 48px; color: var(--ink); }
+    .pricing-grid { display: flex; gap: 60px; align-items: stretch; justify-content: space-between; }
+    .plan { flex: 1; display: flex; flex-direction: column; align-items: flex-start; }
+    .free-plan, .complete-plan { border-top: 1px solid var(--gold); padding-top: 32px; }
+    .featured-plan { background: var(--bg-secondary); border: 1px solid var(--gold); padding: 32px; position: relative; }
+    .plan-badge { font-family: 'DM Sans', sans-serif; text-transform: uppercase; font-size: 8px; letter-spacing: 0.15em; color: var(--gold); margin-bottom: 12px; display: block; }
+    .plan-title { font-family: 'Cormorant Garamond', serif; font-weight: 500; font-size: 28px; color: var(--ink); margin-bottom: 8px; }
+    .plan-price { font-size: 13px; color: var(--mist); margin-bottom: 24px; }
+    .plan-features { list-style: none; margin-bottom: 32px; flex-grow: 1; }
+    .plan-feature { font-size: 13px; line-height: 2.2; color: var(--mist); }
+    .plan-cta-fill {
+      background: var(--ink); color: var(--bg-primary); font-family: 'DM Sans', sans-serif;
+      text-transform: uppercase; font-size: 10px; padding: 12px 32px; letter-spacing: 0.1em;
+      transition: background 300ms ease; border: none; cursor: pointer;
+    }
+    .plan-cta-fill:hover { background: #2d2d2a; }
+
+    /* Section 10: Essays Preview */
+    .essays { padding: 80px; background: var(--navy); }
+    .essays-container { max-width: 1200px; margin: 0 auto; }
+    .essays-header { margin-bottom: 48px; }
+    .essays-eyebrow { color: var(--gold); margin-bottom: 12px; }
+    .essays-title { font-family: 'Cormorant Garamond', serif; font-style: italic; font-weight: 400; font-size: 40px; color: var(--cream); }
+    .essays-grid { display: flex; gap: 24px; }
+    .essay-card { flex: 1; min-width: 0; }
+    .essay-img-box { width: 100%; height: 200px; overflow: hidden; position: relative; }
+    .essay-img { width: 100%; height: 100%; object-fit: cover; background: linear-gradient(160deg, #0d1b2a 0%, #1c2d1a 50%, #1a1408 100%); transition: transform 400ms ease; }
+    .essay-card:hover .essay-img { transform: scale(1.03); }
+    .essay-img-box::after { content: ''; position: absolute; top:0; left:0; width:100%; height:100%; background: var(--overlay-dark); pointer-events: none;}
+    .essay-content { padding-top: 20px; }
+    .essay-tag { font-family: 'DM Sans', sans-serif; text-transform: uppercase; font-size: 8px; letter-spacing: 0.15em; color: var(--gold); margin-bottom: 8px; display: block; }
+    .essay-title { font-family: 'Cormorant Garamond', serif; font-style: italic; font-size: 20px; color: var(--cream); line-height: 1.3; margin-bottom: 8px; }
+    .essay-excerpt { font-size: 12px; color: var(--mist); line-height: 1.8; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
+
+    /* Section 11: Footer */
+    .footer { padding: 80px; background: var(--navy-deep); }
+    .footer-container { max-width: 1200px; margin: 0 auto; }
+    .footer-top { display: flex; justify-content: space-between; margin-bottom: 60px; }
+    .footer-left { width: 40%; }
+    .footer-wordmark { font-family: 'Cormorant Garamond', serif; font-size: 24px; color: var(--cream); margin-bottom: 12px; }
+    .footer-motto { font-style: italic; font-size: 12px; color: var(--mist); }
+    .footer-right { width: 60%; display: flex; gap: 80px; }
+    .footer-col { display: flex; flex-direction: column; gap: 16px; }
+    .footer-link { font-family: 'DM Sans', sans-serif; text-transform: uppercase; font-size: 10px; letter-spacing: 0.15em; color: var(--mist); display: inline-flex; }
+    .footer-rule { width: 100%; height: 1px; background: rgba(200,184,154,0.2); margin-bottom: 28px; }
+    .footer-bottom { display: flex; justify-content: space-between; align-items: center; }
+    .footer-copy { font-size: 11px; color: var(--mist); }
+    .footer-legal { display: flex; gap: 12px; align-items: center; font-size: 11px; color: var(--mist); }
+    .legal-sep { color: var(--mist); }
+
+    /* Mobile Responsive */
+    @media (max-width: 768px) {
+      .nav { padding: 0 24px; }
+      .nav-center { display: none; }
+      .hero-h1 { font-size: 52px; }
+      .mission, .parchment, .quote-sec, .pillars, .cta-band, .pricing, .essays, .footer { padding: 70px 24px; }
+      .mission-grid, .parchment-grid, .pillars-grid, .pricing-grid, .footer-top { flex-direction: column; gap: 40px; }
+      .mission-left, .mission-right, .parchment-left, .parchment-right { width: 100%; padding: 0; text-align: left; }
+      .parchment-right { text-align: left; margin-left: 0; }
+      .image-band { flex-direction: column; height: auto; }
+      .image-panel { width: 100%; height: 280px; }
+      .quote-mark { font-size: 80px; }
+      .pull-quote { font-size: 28px; }
+      .essays-grid { flex-direction: column; }
+      .footer-right { flex-direction: column; gap: 40px; }
+      .footer-bottom { flex-direction: column; gap: 16px; align-items: flex-start; }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Curtain Entry Screen -->
+  <div id="fn-curtain">
+    <div class="curtain-inner">
+      <div class="curtain-rule-top"></div>
+      <div class="curtain-wordmark">FootNote</div>
+      <div class="curtain-vol">Vol. I &mdash; The Reading Edition</div>
+      
+      <div style="margin-top: 180px;">
+        <h1 class="curtain-headline">
+          <span class="curtain-line-1">Architecture</span>
+          <span class="curtain-line-2">of Sound</span>
+        </h1>
+        <div class="curtain-rule-mid"></div>
+        <p class="curtain-subline">"A reading companion for those who still finish books."</p>
+      </div>
+
+      <div class="curtain-hint curtain-enter-hint">
+        <span class="curtain-enter-text">Enter</span>
+        <span class="curtain-enter-icon">&darr;</span>
+      </div>
+    </div>
+  </div>
+
+  <main id="fn-page">
+
+    <!-- 1. Navigation -->
+    <nav class="nav">
+      <div class="nav-logo">FootNote</div>
+      <button class="nav-menu-btn" aria-label="Menu">
+        <span class="nav-menu-line"></span>
+        <span class="nav-menu-line"></span>
+      </button>
+    </nav>
+
+  <!-- 2. Hero -->
+  <section class="hero">
+    <div class="eyebrow hero-eyebrow onload-fade-up onload-delay-2">A READING COMPANION</div>
+    <h1 class="hero-headline onload-fade-up onload-delay-3">
+      <span class="hero-h1 hero-line-1 normal">Architecture</span>
+      <span class="hero-h1 hero-line-2 italic">of Sound</span>
+    </h1>
+    <div class="hero-rule onload-fade-up onload-delay-4"></div>
+    <p class="hero-body onload-fade-up onload-delay-5">For those who think in long-form. FootNote is the sound of deep focus &mdash; and the space to actually read.</p>
+    <div class="hero-links onload-fade-up onload-delay-6">
+      <a href="#" class="cta-text-anim">Explore Playlists &rarr;</a>
+      <span class="hero-sep">|</span>
+      <a href="#" class="cta-text-anim">Browse Essays &rarr;</a>
+    </div>
+  </section>
+
+  <!-- 3. Editorial Image Band -->
+  <section class="image-band">
+    <div class="image-panel img-library anim-slide-left">
+      <div class="image-text">
+        <span class="eyebrow image-eyebrow">SOUND SERIES</span>
+        <h3 class="image-title">"The architecture of silence"</h3>
+      </div>
+    </div>
+    <div class="image-panel img-music anim-slide-right stagger-1">
+      <div class="image-text">
+        <span class="eyebrow image-eyebrow">FEATURED ESSAY</span>
+        <h3 class="image-title">"Sound as architecture"</h3>
+      </div>
+    </div>
+  </section>
+
+  <!-- 4. Mission Statement -->
+  <section class="mission">
+    <div class="mission-grid">
+      <div class="mission-left anim-slide-left">
+        <h2 class="mission-statement">
+          <span class="mission-l1 normal">We built FootNote</span>
+          <span class="mission-l2 italic">because silence isn't</span>
+          <span class="mission-l3 normal">always enough.</span>
+        </h2>
+      </div>
+      <div class="mission-right anim-slide-right delay-2">
+        <p class="mission-body">FootNote began as a question: what if the sounds around reading weren't distraction &mdash; but architecture? We curate frequencies, essays, and silence with the same editorial care as a print magazine.</p>
+        <a href="#" class="cta-text-anim">Read Our Story &rarr;</a>
+      </div>
+    </div>
+  </section>
+
+  <!-- 5. Parchment Feature -->
+  <section class="parchment">
+    <div class="parchment-grid">
+      <div class="parchment-left anim-fade-up">
+        <span class="eyebrow parchment-eyebrow">THE FOOTNOTE PHILOSOPHY</span>
+        <h2 class="parchment-headline">
+          <span class="normal">Designed</span><br>
+          <span class="parchment-h2 italic">for Depth.</span>
+        </h2>
+      </div>
+      <div class="parchment-right anim-fade-up stagger-1">
+        <div class="parchment-descriptor">EDITORIAL CURATION &middot; SPATIAL AUDIO &middot; LONG-FORM FOCUS</div>
+        <div class="parchment-rule"></div>
+        <div class="parchment-quote">
+          <span class="parchment-dash">&mdash;</span> "Built for the reader who still finishes books."
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- 6. Dark Pull Quote -->
+  <section class="quote-sec observer-trigger">
+    <span class="eyebrow quote-eyebrow anim-fade-up">FROM THE COMMUNITY</span>
+    <span class="quote-mark anim-fade-up">"</span>
+    <h2 class="pull-quote" id="pull-quote">
+      "Most 'focus music' is noise.<br>FootNote is the counter-argument."
+    </h2>
+    <div class="quote-rule anim-fade-up stagger-1"></div>
+    <div class="quote-attr anim-fade-up stagger-2">&mdash; Hugo Lamont, novelist &middot; writing from Lisbon</div>
+    <div class="quote-sub anim-fade-up stagger-3">"FootNote has become the only constant in my writing practice. I open it before I open anything else."</div>
+  </section>
+
+  <!-- 7. Pilllars -->
+  <section class="pillars">
+    <div class="pillars-container">
+      <div class="pillars-rule-top anim-fade-up"></div>
+      <div class="pillars-grid">
+        <div class="pillar anim-fade-up">
+          <div class="pillar-accent"></div>
+          <span class="eyebrow pillar-eyebrow">CURATION</span>
+          <h3 class="pillar-title">Pure reading, by default.</h3>
+          <p class="pillar-body">Every playlist, ambient layer, and essay collection is hand-selected. No algorithm decides what you hear or read.</p>
+        </div>
+        <div class="pillar anim-fade-up stagger-1">
+          <div class="pillar-accent"></div>
+          <span class="eyebrow pillar-eyebrow">SOUND DESIGN</span>
+          <h3 class="pillar-title">Sound for the page.</h3>
+          <p class="pillar-body">Frequencies tuned to reading rhythms. Not background music &mdash; a second layer of editorial intention.</p>
+        </div>
+        <div class="pillar anim-fade-up stagger-2">
+          <div class="pillar-accent"></div>
+          <span class="eyebrow pillar-eyebrow">LIBRARY</span>
+          <h3 class="pillar-title">Everything, archived.</h3>
+          <p class="pillar-body">Your reading history, bookmarks, marginalia, and listening sessions &mdash; stored beautifully, retrievable always.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- 8. CTA Band -->
+  <section class="cta-band">
+    <div class="cta-content anim-fade-up">
+      <span class="eyebrow cta-eyebrow">BEGIN YOUR PRACTICE</span>
+      <h2 class="cta-headline">
+        "Titles worth<br><span style="margin-left:3vw;">your attention."</span>
+      </h2>
+      <a href="#" class="cta-btn-main">Read Now &rarr;</a>
+    </div>
+  </section>
+
+  <!-- 9. Pricing -->
+  <section class="pricing">
+    <div class="pricing-container">
+      <div class="pricing-header anim-fade-up">
+        <span class="eyebrow pricing-eyebrow">MEMBERSHIP</span>
+        <h2 class="pricing-headline normal">Read on your terms.</h2>
+      </div>
+      <div class="pricing-grid">
+        <div class="plan free-plan anim-fade-up">
+          <h3 class="plan-title">Quiet</h3>
+          <span class="plan-price">Free forever</span>
+          <ul class="plan-features">
+            <li class="plan-feature">3 ambient playlists</li>
+            <li class="plan-feature">5 essay reads/month</li>
+            <li class="plan-feature">Basic bookmarking</li>
+          </ul>
+          <a href="#" class="cta-text-anim">Explore free &rarr;</a>
+        </div>
+        <div class="plan featured-plan anim-scale stagger-1">
+          <span class="plan-badge">MOST POPULAR</span>
+          <h3 class="plan-title">Composed</h3>
+          <span class="plan-price">$8 / month</span>
+          <ul class="plan-features">
+            <li class="plan-feature">Unlimited playlists</li>
+            <li class="plan-feature">Full essay archive</li>
+            <li class="plan-feature">Offline listening</li>
+            <li class="plan-feature">Sound layering tools</li>
+          </ul>
+          <button class="plan-cta-fill">Begin Reading</button>
+        </div>
+        <div class="plan complete-plan anim-fade-up stagger-2">
+          <h3 class="plan-title">Complete</h3>
+          <span class="plan-price">$16 / month</span>
+          <ul class="plan-features">
+            <li class="plan-feature">Everything in Composed</li>
+            <li class="plan-feature">Curated reading bundles</li>
+            <li class="plan-feature">Priority essay releases</li>
+            <li class="plan-feature">Annual sound almanac</li>
+          </ul>
+          <a href="#" class="cta-text-anim">Explore complete &rarr;</a>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- 10. Featured Essays -->
+  <section class="essays">
+    <div class="essays-container">
+      <div class="essays-header anim-fade-up">
+        <span class="eyebrow essays-eyebrow">FEATURED READING</span>
+        <h2 class="essays-title">"Essays worth the hour."</h2>
+      </div>
+      <div class="essays-grid">
+        <!-- Essay 1 -->
+        <div class="essay-card anim-slide-right delay-2">
+          <div class="essay-img-box"><div class="essay-img"></div></div>
+          <div class="essay-content">
+            <span class="essay-tag">FOCUS &middot; WRITING</span>
+            <h3 class="essay-title">On the sound of concentration</h3>
+            <p class="essay-excerpt">What does it mean to choose silence &mdash; and when does silence become its own distraction?</p>
+          </div>
+        </div>
+        <!-- Essay 2 -->
+        <div class="essay-card anim-slide-right stagger-1">
+          <div class="essay-img-box"><div class="essay-img"></div></div>
+          <div class="essay-content">
+            <span class="essay-tag">ENVIRONMENT &middot; SPACE</span>
+            <h3 class="essay-title">The room where I finally wrote</h3>
+            <p class="essay-excerpt">A small study, a particular light, a sound that was neither music nor silence. Some rooms think for you.</p>
+          </div>
+        </div>
+        <!-- Essay 3 -->
+        <div class="essay-card anim-slide-right stagger-2">
+          <div class="essay-img-box"><div class="essay-img"></div></div>
+          <div class="essay-content">
+            <span class="essay-tag">PRACTICE &middot; RITUAL</span>
+            <h3 class="essay-title">Reading as a physical act</h3>
+            <p class="essay-excerpt">We have forgotten that reading requires a body. Posture, breath, temperature &mdash; all of it is the practice.</p>
+          </div>
+        </div>
+        <!-- Essay 4 -->
+        <div class="essay-card anim-slide-right stagger-3">
+          <div class="essay-img-box"><div class="essay-img"></div></div>
+          <div class="essay-content">
+            <span class="essay-tag">SOUND &middot; FREQUENCY</span>
+            <h3 class="essay-title">Why lyrics break the spell</h3>
+            <p class="essay-excerpt">Language cannot be background. The moment a word reaches you, you are reading it &mdash; not the page.</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- 11. Footer -->
+  <footer class="footer">
+    <div class="footer-container">
+      <div class="footer-top anim-fade-up">
+        <div class="footer-left">
+          <div class="footer-wordmark">FootNote</div>
+          <div class="footer-motto">"No ads. No algorithms. No noise."</div>
+        </div>
+        <div class="footer-right">
+          <div class="footer-col">
+            <a href="#" class="footer-link link-underline">Listen</a>
+            <a href="#" class="footer-link link-underline">Read</a>
+            <a href="#" class="footer-link link-underline">Archive</a>
+            <a href="#" class="footer-link link-underline">About</a>
+            <a href="#" class="footer-link link-underline">Manifesto</a>
+          </div>
+        </div>
+      </div>
+      <div class="footer-rule anim-fade-up stagger-1"></div>
+      <div class="footer-bottom anim-fade-up stagger-2">
+        <div class="footer-copy">&copy; 2025 FootNote</div>
+        <div class="footer-legal">
+          <a href="#" class="legal-link">Privacy</a>
+          <span class="legal-sep">&middot;</span>
+          <a href="#" class="legal-link">Terms</a>
+          <span class="legal-sep">&middot;</span>
+          <a href="#" class="legal-link">Contact</a>
+        </div>
+      </div>
+    </div>
+  </footer>
+
+  </main>
+
+  <script>
+    // Curtain Logic
+    const curtain = document.getElementById('fn-curtain');
+    const page = document.getElementById('fn-page');
+
+    function liftCurtain() {
+      if (curtain.classList.contains('is-lifting')) return;
+      curtain.classList.add('is-lifting');
+      page.classList.add('is-revealed');
+      
+      setTimeout(() => {
+        curtain.classList.add('is-gone');
+        document.body.style.overflow = '';
+      }, 1800);
+    }
+
+    curtain.addEventListener('click', liftCurtain);
+    const autoLift = setTimeout(liftCurtain, 6000);
+    curtain.addEventListener('click', () => clearTimeout(autoLift), { once: true });
+    document.body.style.overflow = 'hidden';
+
+    document.addEventListener('DOMContentLoaded', () => {
+      // Nav fade on scroll
+      const nav = document.querySelector('.nav');
+      window.addEventListener('scroll', () => {
+        if (window.scrollY > 40) {
+          nav.classList.add('scrolled');
+        } else {
+          nav.classList.remove('scrolled');
+        }
+      });
+
+      // Complex Pull Quote Animation (Split words)
+      const pullQuote = document.getElementById('pull-quote');
+      if (pullQuote) {
+        // preserve line breaks
+        const htmlLines = pullQuote.innerHTML.split(/<br\s*\/?>/gi);
+        let newHtml = '';
+        htmlLines.forEach((line, i) => {
+          const words = line.trim().split(' ');
+          words.forEach(word => {
+            if (word.length > 0) {
+              newHtml += `<span>${word}</span> `;
+            }
+          });
+          if (i < htmlLines.length - 1) {
+            newHtml += '<br>';
+          }
+        });
+        pullQuote.innerHTML = newHtml;
+      }
+
+      // Intersection Observer
+      const observerOptions = {
+        rootMargin: '0px',
+        threshold: 0.12
+      };
+
+      let quoteAnimated = false;
+
+      const observer = new IntersectionObserver((entries, obs) => {
+        entries.forEach(entry => {
+          if (entry.isIntersecting) {
+            entry.target.classList.add('is-visible');
+            obs.unobserve(entry.target);
+
+            if (entry.target.classList.contains('observer-trigger') && !quoteAnimated) {
+              quoteAnimated = true;
+              const spans = entry.target.querySelectorAll('.pull-quote span');
+              spans.forEach((span, i) => {
+                setTimeout(() => {
+                  span.style.opacity = '1';
+                }, i * 30);
+              });
+            }
+          }
+        });
+      }, observerOptions);
+
+      document.querySelectorAll('.anim-fade-up, .anim-slide-left, .anim-slide-right, .anim-scale, .observer-trigger').forEach(el => {
+        observer.observe(el);
+      });
+    });
+  </script>
+</body>
 </html>
