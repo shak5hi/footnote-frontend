@@ -1,0 +1,189 @@
+﻿// Curtain Logic
+    const curtain = document.getElementById('fn-curtain');
+    const page = document.getElementById('fn-page');
+
+    function liftCurtain() {
+      if (curtain.classList.contains('is-lifting')) return;
+      curtain.classList.add('is-lifting');
+      page.classList.add('is-revealed');
+
+      setTimeout(() => {
+        curtain.classList.add('is-gone');
+        document.body.style.overflow = '';
+      }, 1800);
+    }
+
+    curtain.addEventListener('click', liftCurtain);
+    const autoLift = setTimeout(liftCurtain, 6000);
+    curtain.addEventListener('click', () => clearTimeout(autoLift), { once: true });
+    document.body.style.overflow = 'hidden';
+
+    document.addEventListener('DOMContentLoaded', () => {
+      // Nav fade on scroll
+      const nav = document.querySelector('.nav');
+      window.addEventListener('scroll', () => {
+        if (window.scrollY > 40) {
+          nav.classList.add('scrolled');
+        } else {
+          nav.classList.remove('scrolled');
+        }
+      });
+
+      // Complex Pull Quote Animation (Split words)
+      const pullQuote = document.getElementById('pull-quote');
+      if (pullQuote) {
+        // preserve line breaks
+        const htmlLines = pullQuote.innerHTML.split(/<br\s*\/?>/gi);
+        let newHtml = '';
+        htmlLines.forEach((line, i) => {
+          const words = line.trim().split(' ');
+          words.forEach(word => {
+            if (word.length > 0) {
+              newHtml += `<span>${word}</span> `;
+            }
+          });
+          if (i < htmlLines.length - 1) {
+            newHtml += '<br>';
+          }
+        });
+        pullQuote.innerHTML = newHtml;
+      }
+
+      // Editorial Carousel Logic
+      const editorialItems = document.querySelectorAll('.editorial-item');
+      const editorialBgs = document.querySelectorAll('.editorial-bg'); // bg1 and bg2
+      const editorialHeading = document.querySelector('.editorial-heading');
+      const editorialSub = document.querySelector('.editorial-subheading');
+
+      if (editorialItems.length > 0) {
+        let currentBgIndex = 0;
+        let activeBgUrl = null;
+
+        editorialItems.forEach(item => {
+          const triggerUpdate = () => {
+            if (item.classList.contains('active')) return;
+            
+            editorialItems.forEach(el => el.classList.remove('active'));
+            item.classList.add('active');
+
+            activeBgUrl = item.dataset.bg; // Keep track of latest requested load
+
+            editorialHeading.style.opacity = '0';
+            editorialSub.style.opacity = '0';
+
+            // Preload image so wait times don't stutter the animation
+            const img = new Image();
+            img.src = item.dataset.bg;
+            img.onload = () => {
+              // Only apply if this is still the most recent hover request
+              if (activeBgUrl !== item.dataset.bg) return;
+
+              const nextBgIndex = currentBgIndex === 0 ? 1 : 0;
+              const currentBg = editorialBgs[currentBgIndex];
+              const nextBg = editorialBgs[nextBgIndex];
+
+              nextBg.style.backgroundImage = `url('${item.dataset.bg}')`;
+              nextBg.style.opacity = '1';      // Fade in new layer
+              currentBg.style.opacity = '0';     // Fade out old layer
+
+              currentBgIndex = nextBgIndex;
+              
+              editorialHeading.textContent = item.dataset.title;
+              editorialSub.textContent = item.dataset.sub;
+              editorialHeading.style.opacity = '1';
+              editorialSub.style.opacity = '1';
+            };
+          };
+
+          item.addEventListener('mouseenter', triggerUpdate);
+          item.addEventListener('click', triggerUpdate);
+        });
+      }
+
+      // Hero Scroll Animation Logic
+      const scrollContainer = document.querySelector('.hero-scroll-container');
+      const whiteLayer = document.querySelector('.hero-white-layer');
+
+      if (scrollContainer && whiteLayer) {
+        // Click to scroll and reveal
+        whiteLayer.addEventListener('click', (e) => {
+          // If the user clicked a link or button inside the hero, let it behave normally
+          if (e.target.closest('a') || e.target.closest('button')) return;
+
+          const maxScroll = scrollContainer.scrollHeight - window.innerHeight;
+          const targetY = scrollContainer.getBoundingClientRect().top + window.scrollY + maxScroll;
+          window.scrollTo({
+            top: targetY,
+            behavior: 'smooth'
+          });
+        });
+
+        let currentProgress = 0;
+        let targetProgress = 0;
+
+        window.addEventListener('scroll', () => {
+          const rect = scrollContainer.getBoundingClientRect();
+          const maxScroll = scrollContainer.scrollHeight - window.innerHeight;
+
+          if (rect.top <= 0) {
+            targetProgress = Math.min(1, Math.abs(rect.top) / maxScroll);
+          } else {
+            targetProgress = 0;
+          }
+        }, { passive: true });
+
+        // Smooth Lerp Loop for luxurious feel
+        function renderLoop() {
+          currentProgress += (targetProgress - currentProgress) * 0.07; // Lerp factor for smoothness
+
+          if (currentProgress < 0.001) {
+            whiteLayer.style.transform = 'translateY(0%) scale(1)';
+            whiteLayer.style.opacity = '1';
+          } else if (currentProgress > 0.999) {
+            whiteLayer.style.transform = 'translateY(-100%) scale(0.98)';
+            whiteLayer.style.opacity = '0.95';
+          } else {
+            const yMove = currentProgress * 100;
+            const scale = 1 - (currentProgress * 0.02);
+            const opacity = 1 - (currentProgress * 0.05);
+            whiteLayer.style.transform = `translateY(-${yMove}%) scale(${scale})`;
+            whiteLayer.style.opacity = opacity.toString();
+          }
+
+          requestAnimationFrame(renderLoop);
+        }
+
+        requestAnimationFrame(renderLoop);
+      }
+
+      // Intersection Observer
+      const observerOptions = {
+        rootMargin: '0px',
+        threshold: 0.12
+      };
+
+      let quoteAnimated = false;
+
+      const observer = new IntersectionObserver((entries, obs) => {
+        entries.forEach(entry => {
+          if (entry.isIntersecting) {
+            entry.target.classList.add('is-visible');
+            obs.unobserve(entry.target);
+
+            if (entry.target.classList.contains('observer-trigger') && !quoteAnimated) {
+              quoteAnimated = true;
+              const spans = entry.target.querySelectorAll('.pull-quote span');
+              spans.forEach((span, i) => {
+                setTimeout(() => {
+                  span.style.opacity = '1';
+                }, i * 30);
+              });
+            }
+          }
+        });
+      }, observerOptions);
+
+      document.querySelectorAll('.anim-fade-up, .anim-slide-left, .anim-slide-right, .anim-scale, .observer-trigger').forEach(el => {
+        observer.observe(el);
+      });
+    });
