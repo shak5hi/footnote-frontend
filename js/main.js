@@ -1,4 +1,4 @@
-﻿// Curtain Logic
+// Curtain Logic
     const curtain = document.getElementById('fn-curtain');
     const page = document.getElementById('fn-page');
 
@@ -186,4 +186,63 @@
       document.querySelectorAll('.anim-fade-up, .anim-slide-left, .anim-slide-right, .anim-scale, .observer-trigger').forEach(el => {
         observer.observe(el);
       });
+
+      // Cinematic Scroll Logic
+      const cScroll = document.getElementById('cinematic-interlude');
+      const cImg = document.querySelector('.cinematic-img');
+      const cTexts = document.querySelectorAll('.cinematic-text');
+
+      if (cScroll && cImg && cTexts.length > 0) {
+        window.addEventListener('scroll', () => {
+          const rect = cScroll.getBoundingClientRect();
+          const maxScroll = cScroll.scrollHeight - window.innerHeight;
+
+          if (rect.top <= 0 && rect.bottom >= window.innerHeight) {
+            const progress = Math.min(1, Math.max(0, Math.abs(rect.top) / maxScroll));
+            
+            // Image subtle zoom
+            const scale = 1.05 - (progress * 0.05);
+            cImg.style.transform = `scale(${scale})`;
+
+            // Text overlapping fade logic
+            cTexts.forEach((text, index) => {
+              const startFadeIn = index * 0.20;
+              const endFadeIn = startFadeIn + 0.10;
+              const startFadeOut = endFadeIn + 0.15; // stays fully visible for a bit
+              const endFadeOut = startFadeOut + 0.10;
+
+              let fade = 0;
+              let y = 30;
+
+              if (progress >= startFadeIn && progress <= endFadeOut) {
+                if (progress <= endFadeIn) {
+                  // Fading in
+                  const t = (progress - startFadeIn) / 0.10;
+                  fade = t;
+                  y = 30 * (1 - t);
+                } else if (progress <= startFadeOut) {
+                  // Fully visible
+                  fade = 1;
+                  y = 0;
+                } else {
+                  // Fading out
+                  const t = (progress - startFadeOut) / 0.10;
+                  fade = 1 - t;
+                  y = -30 * t;
+                }
+              }
+              text.style.opacity = fade.toString();
+              text.style.transform = `translateY(${y}px)`;
+            });
+          } else if (rect.top > 0) {
+            // Above the section
+            cImg.style.transform = 'scale(1.05)';
+            cTexts.forEach(t => { t.style.opacity = '0'; t.style.transform = 'translateY(30px)'; });
+          } else {
+            // Below the section
+            cImg.style.transform = 'scale(1.0)';
+            cTexts.forEach(t => { t.style.opacity = '0'; t.style.transform = 'translateY(-30px)'; });
+          }
+        }, { passive: true });
+      }
     });

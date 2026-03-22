@@ -1839,3 +1839,185 @@
   }
 }
 
+/* ==========================================================================
+   Cinematic Scroll Interlude
+   ========================================================================== */
+
+.cinematic-scroll {
+  height: 250vh;
+  position: relative;
+  width: 100%;
+  background-color: var(--navy-deep);
+}
+
+.cinematic-sticky {
+  position: sticky;
+  top: 0;
+  height: 100vh;
+  width: 100%;
+  overflow: hidden;
+}
+
+.cinematic-img-wrapper {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+}
+
+.cinematic-img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  transform-origin: center;
+  filter: sepia(0.05) contrast(0.95);
+  transform: scale(1.05); /* JS will step this down to 1.0 */
+  will-change: transform;
+}
+
+.cinematic-overlay {
+  position: absolute;
+  top: 0; left: 0; width: 100%; height: 100%;
+  background: linear-gradient(rgba(10, 21, 32, 0.4), rgba(10, 21, 32, 0.65));
+  z-index: 1;
+}
+
+.cinematic-text-layers {
+  position: absolute;
+  top: 0; left: 0; width: 100%; height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-direction: column; 
+  z-index: 2;
+  pointer-events: none;
+}
+
+.cinematic-text {
+  position: absolute;
+  font-family: 'Cormorant Garamond', serif;
+  font-weight: 300;
+  font-size: clamp(40px, 6vw, 88px);
+  color: var(--bg-primary);
+  text-align: center;
+  opacity: 0;
+  transform: translateY(20px);
+  will-change: opacity, transform;
+  text-shadow: 0 4px 20px rgba(0, 0, 0, 0.5);
+  letter-spacing: -0.01em;
+  padding: 0 24px;
+}
+
+
+/* ==========================================================================
+   Immersive Scroll Section
+   ========================================================================== */
+
+.immersive-scroll-container {
+  /* 400vh provides a long vertical scroll area allowing for slow horizontal pan */
+  height: 400vh;
+  position: relative;
+  width: 100%;
+  background-color: var(--navy-deep); /* dark backdrop beneath images */
+}
+
+.immersive-sticky-wrapper {
+  position: sticky;
+  top: 0;
+  width: 100vw;
+  height: 100vh;
+  overflow: hidden;
+  /* hide anything outside viewport to ensure fake horizontal scroll effect */
+}
+
+.immersive-track {
+  display: flex;
+  width: 300vw; /* 3 panels * 100vw */
+  height: 100vh;
+  will-change: transform;
+  /* JS will control transform: translateX() */
+}
+
+.immersive-panel {
+  width: 100vw;
+  height: 100vh;
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+  flex: 0 0 100vw;
+}
+
+.immersive-img {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  /* slight slow scaling for deep parallax */
+  transform: scale(1.05);
+  transition: transform 0.2s ease-out;
+  filter: sepia(0.1) contrast(0.9);
+}
+
+.immersive-overlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(rgba(10, 21, 32, 0.4), rgba(10, 21, 32, 0.6));
+  z-index: 1;
+}
+
+.immersive-text {
+  font-family: 'Cormorant Garamond', serif;
+  font-weight: 300;
+  font-size: clamp(64px, 8vw, 120px);
+  color: var(--bg-primary);
+  z-index: 2;
+  position: relative;
+  letter-spacing: -0.01em;
+  line-height: 1;
+  text-shadow: 0 4px 20px rgba(0, 0, 0, 0.4);
+  opacity: 0;
+  transform: translateY(30px);
+  transition: opacity 1.2s ease-out, transform 1.2s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+}
+
+.immersive-text.active {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+.immersive-text-block {
+  z-index: 2;
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+  align-items: flex-end;
+  opacity: 0;
+  transform: translateY(30px);
+  transition: opacity 1.2s ease-out, transform 1.2s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+}
+
+.immersive-text-block.active {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+.immersive-subtext {
+  font-family: 'DM Sans', sans-serif;
+  font-weight: 300;
+  font-size: 16px;
+  color: var(--cream);
+  max-width: 400px;
+  text-align: right;
+  letter-spacing: 0.05em;
+}
+
+
