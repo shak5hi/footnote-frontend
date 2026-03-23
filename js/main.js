@@ -204,33 +204,39 @@
             const scale = 1.05 - (progress * 0.05);
             cImg.style.transform = `scale(${scale})`;
 
-            // Text overlapping fade logic
+            // Text Stage sequence logic
             cTexts.forEach((text, index) => {
-              const startFadeIn = index * 0.20;
-              const endFadeIn = startFadeIn + 0.10;
-              const startFadeOut = endFadeIn + 0.15; // stays fully visible for a bit
-              const endFadeOut = startFadeOut + 0.10;
-
               let fade = 0;
-              let y = 30;
+              let y = 20;
 
-              if (progress >= startFadeIn && progress <= endFadeOut) {
-                if (progress <= endFadeIn) {
-                  // Fading in
-                  const t = (progress - startFadeIn) / 0.10;
-                  fade = t;
-                  y = 30 * (1 - t);
-                } else if (progress <= startFadeOut) {
-                  // Fully visible
-                  fade = 1;
-                  y = 0;
-                } else {
-                  // Fading out
-                  const t = (progress - startFadeOut) / 0.10;
-                  fade = 1 - t;
-                  y = -30 * t;
+              if (index === 0) {
+                // Line 0: "You don't just read here—" (Stage 1)
+                if (progress < 0.05) { fade = progress / 0.05; y = 20 * (1 - fade); }
+                else if (progress <= 0.25) { fade = 1; y = 0; }
+                else if (progress <= 0.35) { fade = 1 - ((progress - 0.25) / 0.10); y = -20 * ((progress - 0.25) / 0.10); }
+                else { fade = 0; y = -20; }
+              } 
+              else if (index === 1) {
+                // Line 1: "you listen." (Stage 2)
+                if (progress < 0.30) { fade = 0; y = 20; }
+                else if (progress <= 0.40) { fade = (progress - 0.30) / 0.10; y = 20 * (1 - fade); }
+                else if (progress <= 0.65) { fade = 1; y = 0; }
+                else if (progress <= 0.80) { 
+                  // Softens to 0.6
+                  const t = (progress - 0.65) / 0.15;
+                  fade = 1 - (t * 0.4); // 1.0 down to 0.6
+                  y = 0; 
                 }
+                else { fade = 0.6; y = 0; } // holds until section exits
               }
+              else if (index === 2) {
+                // Line 2: "Enter the Frequency" (Stage 3)
+                // Appears below line 1 (no need to translate line 1 up, just fade this in)
+                if (progress < 0.70) { fade = 0; y = 20; }
+                else if (progress <= 0.85) { fade = (progress - 0.70) / 0.15; y = 20 * (1 - fade); }
+                else { fade = 1; y = 0; }
+              }
+
               text.style.opacity = fade.toString();
               text.style.transform = `translateY(${y}px)`;
             });
