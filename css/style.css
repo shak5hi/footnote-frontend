@@ -899,116 +899,84 @@
       margin-bottom: 24px;
     }
 
-    /* Section 5: Parchment Feature Panel */
-    .parchment {
-      padding: 100px 80px;
-      background: var(--bg-secondary);
-    }
 
-    .parchment-grid {
-      display: flex;
-      align-items: flex-start;
-      max-width: 1200px;
-      margin: 0 auto;
-    }
-
-    .parchment-left {
-      width: 60%;
-    }
-
-    .parchment-right {
-      width: 40%;
-      text-align: right;
-      margin-left: auto;
-      width: 45%;
-    }
-
-    .parchment-eyebrow {
-      color: var(--mist);
-      margin-bottom: 20px;
-      display: block;
-    }
-
-    .parchment-headline {
-      font-family: 'Cormorant Garamond', serif;
-      font-weight: 400;
-      font-size: 56px;
-      color: var(--ink);
-    }
-
-    .parchment-h2 {
-      font-style: italic;
-      display: block;
-    }
-
-    .parchment-descriptor {
-      font-family: 'DM Sans', sans-serif;
-      text-transform: uppercase;
-      font-size: 10px;
-      letter-spacing: 0.1em;
-      color: var(--ink);
-      margin-bottom: 16px;
-    }
-
-    .parchment-rule {
-      width: 100%;
-      height: 1px;
-      background: rgba(200, 184, 154, 0.4);
-      margin: 24px 0;
-    }
-
-    .parchment-quote {
-      font-size: 14px;
-      color: var(--mist);
-      display: flex;
-      justify-content: flex-end;
-      align-items: center;
-      gap: 8px;
-    }
-
-    .parchment-dash {
-      font-family: 'DM Sans', sans-serif;
-      font-size: 14px;
-      color: var(--mist);
-    }
-
-    /* Section 6: Full Bleed Dark Quote */
+    /* Section 6: High Fashion Editorial Quote */
     .quote-sec {
-      background: var(--navy);
-      min-height: 70vh;
+      position: relative;
+      background: #110C0B;
+      min-height: 90vh;
       width: 100%;
       display: flex;
       flex-direction: column;
-      align-items: center;
+      align-items: flex-end;
       justify-content: center;
-      padding: 100px 40px;
+      padding: 160px 10vw 160px 20vw;
+      overflow: hidden;
+    }
+
+    .quote-sec::before {
+      content: '';
+      position: absolute;
+      top: 0; left: 0;
+      width: 100%; height: 100%;
+      background-image: url('../src/assets/images/download.jpg');
+      background-size: contain;
+      background-repeat: no-repeat;
+      background-position: center;
+      opacity: 0.8;
+      z-index: 1;
+      pointer-events: none;
+    }
+
+    .quote-sec::after {
+      content: '';
+      position: absolute;
+      top: 0; left: 0;
+      width: 100%; height: 100%;
+      background: radial-gradient(circle at center, transparent 20%, #110C0B 90%);
+      z-index: 2;
+      pointer-events: none;
+    }
+
+    .quote-eyebrow,
+    .quote-mark,
+    .pull-quote,
+    .quote-rule,
+    .quote-attr,
+    .quote-sub {
+      position: relative;
+      z-index: 3;
+      max-width: 600px;
+      width: 100%;
+      text-align: left;
     }
 
     .quote-eyebrow {
-      color: var(--gold);
-      margin-bottom: 0px;
+      color: rgba(200, 184, 154, 0.9);
+      margin-bottom: 24px;
       display: block;
-      text-align: center;
+      letter-spacing: 0.35em;
     }
 
     .quote-mark {
       font-family: 'Cormorant Garamond', serif;
-      font-size: 120px;
-      line-height: 0.8;
-      color: rgba(200, 184, 154, 0.3);
-      text-align: center;
-      margin-bottom: -10px;
+      font-size: 240px;
+      line-height: 0.6;
+      color: rgba(200, 184, 154, 0.2);
+      margin-bottom: -50px;
+      transform: translateX(-40px);
+      pointer-events: none;
     }
 
     .pull-quote {
       font-family: 'Cormorant Garamond', serif;
       font-style: italic;
-      font-weight: 400;
-      font-size: 40px;
-      line-height: 1.3;
-      color: var(--cream);
-      text-align: center;
-      max-width: 680px;
+      font-weight: 300;
+      font-size: 48px;
+      line-height: 1.5;
+      color: #ffffff;
+      text-shadow: 0 4px 12px rgba(17, 12, 11, 0.4);
+      margin-left: 20px;
     }
 
     .pull-quote span {
@@ -1017,26 +985,43 @@
     }
 
     .quote-rule {
-      width: 80px;
+      width: 40px;
       height: 1px;
       background: var(--gold);
-      margin: 40px auto;
+      opacity: 0.8;
+      margin: 48px 0 48px 20px;
     }
 
     .quote-attr {
-      font-size: 12px;
-      color: var(--mist);
-      text-align: center;
+      font-size: 11px;
+      font-weight: 300;
+      color: rgba(200, 184, 154, 0.95);
+      margin-left: 20px;
     }
 
     .quote-sub {
-      font-size: 11px;
-      font-style: italic;
-      color: var(--mist);
-      text-align: center;
-      max-width: 400px;
-      margin: 12px auto 0;
+      font-size: 10px;
+      font-weight: 300;
+      font-style: normal;
+      color: rgba(250, 250, 247, 0.85);
+      max-width: 380px;
+      margin: 20px 0 0 20px;
+      line-height: 2;
     }
+
+    .quote-sec .anim-fade-up {
+      transition: opacity 1.4s cubic-bezier(0.25, 0.46, 0.45, 0.94),
+        transform 1.4s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+      transform: translateY(24px);
+    }
+
+    .quote-sec .anim-fade-up.is-visible {
+      transform: translateY(0);
+    }
+
+    .quote-sec .stagger-1 { transition-delay: 200ms; }
+    .quote-sec .stagger-2 { transition-delay: 400ms; }
+    .quote-sec .stagger-3 { transition-delay: 600ms; }
 
     /* Section 7: Three Pillar Grid */
     .pillars {
@@ -1093,50 +1078,6 @@
       max-width: 280px;
     }
 
-    /* Section 8: Dark Image CTA */
-    .cta-band {
-      background: radial-gradient(ellipse at center, #1a2d40 0%, #0a1520 70%);
-      height: 60vh;
-      width: 100%;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      justify-content: center;
-    }
-
-    .cta-eyebrow {
-      color: var(--gold);
-      margin-bottom: 32px;
-    }
-
-    .cta-headline {
-      font-family: 'Cormorant Garamond', serif;
-      font-style: italic;
-      font-weight: 400;
-      font-size: 64px;
-      color: var(--cream);
-      line-height: 1.1;
-      text-align: center;
-    }
-
-    .cta-btn-main {
-      font-family: 'DM Sans', sans-serif;
-      font-weight: 400;
-      text-transform: uppercase;
-      font-size: 10px;
-      letter-spacing: 0.1em;
-      border: 1px solid var(--gold);
-      color: var(--gold);
-      padding: 12px 32px;
-      margin-top: 48px;
-      transition: 300ms ease;
-      background: transparent;
-    }
-
-    .cta-btn-main:hover {
-      background: var(--gold);
-      color: var(--navy-deep);
-    }
 
     /* Section 9: Pricing */
     .pricing {
@@ -1352,7 +1293,7 @@
     /* Section 11: Footer */
     .footer {
       padding: 80px;
-      background: var(--navy-deep);
+      background: #060e17; /* Strong, dark solid navy */
     }
 
     .footer-container {
@@ -1457,10 +1398,7 @@
       }
 
       .mission,
-      .parchment,
-      .quote-sec,
       .pillars,
-      .cta-band,
       .pricing,
       .essays,
       .footer {
@@ -1468,7 +1406,6 @@
       }
 
       .mission-grid,
-      .parchment-grid,
       .pillars-grid,
       .pricing-grid,
       .footer-top {
@@ -1477,18 +1414,12 @@
       }
 
       .mission-left,
-      .mission-right,
-      .parchment-left,
-      .parchment-right {
+      .mission-right {
         width: 100%;
         padding: 0;
         text-align: left;
       }
 
-      .parchment-right {
-        text-align: left;
-        margin-left: 0;
-      }
 
       .editorial-top-nav {
         padding: 24px;
@@ -1537,6 +1468,25 @@
         flex-direction: column;
         gap: 16px;
         align-items: flex-start;
+      }
+
+      .quote-sec {
+        padding: 100px 32px;
+        align-items: flex-start;
+      }
+      .quote-mark {
+        font-size: 160px;
+        margin-bottom: -30px;
+        transform: translateX(-10px);
+      }
+      .pull-quote {
+        font-size: 32px;
+        margin-left: 0;
+      }
+      .quote-rule,
+      .quote-attr,
+      .quote-sub {
+        margin-left: 0;
       }
     }
 
