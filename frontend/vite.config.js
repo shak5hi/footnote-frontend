@@ -9,7 +9,7 @@ export default defineConfig({
       '/api': {
         // CHANGE THIS IP to the exact IP address of your other laptop!
         // Example: 'http://192.168.1.25:5001'
-        target: 'http://localhost:5001',
+        target: 'http://127.0.0.1:5001',
         changeOrigin: true
       }
     }
