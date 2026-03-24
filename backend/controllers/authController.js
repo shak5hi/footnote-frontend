@@ -4,11 +4,17 @@ const generateToken = require("../utils/generateToken");
 
 exports.signup = async (req, res) => {
     try {
-        const { name, email, password } = req.body;
+        const { firstName, lastName, email, password } = req.body;
 
         // Check if all fields filled
-        if (!name || !email || !password) {
+        if (!firstName || !lastName || !email || !password) {
             return res.status(400).json({ message: "Please fill all fields" });
+        }
+
+        // Validate email format
+        const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+        if (!emailRegex.test(email)) {
+            return res.status(400).json({ message: "Please provide a valid email address" });
         }
 
         // Check if user already exists
@@ -22,7 +28,8 @@ exports.signup = async (req, res) => {
 
         // Create user
         const user = await User.create({
-            name,
+            firstName,
+            lastName,
             email,
             password: hashedPassword,
         });
@@ -33,7 +40,8 @@ exports.signup = async (req, res) => {
         // Send response
         res.status(201).json({
             _id: user._id,
-            name: user.name,
+            firstName: user.firstName,
+            lastName: user.lastName,
             email: user.email,
             token: token,
         });

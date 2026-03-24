@@ -4,6 +4,7 @@ require("dotenv").config();
 
 const connectDB = require("./config/db");
 const authRoutes = require("./routes/authRoutes");
+const { swaggerUi, swaggerSpec } = require("./config/swagger");
 
 const app = express();
 
@@ -14,6 +15,9 @@ connectDB();
 
 app.use("/api/auth", authRoutes);
 
-app.listen(5000, () => {
-    console.log("Server running on port 5000");
+// Swagger route
+app.use("/api-docs", swaggerUi.serve, swaggerUi.setup(swaggerSpec));
+
+app.listen(5001, () => {
+    console.log("Server running on port 5001");
 });
