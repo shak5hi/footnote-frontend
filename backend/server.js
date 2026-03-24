@@ -20,4 +20,5 @@ app.use("/api-docs", swaggerUi.serve, swaggerUi.setup(swaggerSpec));
 
 app.listen(5001, () => {
     console.log("Server running on port 5001");
+    console.log("Swagger docs available at: http://localhost:5001/api-docs");
 });
