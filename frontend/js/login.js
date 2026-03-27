@@ -82,4 +82,42 @@ document.addEventListener('DOMContentLoaded', () => {
       btn.disabled = false;
     }
   });
+
+  loginForm.addEventListener('submit', async (e) => {
+    e.preventDefault();
+
+    const username = document.getElementById('login-username').value;
+    const password = document.getElementById('login-password').value;
+
+    const btn = loginForm.querySelector('button[type="submit"]');
+    const originalText = btn.textContent;
+    btn.textContent = 'Logging in...';
+    btn.disabled = true;
+
+    try {
+      const response = await fetch('/api/auth/login', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        // Using username as email since the backend is currently expecting email
+        body: JSON.stringify({ email: username, password })
+      });
+
+      const data = await response.json();
+
+      if (response.ok) {
+        alert('Login successful!');
+        window.location.href = './index.html'; // Redirect to landing page
+      } else {
+        alert('Error: ' + (data.message || 'Login failed'));
+      }
+    } catch (error) {
+      console.error('Error during login:', error);
+      alert('Network error. Is the backend running?');
+    } finally {
+      btn.textContent = originalText;
+      btn.disabled = false;
+    }
+  });
 });

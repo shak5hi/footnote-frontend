@@ -8,8 +8,8 @@ export default defineConfig({
     proxy: {
       '/api': {
         // CHANGE THIS IP to the exact IP address of your other laptop!
-        // Example: 'http://192.168.1.25:5001'
-        target: 'http://127.0.0.1:5001',
+        // Example: 'http://192.168.1.25:5000'
+        target: 'http://127.0.0.1:5000',
         changeOrigin: true
       }
     }
