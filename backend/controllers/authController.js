@@ -50,3 +50,43 @@ exports.signup = async (req, res) => {
         res.status(500).json({ message: error.message });
     }
 };
+
+exports.login = async (req, res) => {
+    try {
+        const { email, password } = req.body;
+
+        // Check if email and password provided
+        if (!email || !password) {
+            return res.status(400).json({ message: "Please fill all fields" });
+        }
+
+        // Find user by email
+        const user = await User.findOne({ email });
+        if (!user) {
+            return res.status(400).json({ message: "User not found" });
+        }
+
+        // Compare password with hashed password
+        const isMatch = await bcrypt.compare(password, user.password);
+        if (!isMatch) {
+            return res.status(400).json({ message: "Invalid password" });
+        }
+
+        // Generate token
+        const token = generateToken(user._id);
+
+        console.log(`✅ [SUCCESS] Login successful for user: ${user.email}`);
+
+        // Send response
+        res.json({
+            _id: user._id,
+            firstName: user.firstName,
+            lastName: user.lastName,
+            email: user.email,
+            token: token,
+        });
+
+    } catch (error) {
+        res.status(500).json({ message: error.message });
+    }
+};

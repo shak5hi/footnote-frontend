@@ -1,85 +1,134 @@
-document.addEventListener('DOMContentLoaded', () => {
-  const loginBtn = document.getElementById('toggle-login');
-  const registerBtn = document.getElementById('toggle-register');
-  const loginForm = document.getElementById('form-login');
-  const registerForm = document.getElementById('form-register');
+document.addEventListener("DOMContentLoaded", () => {
+  const loginBtn = document.getElementById("toggle-login");
+  const registerBtn = document.getElementById("toggle-register");
+  const loginForm = document.getElementById("form-login");
+  const registerForm = document.getElementById("form-register");
 
-  loginBtn.addEventListener('click', () => {
-    loginBtn.classList.add('active');
-    registerBtn.classList.remove('active');
+  // Toggle between login & register
+  loginBtn.addEventListener("click", () => {
+    loginBtn.classList.add("active");
+    registerBtn.classList.remove("active");
 
-    registerForm.classList.remove('active');
+    registerForm.classList.remove("active");
     setTimeout(() => {
-      loginForm.classList.add('active');
+      loginForm.classList.add("active");
     }, 50);
   });
 
-  registerBtn.addEventListener('click', () => {
-    registerBtn.classList.add('active');
-    loginBtn.classList.remove('active');
+  registerBtn.addEventListener("click", () => {
+    registerBtn.classList.add("active");
+    loginBtn.classList.remove("active");
 
-    loginForm.classList.remove('active');
+    loginForm.classList.remove("active");
     setTimeout(() => {
-      registerForm.classList.add('active');
+      registerForm.classList.add("active");
     }, 50);
   });
 
-  const passwordToggles = document.querySelectorAll('.toggle-password');
-  passwordToggles.forEach(toggle => {
-    toggle.addEventListener('click', (e) => {
+  // Show/Hide password
+  const passwordToggles = document.querySelectorAll(".toggle-password");
+  passwordToggles.forEach((toggle) => {
+    toggle.addEventListener("click", (e) => {
       e.preventDefault();
-      const input = toggle.parentElement.querySelector('input');
-      if (input.type === 'password') {
-        input.type = 'text';
-        toggle.textContent = 'Hide';
+      const input = toggle.parentElement.querySelector("input");
+
+      if (input.type === "password") {
+        input.type = "text";
+        toggle.textContent = "Hide";
       } else {
-        input.type = 'password';
-        toggle.textContent = 'Show';
+        input.type = "password";
+        toggle.textContent = "Show";
       }
     });
   });
 
-  registerForm.addEventListener('submit', async (e) => {
+  // ================= SIGNUP =================
+  registerForm.addEventListener("submit", async (e) => {
     e.preventDefault();
 
-    const fname = document.getElementById('reg-fname').value;
-    const lname = document.getElementById('reg-lname').value;
-    const email = document.getElementById('reg-email').value;
-    const password = document.getElementById('reg-password').value;
-
-    const btn = registerForm.querySelector('button[type="submit"]');
-    const originalText = btn.textContent;
-    btn.textContent = 'Registering...';
-    btn.disabled = true;
+    const fname = document.getElementById("reg-name").value;
+    const email = document.getElementById("reg-email").value;
+    const password = document.getElementById("reg-password").value;
 
     try {
-      const response = await fetch('http://localhost:5001/api/auth/signup', {
-        method: 'POST',
+      const response = await fetch("http://localhost:5001/api/auth/signup", {
+        method: "POST",
         headers: {
-          'Content-Type': 'application/json'
+          "Content-Type": "application/json",
         },
-        body: JSON.stringify({ firstName: fname, lastName: lname, email, password })
+        body: JSON.stringify({
+          name: fname,
+          email: email,
+          password: password,
+        }),
       });
 
       const data = await response.json();
 
       if (response.ok) {
-        console.log('\n================================');
-        console.log(`✅ [SUCCESS] Data successfully sent to the remote backend!`);
-        console.log(`User registered: ${fname} ${lname} (${email})`);
-        console.log('================================\n');
-
-        alert('Registration successful! You can now log in.');
-        loginBtn.click(); // Switch to login tab
+        alert("Registration successful! Please login.");
+        loginBtn.click();
       } else {
-        alert('Error: ' + (data.message || 'Registration failed'));
+        alert(data.message || "Signup failed");
       }
     } catch (error) {
-      console.error('Error during registration:', error);
-      alert('Network error. Is the backend running?');
-    } finally {
-      btn.textContent = originalText;
-      btn.disabled = false;
+      console.error("Signup error:", error);
+      alert("Server error during signup");
+    }
+  });
+
+  // ================= LOGIN =================
+  loginForm.addEventListener("submit", async (e) => {
+    e.preventDefault();
+
+    const email = document.getElementById("login-username").value;
+    const password = document.getElementById("login-password").value;
+    const msgEl = document.getElementById("login-message");
+
+    try {
+      if (msgEl) {
+        msgEl.textContent = "Logging in...";
+        msgEl.style.color = "inherit";
+      }
+
+      const response = await fetch("http://localhost:5001/api/auth/login", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          email: email,
+          password: password,
+        }),
+      });
+
+      const data = await response.json();
+
+      if (response.ok) {
+        if (msgEl) {
+          msgEl.textContent = "✅ Login successful! Redirecting...";
+          msgEl.style.color = "green";
+        }
+
+        // Save JWT token
+        localStorage.setItem("token", data.token);
+
+        // Redirect to dashboard
+        setTimeout(() => {
+          window.location.href = "/dashboard.html";
+        }, 1500);
+      } else {
+        if (msgEl) {
+          msgEl.textContent = "❌ " + (data.message || "Login failed");
+          msgEl.style.color = "red";
+        }
+      }
+    } catch (error) {
+      console.error("Login error:", error);
+      if (msgEl) {
+        msgEl.textContent = "❌ Server error during login";
+        msgEl.style.color = "red";
+      }
     }
   });
 });
