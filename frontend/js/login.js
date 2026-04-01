@@ -46,7 +46,8 @@ document.addEventListener("DOMContentLoaded", () => {
   registerForm.addEventListener("submit", async (e) => {
     e.preventDefault();
 
-    const fname = document.getElementById("reg-name").value;
+    const fname = document.getElementById("reg-fname").value;
+    const lname = document.getElementById("reg-lname").value;
     const email = document.getElementById("reg-email").value;
     const password = document.getElementById("reg-password").value;
 
@@ -57,7 +58,8 @@ document.addEventListener("DOMContentLoaded", () => {
           "Content-Type": "application/json",
         },
         body: JSON.stringify({
-          name: fname,
+          firstName: fname,
+          lastName: lname,
           email: email,
           password: password,
         }),
