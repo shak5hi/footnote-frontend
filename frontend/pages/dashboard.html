@@ -1,0 +1,294 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>FootNote — Dashboard</title>
+  <link rel="stylesheet" href="../css/dashboard.css">
+</head>
+<body>
+
+  <div class="cursor-dot"></div>
+  <div class="cursor-ring"></div>
+
+  <div class="dashboard-wrapper">
+
+    <!-- 1. Left Sidebar -->
+    <aside class="sidebar-left">
+      <div class="brand-logo reveal-item">FOOTNOTE</div>
+
+      <nav class="nav-menu">
+        <a href="#" class="nav-item active has-hover reveal-item" style="transition-delay:0.05s">
+          <svg class="nav-icon" viewBox="0 0 24 24"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>
+          Home
+        </a>
+        <a href="#" class="nav-item has-hover reveal-item" style="transition-delay:0.08s">
+          <svg class="nav-icon" viewBox="0 0 24 24"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
+          Subscriptions
+        </a>
+        <a href="#" class="nav-item has-hover reveal-item" style="transition-delay:0.11s">
+          <svg class="nav-icon" viewBox="0 0 24 24"><path d="M21 11.5a8.38 8.38 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.38 8.38 0 0 1-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 0 1-.9-3.8 8.5 8.5 0 0 1 4.7-7.6 8.38 8.38 0 0 1 3.8-.9h.5a8.48 8.48 0 0 1 8 8v.5z"/></svg>
+          Chat
+        </a>
+        <a href="#" class="nav-item has-hover reveal-item" style="transition-delay:0.14s">
+          <svg class="nav-icon" viewBox="0 0 24 24"><path d="M22 12h-4l-3 9L9 3l-3 9H2"/></svg>
+          Activity
+        </a>
+        <a href="#" class="nav-item has-hover reveal-item" style="transition-delay:0.17s">
+          <svg class="nav-icon" viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+          Explore
+        </a>
+        <a href="#" class="nav-item has-hover reveal-item" style="transition-delay:0.20s">
+          <svg class="nav-icon" viewBox="0 0 24 24"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+          Profile
+        </a>
+      </nav>
+
+      <button class="btn-create has-hover reveal-item" style="transition-delay:0.25s">Create Something Worth Keeping</button>
+
+      <div class="sidebar-bottom reveal-item" style="transition-delay:0.28s">
+        <a href="#" class="nav-item has-hover">
+          <svg class="nav-icon" viewBox="0 0 24 24"><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="18" x2="21" y2="18"/></svg>
+          More
+        </a>
+      </div>
+    </aside>
+
+    <!-- 2. Center Feed -->
+    <main class="center-feed">
+      <div class="feed-header">
+        <h1 class="feed-title">Home</h1>
+      </div>
+
+      <div class="feed-container">
+
+        <!-- Card 1: Featured Story -->
+        <article class="post-card reveal-item" style="transition-delay:0.1s">
+          <span class="post-label">Field Note</span>
+
+          <header class="post-header">
+            <div class="author-info">
+              <div class="author-avatar" style="background-image: url('../src/assets/images/image1.jpg')"></div>
+              <div class="author-details">
+                <span class="author-name">Art Meets Culture</span>
+                <span class="post-date">Apr 6</span>
+              </div>
+            </div>
+            <button class="btn-more has-hover"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="1"/><circle cx="19" cy="12" r="1"/><circle cx="5" cy="12" r="1"/></svg></button>
+          </header>
+
+          <div class="post-content">
+            <div class="post-image">
+              <img src="../src/assets/images/articleblue1.jpg" alt="Quiet Architecture">
+            </div>
+            <h2 class="post-title">You are not tired.<br>You are overstimulated.</h2>
+            <p class="post-preview">You wake up tired, not because you didn't rest —<br>but because your mind never stopped.<br><br>Silence is no longer empty.<br>It's unfamiliar.</p>
+          </div>
+
+          <footer class="post-footer">
+            <div class="post-stats">
+              <button class="stat-btn has-hover">
+                <svg viewBox="0 0 24 24"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg>
+                739
+              </button>
+              <button class="stat-btn has-hover">
+                <svg viewBox="0 0 24 24"><path d="M21 11.5a8.38 8.38 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.38 8.38 0 0 1-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 0 1-.9-3.8 8.5 8.5 0 0 1 4.7-7.6 8.38 8.38 0 0 1 3.8-.9h.5a8.48 8.48 0 0 1 8 8v.5z"/></svg>
+                14
+              </button>
+            </div>
+            <div class="post-actions">
+              <button class="btn-read has-hover">Read →</button>
+              <button class="btn-save has-hover"><svg viewBox="0 0 24 24"><path d="M19 21l-7-5-7 5V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2z"/></svg></button>
+            </div>
+          </footer>
+        </article>
+
+        <!-- Card 2: Personal Entry (no image) -->
+        <article class="post-card reveal-item" style="transition-delay:0.2s">
+          <span class="post-label">Personal Entry</span>
+
+          <header class="post-header">
+            <div class="author-info">
+              <div class="author-avatar" style="background-image: url('../src/assets/images/image2.jpg')"></div>
+              <div class="author-details">
+                <span class="author-name">Maya Chukujama</span>
+                <span class="post-date">Mar 5</span>
+              </div>
+            </div>
+            <button class="btn-more has-hover"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="1"/><circle cx="19" cy="12" r="1"/><circle cx="5" cy="12" r="1"/></svg></button>
+          </header>
+
+          <div class="post-content">
+            <p class="post-text">"I miss the version of me<br>who didn't feel the need to document everything.<br><br>Some moments are meant to disappear."</p>
+          </div>
+
+          <footer class="post-footer">
+            <div class="post-stats">
+              <button class="stat-btn has-hover">
+                <svg viewBox="0 0 24 24"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg>
+                1.1K
+              </button>
+              <button class="stat-btn has-hover">
+                <svg viewBox="0 0 24 24"><path d="M21 11.5a8.38 8.38 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.38 8.38 0 0 1-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 0 1-.9-3.8 8.5 8.5 0 0 1 4.7-7.6 8.38 8.38 0 0 1 3.8-.9h.5a8.48 8.48 0 0 1 8 8v.5z"/></svg>
+                87
+              </button>
+            </div>
+            <div class="post-actions">
+              <button class="btn-save has-hover"><svg viewBox="0 0 24 24"><path d="M19 21l-7-5-7 5V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2z"/></svg></button>
+            </div>
+          </footer>
+        </article>
+
+        <!-- Card 3: Observation -->
+        <article class="post-card reveal-item" style="transition-delay:0.3s">
+          <span class="post-label">Observation</span>
+
+          <header class="post-header">
+            <div class="author-info">
+              <div class="author-avatar" style="background-image: url('../src/assets/images/scrollview2.jpg')"></div>
+              <div class="author-details">
+                <span class="author-name">Aarav Sen</span>
+                <span class="post-date">Feb 19</span>
+              </div>
+            </div>
+            <button class="btn-more has-hover"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="1"/><circle cx="19" cy="12" r="1"/><circle cx="5" cy="12" r="1"/></svg></button>
+          </header>
+
+          <div class="post-content">
+            <h2 class="post-title">We replaced presence with proof</h2>
+            <p class="post-preview">If no one sees it,<br>does it still count?<br><br>Somewhere along the way,<br>we started living for the answer.</p>
+          </div>
+
+          <footer class="post-footer">
+            <div class="post-stats">
+              <button class="stat-btn has-hover">
+                <svg viewBox="0 0 24 24"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg>
+                892
+              </button>
+              <button class="stat-btn has-hover">
+                <svg viewBox="0 0 24 24"><path d="M21 11.5a8.38 8.38 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.38 8.38 0 0 1-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 0 1-.9-3.8 8.5 8.5 0 0 1 4.7-7.6 8.38 8.38 0 0 1 3.8-.9h.5a8.48 8.48 0 0 1 8 8v.5z"/></svg>
+                43
+              </button>
+            </div>
+            <div class="post-actions">
+              <button class="btn-save has-hover"><svg viewBox="0 0 24 24"><path d="M19 21l-7-5-7 5V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2z"/></svg></button>
+            </div>
+          </footer>
+        </article>
+
+      </div>
+    </main>
+
+    <!-- 3. Right Sidebar -->
+    <aside class="sidebar-right">
+
+      <!-- Theme Toggle -->
+      <div class="theme-toggle-row reveal-item" style="transition-delay:0.15s">
+        <button class="theme-toggle has-hover" id="themeToggle" title="Toggle theme">🌙</button>
+      </div>
+
+      <!-- Search -->
+      <div class="search-wrapper reveal-item" style="transition-delay:0.2s">
+        <svg class="search-icon" viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+        <input type="text" class="search-input has-hover" placeholder="Search FootNote">
+      </div>
+
+      <!-- Continue Reading -->
+      <div class="right-section reveal-item" style="transition-delay:0.3s">
+        <div class="section-header">
+          <span class="section-label">Continue Reading</span>
+          <a href="#" class="view-all-link has-hover">See all</a>
+        </div>
+        <div class="sidebar-list">
+          <div class="sidebar-list-item has-hover">
+            <div class="item-content">
+              <span class="item-meta">Field Notes</span>
+              <h4 class="item-title">not everything that matters needs to be shared</h4>
+              <span class="item-stats">4m read &middot; 1.15K likes</span>
+            </div>
+            <div class="item-thumb" style="background-image: url('../src/assets/images/image3.jpg')"></div>
+          </div>
+          <div class="sidebar-list-item has-hover">
+            <div class="item-content">
+              <span class="item-meta">Slow Living</span>
+              <h4 class="item-title">you don't need a new routine, just a slower one</h4>
+              <span class="item-stats">6m read &middot; 604 likes</span>
+            </div>
+            <div class="item-thumb" style="background-image: url('../src/assets/images/image4.jpg')"></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Voices to Follow -->
+      <div class="right-section reveal-item" style="transition-delay:0.4s">
+        <div class="section-header">
+          <span class="section-label">Voices to Follow</span>
+          <a href="#" class="view-all-link has-hover">See all</a>
+        </div>
+        <div class="sidebar-list">
+          <div class="sidebar-list-item has-hover">
+            <div class="author-avatar small" style="background-image: url('../src/assets/images/image1.jpg')"></div>
+            <div class="item-content">
+              <h4 class="item-title" style="font-style:normal; font-size:13.5px; font-family:var(--font-sans); font-weight:500;">Nicole Walters</h4>
+              <span class="item-meta" style="text-transform:none; letter-spacing:0; font-size:12px; line-height:1.5; margin-top:2px; display:block;">writes about stillness and emotional clarity</span>
+            </div>
+          </div>
+          <div class="sidebar-list-item has-hover">
+            <div class="author-avatar small" style="background-image: url('../src/assets/images/image2.jpg')"></div>
+            <div class="item-content">
+              <h4 class="item-title" style="font-style:normal; font-size:13.5px; font-family:var(--font-sans); font-weight:500;">Elina Verne</h4>
+              <span class="item-meta" style="text-transform:none; letter-spacing:0; font-size:12px; line-height:1.5; margin-top:2px; display:block;">writes on growth, solitude, and needing less</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+    </aside>
+
+  </div>
+
+  <script>
+    // Custom Cursor
+    const dot  = document.querySelector('.cursor-dot');
+    const ring = document.querySelector('.cursor-ring');
+    let mx = 0, my = 0, rx = 0, ry = 0;
+
+    document.addEventListener('mousemove', e => {
+      mx = e.clientX; my = e.clientY;
+      dot.style.transform  = `translate(${mx}px, ${my}px)`;
+    });
+
+    // Ring follows with slight lag
+    (function loop() {
+      rx += (mx - rx) * 0.12;
+      ry += (my - ry) * 0.12;
+      ring.style.transform = `translate(${rx}px, ${ry}px)`;
+      requestAnimationFrame(loop);
+    })();
+
+    // Hover effects
+    document.querySelectorAll('.has-hover, a, button, input').forEach(el => {
+      el.addEventListener('mouseenter', () => { ring.classList.add('hovered'); dot.classList.add('hovered'); });
+      el.addEventListener('mouseleave', () => { ring.classList.remove('hovered'); dot.classList.remove('hovered'); });
+    });
+
+    // Staggered reveals on load
+    window.addEventListener('load', () => {
+      setTimeout(() => {
+        document.querySelectorAll('.reveal-item').forEach(el => el.classList.add('is-visible'));
+      }, 80);
+    });
+
+    // Theme Toggle
+    const themeToggle = document.getElementById('themeToggle');
+    let isPaper = false;
+
+    themeToggle.addEventListener('click', () => {
+      isPaper = !isPaper;
+      document.body.classList.toggle('paper-mode', isPaper);
+      themeToggle.textContent = isPaper ? '☀️' : '🌙';
+    });
+  </script>
+
+</body>
+</html>
