@@ -377,28 +377,25 @@ body.paper-mode .post-text { border-left-color: rgba(122,98,72,0.25); }
   gap: 0;
 }
 
-/* Theme toggle — minimal circle icon */
+/* Theme toggle — minimal text */
 .theme-toggle-row {
   display: flex;
   justify-content: flex-end;
   margin-bottom: 28px;
 }
 .theme-toggle {
-  width: 32px;
-  height: 32px;
-  border-radius: 50%;
-  background: var(--bg-hover);
-  border: 1px solid var(--border);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-size: 14px;
-  transition: all var(--t-fast) ease;
-  line-height: 1;
+  font-family: var(--font-sans);
+  font-size: 11px;
+  font-weight: 400;
+  letter-spacing: 0.1em;
+  color: var(--text-ghost);
+  padding: 0;
+  background: none;
+  border: none;
+  transition: color var(--t-fast);
 }
 .theme-toggle:hover {
-  border-color: rgba(214,195,163,0.3);
-  filter: brightness(1.1);
+  color: var(--text-secondary);
 }
 
 /* Search */

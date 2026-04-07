@@ -1,0 +1,216 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>FootNote — Subscriptions</title>
+  <link rel="stylesheet" href="../css/dashboard.css">
+  <link rel="stylesheet" href="../css/pages.css">
+  <style>
+    .sub-latest {
+      font-size: 12.5px;
+      color: var(--text-ghost);
+      font-style: italic;
+      margin-top: 4px;
+      line-height: 1.5;
+    }
+    .sub-latest a {
+      color: var(--text-secondary);
+      transition: color var(--t-fast);
+    }
+    .sub-latest a:hover { color: var(--accent); }
+    .recent-writing {
+      padding: 22px 24px;
+      background: var(--bg-card);
+      border-radius: 10px;
+      border: 1px solid var(--border);
+      margin-bottom: 12px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 16px;
+      transition: transform var(--t-slow) var(--ease), border-color var(--t-slow) ease;
+    }
+    .recent-writing:hover {
+      transform: translateY(-2px);
+      border-color: rgba(214,195,163,0.1);
+    }
+    .recent-writing-info { flex: 1; }
+    .recent-author {
+      font-size: 11px;
+      color: var(--text-ghost);
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      margin-bottom: 6px;
+    }
+    .recent-title {
+      font-family: var(--font-serif);
+      font-size: 17px;
+      font-weight: 400;
+      color: var(--text-primary);
+      line-height: 1.4;
+    }
+  </style>
+</head>
+<body>
+  <div class="cursor-dot"></div>
+  <div class="cursor-ring"></div>
+
+  <div class="dashboard-wrapper">
+
+    <!-- Left Sidebar -->
+    <aside class="sidebar-left">
+      <div class="brand-logo">FOOTNOTE</div>
+      <nav class="nav-menu">
+        <a href="dashboard.html" class="nav-item has-hover">
+          <svg class="nav-icon" viewBox="0 0 24 24"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>
+          Home
+        </a>
+        <a href="subscriptions.html" class="nav-item active has-hover">
+          <svg class="nav-icon" viewBox="0 0 24 24"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
+          Subscriptions
+        </a>
+        <a href="#" class="nav-item has-hover">
+          <svg class="nav-icon" viewBox="0 0 24 24"><path d="M21 11.5a8.38 8.38 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.38 8.38 0 0 1-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 0 1-.9-3.8 8.5 8.5 0 0 1 4.7-7.6 8.38 8.38 0 0 1 3.8-.9h.5a8.48 8.48 0 0 1 8 8v.5z"/></svg>
+          Chat
+        </a>
+        <a href="#" class="nav-item has-hover">
+          <svg class="nav-icon" viewBox="0 0 24 24"><path d="M22 12h-4l-3 9L9 3l-3 9H2"/></svg>
+          Activity
+        </a>
+        <a href="explore.html" class="nav-item has-hover">
+          <svg class="nav-icon" viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+          Explore
+        </a>
+        <a href="profile.html" class="nav-item has-hover">
+          <svg class="nav-icon" viewBox="0 0 24 24"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+          Profile
+        </a>
+      </nav>
+      <a href="create.html" class="btn-create has-hover">Create Something Worth Keeping</a>
+      <div class="sidebar-bottom">
+        <a href="#" class="nav-item has-hover">
+          <svg class="nav-icon" viewBox="0 0 24 24"><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="18" x2="21" y2="18"/></svg>
+          More
+        </a>
+      </div>
+    </aside>
+
+    <!-- Main -->
+    <main class="page-main">
+      <div class="page-header">
+        <h1 class="page-title">Subscriptions</h1>
+      </div>
+
+      <div class="page-container">
+
+        <!-- Subscribed to -->
+        <div class="reveal-item">
+          <p class="section-title">Subscribed To</p>
+
+          <div class="writer-row">
+            <div class="writer-avatar" style="background-image:url('../src/assets/images/image1.jpg')"></div>
+            <div class="writer-info">
+              <p class="writer-name">Nicole Walters</p>
+              <p class="writer-bio">writes about stillness and emotional clarity</p>
+              <p class="sub-latest">latest: <a href="article.html">"becoming a place you don't need to escape from"</a></p>
+            </div>
+            <button class="btn-subscribe has-hover" style="border-color:rgba(214,195,163,0.15);color:var(--text-ghost)">Subscribed</button>
+          </div>
+
+          <div class="writer-row">
+            <div class="writer-avatar" style="background-image:url('../src/assets/images/scrollview2.jpg')"></div>
+            <div class="writer-info">
+              <p class="writer-name">Aarav Sen</p>
+              <p class="writer-bio">explores modern burnout and inner pace</p>
+              <p class="sub-latest">latest: <a href="article.html">"burnout is not always loud"</a></p>
+            </div>
+            <button class="btn-subscribe has-hover" style="border-color:rgba(214,195,163,0.15);color:var(--text-ghost)">Subscribed</button>
+          </div>
+        </div>
+
+        <!-- Recent from subscriptions -->
+        <div class="reveal-item" style="transition-delay:0.15s; margin-top:48px;">
+          <p class="section-title">Recent from Your Subscriptions</p>
+
+          <a href="article.html" class="recent-writing" style="display:flex;text-decoration:none">
+            <div class="recent-writing-info">
+              <p class="recent-author">Nicole Walters</p>
+              <h3 class="recent-title">rest is not something you earn</h3>
+            </div>
+            <span class="writing-read-link" style="flex-shrink:0">Read →</span>
+          </a>
+
+          <a href="article.html" class="recent-writing" style="display:flex;text-decoration:none">
+            <div class="recent-writing-info">
+              <p class="recent-author">Aarav Sen</p>
+              <h3 class="recent-title">your pace is allowed to be different</h3>
+            </div>
+            <span class="writing-read-link" style="flex-shrink:0">Read →</span>
+          </a>
+
+          <a href="article.html" class="recent-writing" style="display:flex;text-decoration:none">
+            <div class="recent-writing-info">
+              <p class="recent-author">Nicole Walters</p>
+              <h3 class="recent-title">you don't need a new routine, just a slower one</h3>
+            </div>
+            <span class="writing-read-link" style="flex-shrink:0">Read →</span>
+          </a>
+        </div>
+
+      </div>
+    </main>
+
+    <!-- Right Sidebar -->
+    <aside class="sidebar-right">
+      <div class="theme-toggle-row">
+        <button class="theme-toggle has-hover" id="themeToggle" title="Toggle theme">deep</button>
+      </div>
+      <div class="search-wrapper">
+        <svg class="search-icon" viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+        <input type="text" class="search-input has-hover" placeholder="Search FootNote">
+      </div>
+      <div class="right-section">
+        <div class="section-header">
+          <span class="section-label">Continue Reading</span>
+          <a href="#" class="view-all-link has-hover">See all</a>
+        </div>
+        <div class="sidebar-list">
+          <div class="sidebar-list-item has-hover">
+            <div class="item-content">
+              <span class="item-meta">Field Notes</span>
+              <h4 class="item-title">not everything that matters needs to be shared</h4>
+            </div>
+            <div class="item-thumb" style="background-image:url('../src/assets/images/image3.jpg')"></div>
+          </div>
+          <div class="sidebar-list-item has-hover">
+            <div class="item-content">
+              <span class="item-meta">Slow Living</span>
+              <h4 class="item-title">you don't need a new routine, just a slower one</h4>
+            </div>
+            <div class="item-thumb" style="background-image:url('../src/assets/images/image4.jpg')"></div>
+          </div>
+        </div>
+      </div>
+      <div class="right-section">
+        <div class="section-header">
+          <span class="section-label">Voices to Follow</span>
+          <a href="#" class="view-all-link has-hover">See all</a>
+        </div>
+        <div class="sidebar-list">
+          <div class="sidebar-list-item has-hover">
+            <div class="author-avatar small" style="background-image:url('../src/assets/images/image2.jpg')"></div>
+            <div class="item-content">
+              <h4 class="item-title" style="font-style:normal;font-family:var(--font-sans);font-size:13px;font-weight:500">Maya Chukujama</h4>
+              <span class="item-meta" style="text-transform:none;letter-spacing:0;font-size:12px">writing to understand things I don't have words for yet</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </aside>
+
+  </div>
+
+  <script src="../js/pages.js"></script>
+</body>
+</html>
