@@ -18,6 +18,9 @@ const ArticleSchema = new mongoose.Schema({
   coverImage: {
     type: String, // String path or URL
   },
+  musicTrack: {
+    type: String,
+  },
   author: {
     type: mongoose.Schema.Types.ObjectId,
     ref: "User",

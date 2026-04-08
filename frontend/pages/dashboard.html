@@ -283,10 +283,74 @@
     const themeToggle = document.getElementById('themeToggle');
     let isPaper = false;
 
+    // Make sure initial state text matches functionality (default is deep, so button should offer paper)
+    themeToggle.textContent = 'paper';
+
     themeToggle.addEventListener('click', () => {
       isPaper = !isPaper;
       document.body.classList.toggle('paper-mode', isPaper);
-      themeToggle.textContent = isPaper ? '☀️' : '🌙';
+      themeToggle.textContent = isPaper ? 'deep' : 'paper';
+    });
+
+    // Fetch dynamic published articles and prepend to feed
+    document.addEventListener("DOMContentLoaded", async () => {
+      try {
+        const res = await fetch("http://localhost:5001/api/articles");
+        if (res.ok) {
+          const articles = await res.json();
+          const feedContainer = document.querySelector('.feed-container');
+          
+          let dynamicHtml = "";
+          articles.forEach((article) => {
+            const coverImageHtml = article.coverImage ? 
+              `<div class="post-image"><img src="http://localhost:5001${article.coverImage}" alt="Cover" style="width:100%; object-fit:cover; border-radius:8px; margin-bottom:16px;"></div>` : "";
+            
+            const musicHtml = article.musicTrack ? 
+              `<span style="font-size:10px; color:var(--text-ghost); margin-left:12px;">🎵 ${article.musicTrack}</span>` : "";
+
+            dynamicHtml += `
+              <article class="post-card reveal-item is-visible" style="transition-delay:0s">
+                <span class="post-label">${article.tone || "General"}</span>${musicHtml}
+                
+                <header class="post-header">
+                  <div class="author-info">
+                    <div class="author-avatar" style="background-image: url('../src/assets/images/image2.jpg')"></div>
+                    <div class="author-details">
+                      <span class="author-name">Maya Chukujama</span>
+                      <span class="post-date">Just published</span>
+                    </div>
+                  </div>
+                  <button class="btn-more has-hover"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="1"/><circle cx="19" cy="12" r="1"/><circle cx="5" cy="12" r="1"/></svg></button>
+                </header>
+
+                <div class="post-content">
+                  ${coverImageHtml}
+                  <h2 class="post-title">${article.title}</h2>
+                  <p class="post-preview">${article.content.substring(0, 150).replace(/\n/g, '<br>')}${article.content.length > 150 ? '...' : ''}</p>
+                </div>
+
+                <footer class="post-footer">
+                  <div class="post-stats">
+                    <button class="stat-btn has-hover">
+                      <svg viewBox="0 0 24 24"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg> 0
+                    </button>
+                  </div>
+                  <div class="post-actions">
+                    <a href="article.html?id=${article._id}" class="btn-read has-hover" style="text-decoration:none;">Read →</a>
+                  </div>
+                </footer>
+              </article>
+            `;
+          });
+
+          // Insert dynamic articles at the top of the feed container
+          if (feedContainer && dynamicHtml) {
+            feedContainer.insertAdjacentHTML('afterbegin', dynamicHtml);
+          }
+        }
+      } catch (err) {
+        console.error("Error dynamically fetching articles:", err);
+      }
     });
   </script>
 

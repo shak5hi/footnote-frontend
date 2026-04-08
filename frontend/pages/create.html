@@ -249,6 +249,7 @@
             <p style="font-size:12px; color:var(--text-ghost); margin-bottom:8px; font-style:italic; border-top:1px solid rgba(214,195,163,0.1); padding-top:14px;">Or search for any custom track:</p>
             <div style="display:flex; gap:8px;">
               <input type="text" id="manual-music-input" placeholder="e.g. Taylor Swift Blank Space" style="flex:1; background:var(--bg-card); border:1px solid var(--border); color:var(--text-secondary); font-size:13px; padding:8px 12px; border-radius:6px; outline:none; transition: border-color 0.2s;" />
+              <button id="btn-save-manual" style="background:var(--bg-sidebar); border:1px solid var(--border); color:var(--text-ghost); font-size:12px; cursor:pointer; padding:0 14px; border-radius:6px; transition:all 0.2s;" onmouseover="this.style.color='var(--text-primary)'; this.style.borderColor='var(--accent)';" onmouseout="this.style.color='var(--text-ghost)'; this.style.borderColor='var(--border)'">Save</button>
               <button id="btn-search-manual" style="background:var(--bg-sidebar); border:1px solid var(--border); color:var(--text-ghost); font-size:12px; cursor:pointer; padding:0 14px; border-radius:6px; transition:all 0.2s;" onmouseover="this.style.color='var(--text-primary)'; this.style.borderColor='var(--accent)';" onmouseout="this.style.color='var(--text-ghost)'; this.style.borderColor='var(--border)'">Search</button>
             </div>
             <div id="manual-search-result" style="margin-top:10px;"></div>
@@ -315,6 +316,7 @@
             
             if (article.musicTrack) {
                selectedMusicTrack = article.musicTrack;
+               document.getElementById('music-suggestions-container').style.display = 'block';
                const selectedMusicLabel = document.getElementById('selected-music-label');
                selectedMusicLabel.style.display = 'block';
                selectedMusicLabel.innerHTML = `Saved Atmosphere: <strong>${article.musicTrack}</strong>`;
@@ -525,8 +527,16 @@
     });
 
     // Manual Custom Track Search against iTunes
+    const btnSaveManual = document.getElementById('btn-save-manual');
     const btnSearchManual = document.getElementById('btn-search-manual');
     const manualInput = document.getElementById('manual-music-input');
+
+    btnSaveManual.addEventListener('click', (e) => {
+      e.preventDefault();
+      const val = manualInput.value.trim();
+      if (!val) return;
+      window.selectManualTextOnly(val);
+    });
 
     btnSearchManual.addEventListener('click', async (e) => {
       e.preventDefault();
