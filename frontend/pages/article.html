@@ -265,19 +265,17 @@
           </div>
         </div>
 
-        <span class="article-category">Field Note</span>
+        <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:18px;">
+          <span class="article-category" id="article-tag" style="margin-bottom:0;">Field Note</span>
+          <span id="article-music" title="Reading Atmosphere" style="display:none; font-size:10px; letter-spacing:0.5px; color:var(--text-secondary); background:rgba(0,0,0,0.15); border:1px solid rgba(214,195,163,0.15); padding:5px 12px; border-radius:999px;">🎵 Atmosphere</span>
+        </div>
 
-        <h1 class="article-title">You Were Never Meant<br>to Live This Fast</h1>
+        <h1 class="article-title" id="article-title">Loading...</h1>
 
-        <img class="article-image" src="../src/assets/images/articleblue3.jpg" alt="Article header image">
+        <img class="article-image" id="article-image" style="display:none;" alt="Article header image">
 
-        <div class="article-content">
-          <p>Somewhere along the way, life stopped being something we experienced and became something we managed.</p>
-          <p>We optimise mornings, track habits, measure progress — but rarely ask if any of it feels like living.</p>
-          <p>The days blur. Not because they're bad, but because they're identical. Wake. React. Perform. Repeat. There's no room to notice anything. There's barely room to breathe.</p>
-          <p>Slowness is uncomfortable at first. Not because it is wrong, but because it is unfamiliar. We've confused speed with aliveness for so long that stillness feels like failure.</p>
-          <p>But some of the most important things happen in the pauses. In the long walk with no destination. In the conversation that doesn't go anywhere useful. In the morning you let yourself just sit.</p>
-          <p>And maybe that's the point.</p>
+        <div class="article-content" id="article-content">
+          <p>Please wait, loading article...</p>
         </div>
 
         <!-- Actions -->
@@ -374,6 +372,44 @@
 
   <script src="../js/pages.js"></script>
   <script>
+    document.addEventListener("DOMContentLoaded", async () => {
+      const urlParams = new URLSearchParams(window.location.search);
+      const articleId = urlParams.get('id');
+
+      if (articleId) {
+        try {
+          const response = await fetch(`http://localhost:5001/api/articles/${articleId}`);
+          if (!response.ok) throw new Error("Failed to fetch article");
+          const article = await response.json();
+
+          document.getElementById('article-title').textContent = article.title;
+          document.getElementById('article-tag').textContent = article.tone || "General";
+          
+          if (article.coverImage) {
+            const imgEl = document.getElementById('article-image');
+            imgEl.src = `http://localhost:5001${article.coverImage}`;
+            imgEl.style.display = "block";
+          }
+
+          if (article.musicTrack) {
+            const musicEl = document.getElementById('article-music');
+            musicEl.textContent = "🎧 " + article.musicTrack;
+            musicEl.style.display = "inline-block";
+          }
+          
+          const contentFormatted = article.content.split('\n').filter(p => p.trim()).map(p => `<p>${p}</p>`).join('');
+          document.getElementById('article-content').innerHTML = contentFormatted;
+        } catch (err) {
+          console.error(err);
+          document.getElementById('article-title').textContent = "Article not found";
+          document.getElementById('article-content').innerHTML = "<p>We couldn't load this article.</p>";
+        }
+      } else {
+        document.getElementById('article-title').textContent = "No Article Specified";
+        document.getElementById('article-content').innerHTML = "<p>Please click on a valid article to read it.</p>";
+      }
+    });
+
     document.querySelector('.response-input')?.addEventListener('input', function() {
       this.style.height = 'auto';
       this.style.height = this.scrollHeight + 'px';

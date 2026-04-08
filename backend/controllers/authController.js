@@ -90,3 +90,32 @@ exports.login = async (req, res) => {
         res.status(500).json({ message: error.message });
     }
 };
+
+exports.subscribe = async (req, res) => {
+    try {
+        const user = await User.findById(req.user._id);
+        const { name, bio, avatar } = req.body;
+        
+        if (!name) return res.status(400).json({ message: "Author name required" });
+
+        const exists = user.subscriptions.find(sub => sub.name === name);
+        if (!exists) {
+            user.subscriptions.push({ name, bio, avatar });
+            await user.save();
+        }
+        res.status(200).json({ message: "Subscribed successfully" });
+    } catch (err) {
+        console.error("Error subscribing:", err);
+        res.status(500).json({ message: "Server error during subscription" });
+    }
+};
+
+exports.getSubscriptions = async (req, res) => {
+    try {
+        const user = await User.findById(req.user._id);
+        res.status(200).json({ subscriptions: user.subscriptions || [] });
+    } catch (err) {
+        console.error("Error fetching subscriptions:", err);
+        res.status(500).json({ message: "Server error fetching subscriptions" });
+    }
+};

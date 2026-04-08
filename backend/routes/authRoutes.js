@@ -1,6 +1,7 @@
 const express = require("express");
 const router = express.Router();
-const { signup, login } = require("../controllers/authController");
+const { signup, login, subscribe, getSubscriptions } = require("../controllers/authController");
+const { protect } = require("../middleware/authMiddleware");
 
 /**
  * @swagger
@@ -62,4 +63,8 @@ router.post("/signup", signup);
  *         description: Invalid credentials
  */
 router.post("/login", login);
+
+router.post("/subscribe", protect, subscribe);
+router.get("/subscriptions", protect, getSubscriptions);
+
 module.exports = router;

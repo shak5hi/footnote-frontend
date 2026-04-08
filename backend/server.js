@@ -4,6 +4,7 @@ require("dotenv").config();
 
 const connectDB = require("./config/db");
 const authRoutes = require("./routes/authRoutes");
+const articleRoutes = require("./routes/articleRoutes");
 const { swaggerUi, swaggerSpec } = require("./config/swagger");
 
 const app = express();
@@ -14,6 +15,8 @@ app.use(express.json());
 connectDB();
 
 app.use("/api/auth", authRoutes);
+app.use("/api/articles", articleRoutes);
+app.use("/uploads", express.static("uploads"));
 
 // Swagger route
 app.use("/api-docs", swaggerUi.serve, swaggerUi.setup(swaggerSpec));

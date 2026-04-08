@@ -108,54 +108,15 @@
         <div class="reveal-item">
           <p class="section-title">Subscribed To</p>
 
-          <div class="writer-row">
-            <div class="writer-avatar" style="background-image:url('../src/assets/images/image1.jpg')"></div>
-            <div class="writer-info">
-              <p class="writer-name">Nicole Walters</p>
-              <p class="writer-bio">writes about stillness and emotional clarity</p>
-              <p class="sub-latest">latest: <a href="article.html">"becoming a place you don't need to escape from"</a></p>
-            </div>
-            <button class="btn-subscribe has-hover" style="border-color:rgba(214,195,163,0.15);color:var(--text-ghost)">Subscribed</button>
-          </div>
-
-          <div class="writer-row">
-            <div class="writer-avatar" style="background-image:url('../src/assets/images/scrollview2.jpg')"></div>
-            <div class="writer-info">
-              <p class="writer-name">Aarav Sen</p>
-              <p class="writer-bio">explores modern burnout and inner pace</p>
-              <p class="sub-latest">latest: <a href="article.html">"burnout is not always loud"</a></p>
-            </div>
-            <button class="btn-subscribe has-hover" style="border-color:rgba(214,195,163,0.15);color:var(--text-ghost)">Subscribed</button>
+          <div id="subscriptions-container">
+             <p style="color: var(--text-ghost); font-size: 13px; font-style: italic; margin-top: 16px;">Loading subscriptions...</p>
           </div>
         </div>
 
         <!-- Recent from subscriptions -->
-        <div class="reveal-item" style="transition-delay:0.15s; margin-top:48px;">
+        <div class="reveal-item" id="recent-feed-section" style="transition-delay:0.15s; margin-top:48px; display:none;">
           <p class="section-title">Recent from Your Subscriptions</p>
-
-          <a href="article.html" class="recent-writing" style="display:flex;text-decoration:none">
-            <div class="recent-writing-info">
-              <p class="recent-author">Nicole Walters</p>
-              <h3 class="recent-title">rest is not something you earn</h3>
-            </div>
-            <span class="writing-read-link" style="flex-shrink:0">Read →</span>
-          </a>
-
-          <a href="article.html" class="recent-writing" style="display:flex;text-decoration:none">
-            <div class="recent-writing-info">
-              <p class="recent-author">Aarav Sen</p>
-              <h3 class="recent-title">your pace is allowed to be different</h3>
-            </div>
-            <span class="writing-read-link" style="flex-shrink:0">Read →</span>
-          </a>
-
-          <a href="article.html" class="recent-writing" style="display:flex;text-decoration:none">
-            <div class="recent-writing-info">
-              <p class="recent-author">Nicole Walters</p>
-              <h3 class="recent-title">you don't need a new routine, just a slower one</h3>
-            </div>
-            <span class="writing-read-link" style="flex-shrink:0">Read →</span>
-          </a>
+          <div id="subscriptions-feed-container"></div>
         </div>
 
       </div>
@@ -212,5 +173,94 @@
   </div>
 
   <script src="../js/pages.js"></script>
+  <script>
+    document.addEventListener("DOMContentLoaded", async () => {
+      const token = localStorage.getItem("token");
+      const container = document.getElementById("subscriptions-container");
+
+      if (!token) {
+        container.innerHTML = "<p style='color: var(--text-ghost); font-size: 13px; font-style: italic; margin-top: 16px;'>Please log in to see your subscriptions.</p>";
+        return;
+      }
+
+      try {
+        const res = await fetch("http://localhost:5001/api/auth/subscriptions", {
+          headers: { "Authorization": `Bearer ${token}` }
+        });
+        
+        if (res.ok) {
+          const data = await res.json();
+          const subs = data.subscriptions || [];
+
+          if (subs.length === 0) {
+            container.innerHTML = "<p style='color: var(--text-ghost); font-size: 13px; font-style: italic; margin-top: 16px;'>You haven't subscribed to anyone yet. Go to Explore to find writers.</p>";
+            return;
+          }
+
+          container.innerHTML = "";
+          subs.forEach((sub, idx) => {
+            const html = `
+              <div class="writer-row" style="opacity:0; animation: fadeUp 0.6s var(--ease) forwards; animation-delay: ${idx * 0.1}s">
+                <div class="writer-avatar" style="background-image:url('${sub.avatar}')"></div>
+                <div class="writer-info">
+                  <p class="writer-name">${sub.name}</p>
+                  <p class="writer-bio">${sub.bio}</p>
+                </div>
+                <button class="btn-subscribe has-hover" style="border-color:rgba(214,195,163,0.15);color:var(--text-ghost)">Subscribed</button>
+              </div>
+            `;
+            container.innerHTML += html;
+          });
+
+          // Phase 2: Native feed matching
+          const feedContainer = document.getElementById("subscriptions-feed-container");
+          const recentSection = document.getElementById("recent-feed-section");
+          
+          const mockArticlesDB = {
+            "Nicole Walters": [
+              { title: "rest is not something you earn", tone: "Self" },
+              { title: "you don't need a new routine, just a slower one", tone: "Reflection" },
+              { title: "becoming a place you don't need to escape from", tone: "Personal" }
+            ],
+            "Aarav Sen": [
+              { title: "your pace is allowed to be different", tone: "Personal" },
+              { title: "burnout is not always loud", tone: "Work" }
+            ],
+            "Elina Verne": [
+              { title: "not everything that matters needs to be shared", tone: "Field Note" },
+              { title: "the quiet hours", tone: "Observation" }
+            ]
+          };
+
+          let feedHtml = "";
+          subs.forEach(sub => {
+            const mockArticles = mockArticlesDB[sub.name] || [];
+            mockArticles.forEach((article, idx) => {
+              feedHtml += `
+                <a href="article.html" class="recent-writing" style="display:flex;text-decoration:none; opacity:0; animation: fadeUp 0.6s var(--ease) forwards; animation-delay: ${idx * 0.15}s">
+                  <div class="recent-writing-info">
+                    <p class="recent-author">${sub.name} <span style="text-transform:none; margin-left:8px; opacity:0.5;">· ${article.tone}</span></p>
+                    <h3 class="recent-title">${article.title}</h3>
+                  </div>
+                  <span class="writing-read-link" style="flex-shrink:0">Read →</span>
+                </a>
+              `;
+            });
+          });
+
+          if (feedHtml.length > 0) {
+            feedContainer.innerHTML = feedHtml;
+            recentSection.style.display = "block";
+          }
+
+        } else {
+          container.innerHTML = "<p style='color: var(--text-ghost); font-size: 13px;'>Error loading subscriptions.</p>";
+        }
+      } catch (e) {
+        console.error(e);
+        container.innerHTML = "<p style='color: var(--text-ghost); font-size: 13px;'>Failed to reach server.</p>";
+      }
+    });
+  </script>
 </body>
 </html>

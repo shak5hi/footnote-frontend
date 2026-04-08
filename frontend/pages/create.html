@@ -213,26 +213,47 @@
     <!-- Editor -->
     <div class="editor-wrapper">
       <div class="editor-header">
-        <span class="editor-status">Draft · unsaved</span>
+        <span class="editor-status" id="editor-status">Draft · unsaved</span>
         <div class="editor-actions">
-          <button class="btn-draft has-hover">Save Draft</button>
-          <button class="btn-publish has-hover">Publish quietly</button>
+          <button class="btn-draft has-hover" id="btn-save-draft">Save Draft</button>
+          <button class="btn-publish has-hover" id="btn-publish">Publish quietly</button>
         </div>
       </div>
 
       <div class="editor-body reveal-item">
-        <textarea class="editor-title-input" placeholder="Give your thought a name" rows="2" maxlength="120"></textarea>
+        <div style="margin-bottom: 20px;">
+          <input type="file" id="cover-image-input" accept="image/*" style="display: none;">
+          <button id="add-cover-btn" style="font-size: 12px; padding: 6px 12px; background: none; border: 1px dashed var(--border); color: var(--text-ghost); border-radius: 4px; cursor: pointer; transition: all 0.2s;">+ Add Cover Image</button>
+          <img id="cover-preview" style="max-width: 100%; max-height: 300px; display: none; margin-top: 10px; border-radius: 8px; object-fit: cover;" />
+        </div>
+        <textarea class="editor-title-input" id="article-title" placeholder="Give your thought a name" rows="2" maxlength="120"></textarea>
         <div class="editor-divider"></div>
-        <textarea class="editor-body-input" placeholder="Write something you've been meaning to sit with...&#10;&#10;I think I've been confusing movement with progress.&#10;&#10;Just because something is moving&#10;doesn't mean it's going anywhere meaningful."></textarea>
+        <textarea class="editor-body-input" id="article-body" placeholder="Write something you've been meaning to sit with...&#10;&#10;I think I've been confusing movement with progress.&#10;&#10;Just because something is moving&#10;doesn't mean it's going anywhere meaningful."></textarea>
 
         <div class="tone-section">
-          <span class="tone-label">Tone</span>
+          <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom: 14px;">
+            <span class="tone-label" style="margin-bottom:0;">Tone</span>
+            <button id="btn-suggest-music" style="font-size:11px; background:transparent; border:1px solid rgba(214,195,163,0.2); color:var(--text-secondary); border-radius:999px; padding:5px 14px; cursor:pointer; transition:all 0.2s;" class="has-hover">✨ Suggest Reading Music</button>
+          </div>
           <div class="tone-tags">
             <button class="tone-tag active has-hover">Reflection</button>
             <button class="tone-tag has-hover">Personal</button>
             <button class="tone-tag has-hover">Observation</button>
             <button class="tone-tag has-hover">Essay</button>
             <button class="tone-tag has-hover">Field Note</button>
+          </div>
+          
+          <div id="music-suggestions-container" style="display:none; margin-top:24px; padding:18px; border:1px solid rgba(214,195,163,0.1); border-radius:8px; background:rgba(0,0,0,0.15);">
+            <div id="music-options" style="display:flex; flex-direction:column; gap:8px; margin-bottom:14px;"></div>
+            
+            <p style="font-size:12px; color:var(--text-ghost); margin-bottom:8px; font-style:italic; border-top:1px solid rgba(214,195,163,0.1); padding-top:14px;">Or search for any custom track:</p>
+            <div style="display:flex; gap:8px;">
+              <input type="text" id="manual-music-input" placeholder="e.g. Taylor Swift Blank Space" style="flex:1; background:var(--bg-card); border:1px solid var(--border); color:var(--text-secondary); font-size:13px; padding:8px 12px; border-radius:6px; outline:none; transition: border-color 0.2s;" />
+              <button id="btn-search-manual" style="background:var(--bg-sidebar); border:1px solid var(--border); color:var(--text-ghost); font-size:12px; cursor:pointer; padding:0 14px; border-radius:6px; transition:all 0.2s;" onmouseover="this.style.color='var(--text-primary)'; this.style.borderColor='var(--accent)';" onmouseout="this.style.color='var(--text-ghost)'; this.style.borderColor='var(--border)'">Search</button>
+            </div>
+            <div id="manual-search-result" style="margin-top:10px;"></div>
+
+            <p id="selected-music-label" style="font-size:12px; color:var(--accent); margin-top:16px; display:none; padding-top:12px; border-top:1px solid rgba(214,195,163,0.1);"></p>
           </div>
         </div>
       </div>
@@ -257,6 +278,57 @@
 
   <script src="../js/pages.js"></script>
   <script>
+    let editDraftId = null;
+
+    document.addEventListener("DOMContentLoaded", async () => {
+      const params = new URLSearchParams(window.location.search);
+      const id = params.get('id');
+      
+      if (id) {
+        editDraftId = id;
+        document.getElementById('editor-status').textContent = 'Loading draft...';
+        
+        try {
+          const res = await fetch(`http://localhost:5001/api/articles/${id}`);
+          if (res.ok) {
+            const article = await res.json();
+            document.getElementById('article-title').value = article.title || '';
+            document.getElementById('article-body').value = article.content || '';
+            
+            if (article.tone) {
+              document.querySelectorAll('.tone-btn').forEach(btn => {
+                if (btn.textContent.trim() === article.tone) {
+                  btn.classList.add('active');
+                  activeTone = article.tone;
+                } else {
+                  btn.classList.remove('active');
+                }
+              });
+            }
+            
+            if (article.coverImage) {
+              const coverPreview = document.getElementById('cover-preview');
+              coverPreview.src = `http://localhost:5001${article.coverImage}`;
+              coverPreview.style.display = 'block';
+              document.getElementById('add-cover-btn').textContent = "Change Cover Image";
+            }
+            
+            if (article.musicTrack) {
+               selectedMusicTrack = article.musicTrack;
+               const selectedMusicLabel = document.getElementById('selected-music-label');
+               selectedMusicLabel.style.display = 'block';
+               selectedMusicLabel.innerHTML = `Saved Atmosphere: <strong>${article.musicTrack}</strong>`;
+            }
+            
+            document.getElementById('editor-status').textContent = 'Draft loaded';
+          }
+        } catch (e) {
+          console.error(e);
+          document.getElementById('editor-status').textContent = 'Error loading draft';
+        }
+      }
+    });
+
     // Auto-resize textareas
     document.querySelectorAll('textarea').forEach(ta => {
       ta.addEventListener('input', () => {
@@ -266,12 +338,226 @@
     });
 
     // Tone tag toggle
+    let activeTone = "Reflection";
     document.querySelectorAll('.tone-tag').forEach(tag => {
       tag.addEventListener('click', () => {
         document.querySelectorAll('.tone-tag').forEach(t => t.classList.remove('active'));
         tag.classList.add('active');
+        activeTone = tag.textContent;
+        // Automatically fetch new music based on tone change!
+        const musicContainer = document.getElementById('music-suggestions-container');
+        if (musicContainer && musicContainer.style.display === 'block') {
+           document.getElementById('btn-suggest-music').click();
+        }
       });
     });
+
+    // Image Upload Logic
+    const coverInput = document.getElementById('cover-image-input');
+    const coverBtn = document.getElementById('add-cover-btn');
+    const coverPreview = document.getElementById('cover-preview');
+    let selectedFile = null;
+
+    coverBtn.addEventListener('click', () => {
+      coverInput.click();
+    });
+
+    coverInput.addEventListener('change', (e) => {
+      if (e.target.files && e.target.files[0]) {
+        selectedFile = e.target.files[0];
+        const reader = new FileReader();
+        reader.onload = function(e) {
+          coverPreview.src = e.target.result;
+          coverPreview.style.display = 'block';
+          coverBtn.textContent = "Change Cover Image";
+        }
+        reader.readAsDataURL(selectedFile);
+      }
+    });
+
+    // API Call Logic
+    async function submitArticle(status) {
+      const title = document.getElementById('article-title').value.trim();
+      const content = document.getElementById('article-body').value.trim();
+      const statusText = document.getElementById('editor-status');
+      
+      if (!title || !content) {
+        alert("Please provide both a title and content.");
+        return;
+      }
+
+      statusText.textContent = "Saving...";
+
+      const formData = new FormData();
+      formData.append("title", title);
+      formData.append("content", content);
+      formData.append("tone", activeTone);
+      formData.append("status", status);
+      if (selectedFile) {
+        formData.append("coverImage", selectedFile);
+      }
+      if (selectedMusicTrack) {
+        formData.append("musicTrack", selectedMusicTrack);
+      }
+
+      try {
+        const token = localStorage.getItem("token");
+        const headers = {};
+        if (token) headers["Authorization"] = `Bearer ${token}`;
+
+        const apiUrl = editDraftId 
+          ? `http://localhost:5001/api/articles/${editDraftId}` 
+          : "http://localhost:5001/api/articles";
+        const reqMethod = editDraftId ? "PUT" : "POST";
+
+        const response = await fetch(apiUrl, {
+          method: reqMethod,
+          headers, // Note: Do not set Content-Type for FormData, browser sets it with boundary
+          body: formData
+        });
+
+        const data = await response.json();
+        if (response.ok) {
+          statusText.textContent = status === "draft" ? "Draft · saved" : "Published";
+          alert(`Article ${status} successfully!`);
+          if (status === "published") {
+            window.location.href = "dashboard.html";
+          }
+        } else {
+          statusText.textContent = "Error saving";
+          alert(data.message || "Failed to save article");
+        }
+      } catch (err) {
+        console.error(err);
+        statusText.textContent = "Error saving";
+        alert("Server error occurred");
+      }
+    }
+
+    document.getElementById('btn-save-draft').addEventListener('click', () => submitArticle('draft'));
+    document.getElementById('btn-publish').addEventListener('click', () => submitArticle('published'));
+
+    // AI Music Suggestions Logic
+    const btnSuggest = document.getElementById('btn-suggest-music');
+    const musicContainer = document.getElementById('music-suggestions-container');
+    const musicOptions = document.getElementById('music-options');
+    const selectedMusicLabel = document.getElementById('selected-music-label');
+    const manualResult = document.getElementById('manual-search-result');
+    let selectedMusicTrack = "";
+
+    function deselectAll() {
+      // Clear AI styles
+      Array.from(musicOptions.children).forEach(c => {
+         const btn = c.querySelector('button:nth-of-type(2)');
+         if(btn) btn.style.background = "var(--bg-card)";
+      });
+      // Clear manual style
+      if(manualResult.querySelector('button:nth-of-type(2)')){
+         manualResult.querySelector('button:nth-of-type(2)').style.background = "var(--bg-card)";
+      }
+    }
+
+    function createAudioRow(trackObj, container, isManual = false) {
+      const row = document.createElement('div');
+      row.style.cssText = "display:flex; gap:8px; align-items:center;";
+
+      const audio = new Audio(trackObj.url);
+      audio.className = 'ai-preview-audio';
+      let isPlaying = false;
+
+      const playBtn = document.createElement('button');
+      playBtn.innerHTML = "▶";
+      playBtn.style.cssText = "flex-shrink:0; width:36px; height:36px; border-radius:50%; border:1px solid var(--border); background:var(--bg-card); color:var(--text-secondary); cursor:pointer; font-size:12px; display:flex; align-items:center; justify-content:center; transition:all 0.2s;";
+      playBtn.classList.add('play-btn');
+      
+      playBtn.onclick = (e) => {
+        e.stopPropagation();
+        if (isPlaying) {
+          audio.pause();
+          playBtn.innerHTML = "▶";
+        } else {
+          document.querySelectorAll('.ai-preview-audio').forEach(a => {
+            a.pause();
+            if(a.parentElement.querySelector('button.play-btn')) {
+              a.parentElement.querySelector('button.play-btn').innerHTML = "▶";
+            }
+          });
+          audio.play();
+          playBtn.innerHTML = "⏸";
+        }
+        isPlaying = !isPlaying;
+      };
+
+      const selectBtn = document.createElement('button');
+      selectBtn.textContent = "🎵 " + trackObj.name;
+      selectBtn.style.cssText = "flex:1; text-align:left; font-size:13px; color:var(--text-secondary); background:var(--bg-card); border:1px solid var(--border); padding:10px 14px; border-radius:6px; cursor:pointer;";
+      
+      selectBtn.onclick = () => {
+        deselectAll();
+        selectedMusicTrack = trackObj.name;
+        selectedMusicLabel.style.display = 'block';
+        selectedMusicLabel.innerHTML = `${isManual ? 'Custom' : 'Selected'} Atmosphere: <strong>${trackObj.name}</strong>`;
+        selectBtn.style.background = "rgba(214,195,163,0.1)";
+      };
+
+      row.appendChild(playBtn);
+      row.appendChild(audio);
+      row.appendChild(selectBtn);
+      container.appendChild(row);
+    }
+
+    btnSuggest.addEventListener('click', async () => {
+      musicContainer.style.display = 'block';
+      musicOptions.innerHTML = "<p style='font-size:12px; color:var(--text-ghost);'>Fetching AI recommendations (real audio)...</p>";
+      
+      try {
+        const res = await fetch(`http://localhost:5001/api/articles/music-suggestions?tone=${activeTone}`);
+        if (!res.ok) throw new Error("Failed to fetch");
+        const data = await res.json();
+        
+        musicOptions.innerHTML = "<p style='font-size:12px; color:var(--text-ghost); margin-bottom:6px; font-style:italic;'>AI Suggestions based on your Tone:</p>";
+        data.tracks.forEach(trackObj => {
+          createAudioRow(trackObj, musicOptions, false);
+        });
+      } catch(e) {
+        musicOptions.innerHTML = "<p style='font-size:12px; color:#ff6b6b;'>Error loading AI suggestions.</p>";
+      }
+    });
+
+    // Manual Custom Track Search against iTunes
+    const btnSearchManual = document.getElementById('btn-search-manual');
+    const manualInput = document.getElementById('manual-music-input');
+
+    btnSearchManual.addEventListener('click', async (e) => {
+      e.preventDefault();
+      const val = manualInput.value.trim();
+      if (!val) return;
+
+      manualResult.innerHTML = "<p style='font-size:11px; color:var(--text-ghost);'>Searching iTunes...</p>";
+      try {
+        const response = await fetch(`https://itunes.apple.com/search?term=${encodeURIComponent(val)}&limit=1&entity=song`);
+        const data = await response.json();
+        
+        manualResult.innerHTML = "";
+        if (data.results && data.results.length > 0) {
+          const track = data.results[0];
+          const trackName = `${track.trackName} - ${track.artistName}`;
+          createAudioRow({ name: trackName, url: track.previewUrl || "" }, manualResult, true);
+        } else {
+           // Fallback to text only if iTunes can't find it
+           manualResult.innerHTML = `<p style='font-size:12px; color:#ff6b6b;'>No preview found. <button onclick="selectManualTextOnly('${val}')" style="text-decoration:underline; border:none; background:none; color:var(--text-ghost); cursor:pointer;">Add anyway without audio?</button></p>`;
+        }
+      } catch(err) {
+        console.error(err);
+      }
+    });
+
+    window.selectManualTextOnly = function(val) {
+        deselectAll();
+        selectedMusicTrack = val;
+        selectedMusicLabel.style.display = 'block';
+        selectedMusicLabel.innerHTML = `Custom Atmosphere: <strong>${val}</strong>`;
+    };
   </script>
 </body>
 </html>

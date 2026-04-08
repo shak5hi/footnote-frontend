@@ -108,8 +108,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
       if (response.ok) {
         if (msgEl) {
-          msgEl.textContent = "✅ Login successful! Redirecting...";
-          msgEl.style.color = "green";
+          msgEl.textContent = "Login successful. Redirecting...";
         }
 
         // Save JWT token
@@ -117,19 +116,17 @@ document.addEventListener("DOMContentLoaded", () => {
 
         // Redirect to dashboard
         setTimeout(() => {
-          window.location.href = "/dashboard.html";
+          window.location.href = "/pages/dashboard.html";
         }, 1500);
       } else {
         if (msgEl) {
-          msgEl.textContent = "❌ " + (data.message || "Login failed");
-          msgEl.style.color = "red";
+          msgEl.textContent = data.message || "Login failed.";
         }
       }
     } catch (error) {
       console.error("Login error:", error);
       if (msgEl) {
-        msgEl.textContent = "❌ Server error during login";
-        msgEl.style.color = "red";
+        msgEl.textContent = "Server error during login.";
       }
     }
   });

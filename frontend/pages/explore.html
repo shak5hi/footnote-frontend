@@ -216,5 +216,87 @@
   </div>
 
   <script src="../js/pages.js"></script>
+  <script>
+    document.addEventListener("DOMContentLoaded", async () => {
+      const subscribeBtns = document.querySelectorAll('.btn-subscribe');
+      const token = localStorage.getItem("token");
+      let currentSubs = [];
+
+      // Determine initial subscription states if logged in
+      if (token) {
+        try {
+          const res = await fetch("http://localhost:5001/api/auth/subscriptions", {
+             headers: { "Authorization": `Bearer ${token}` }
+          });
+          if (res.ok) {
+            const data = await res.json();
+            currentSubs = data.subscriptions || [];
+          }
+        } catch(e) {
+          console.error("Could not fetch initial subscriptions", e);
+        }
+      }
+      
+      subscribeBtns.forEach(btn => {
+        const row = btn.closest('.writer-row');
+        const name = row.querySelector('.writer-name').textContent;
+
+        // If already subscribed, update visually
+        if (currentSubs.find(s => s.name === name)) {
+          btn.textContent = "Subscribed";
+          btn.style.borderColor = "rgba(214,195,163,0.15)";
+          btn.style.color = "var(--text-ghost)";
+          btn.disabled = true;
+        }
+
+        btn.addEventListener('click', async (e) => {
+          e.preventDefault();
+          const bio = row.querySelector('.writer-bio').textContent;
+          
+          const avatarElement = row.querySelector('.writer-avatar') || row.querySelector('.author-avatar');
+          let avatar = "";
+          if (avatarElement && avatarElement.style.backgroundImage) {
+            // Extract URL from backgroundImage string: url("...")
+            const match = avatarElement.style.backgroundImage.match(/url\(['"]?(.*?)['"]?\)/);
+            if (match && match[1]) {
+              avatar = match[1];
+            }
+          }
+
+          try {
+            if (!token) {
+              alert("Please log in to subscribe");
+              return;
+            }
+
+            btn.textContent = "Saving...";
+
+            const res = await fetch("http://localhost:5001/api/auth/subscribe", {
+              method: "POST",
+              headers: {
+                "Content-Type": "application/json",
+                "Authorization": `Bearer ${token}`
+              },
+              body: JSON.stringify({ name, bio, avatar })
+            });
+
+            if (res.ok) {
+              btn.textContent = "Subscribed";
+              btn.style.borderColor = "rgba(214,195,163,0.15)";
+              btn.style.color = "var(--text-ghost)";
+              btn.disabled = true;
+            } else {
+              btn.textContent = "Subscribe";
+              alert("Error subscribing");
+            }
+          } catch(err) {
+            console.error(err);
+            btn.textContent = "Subscribe";
+            alert("Network error");
+          }
+        });
+      });
+    });
+  </script>
 </body>
 </html>
