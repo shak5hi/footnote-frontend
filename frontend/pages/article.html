@@ -6,6 +6,7 @@
   <title>FootNote — You Were Never Meant to Live This Fast</title>
   <link rel="stylesheet" href="../css/dashboard.css">
   <link rel="stylesheet" href="../css/pages.css">
+  <link rel="stylesheet" href="../css/editor.css">
   <style>
     /* Article page - wider center, no right sidebar at max-width */
     .article-main {
@@ -32,12 +33,12 @@
     }
     body.paper-mode .article-header-bar { background: rgba(245,241,234,0.95); }
     .article-back {
-      font-size: 13px;
-      color: var(--text-ghost);
       display: flex;
       align-items: center;
       gap: 8px;
       transition: color var(--t-fast);
+      font-size: 13px;
+      color: var(--text-ghost);
     }
     .article-back:hover { color: var(--text-primary); }
     .article-back svg { width: 16px; height: 16px; stroke: currentColor; stroke-width: 1.5; fill: none; }
@@ -99,10 +100,86 @@
       line-height: 2;
       color: var(--text-secondary);
     }
-    .article-content p {
-      margin-bottom: 24px;
+    .article-body p:first-of-type::first-letter {
+      float: left;
+      font-family: var(--font-serif);
+      font-size: 4.8em;
+      line-height: 0.7;
+      margin: 0.1em 0.12em 0.05em 0;
+      color: var(--text-primary);
+      font-weight: 500;
     }
     .article-content p:last-child { margin-bottom: 0; }
+
+    /* Block types in reader */
+    .reader-block { margin-bottom: 24px; }
+    .reader-block[data-type="poetry"] {
+      font-family: var(--font-serif);
+      font-style: italic;
+      font-size: 18px;
+      line-height: 2.1;
+      text-align: center;
+      padding: 20px;
+      white-space: pre-wrap;
+      color: var(--text-primary);
+      opacity: 0.85;
+    }
+    .reader-block[data-type="quote"] {
+      font-family: var(--font-serif);
+      font-style: italic;
+      font-size: 19px;
+      line-height: 1.85;
+      padding: 16px 28px;
+      border-left: 2px solid rgba(214,195,163,0.3);
+      color: var(--text-primary);
+      opacity: 0.9;
+    }
+    .reader-block[data-type="heading"] {
+      font-family: var(--font-serif);
+      font-size: 26px;
+      font-weight: 500;
+      color: var(--text-primary);
+      line-height: 1.3;
+      margin: 32px 0 16px;
+    }
+    .reader-block[data-type="image"] {
+      text-align: center;
+      padding: 16px 0;
+    }
+    .reader-block[data-type="image"] img {
+      max-width: 100%;
+      border-radius: 8px;
+      filter: brightness(0.88) saturate(0.9);
+    }
+    .reader-block[data-type="image"] .reader-caption {
+      font-size: 12px;
+      color: var(--text-ghost);
+      font-style: italic;
+      margin-top: 8px;
+    }
+
+    /* Reader footnote side panel */
+    .reader-fn-panel {
+      position: fixed;
+      right: 0; top: 0;
+      width: 320px; height: 100vh;
+      background: var(--bg-sidebar);
+      border-left: 1px solid var(--border);
+      padding: 48px 24px;
+      z-index: 500;
+      transform: translateX(100%);
+      transition: transform 0.4s var(--ease);
+      overflow-y: auto;
+    }
+    .reader-fn-panel.is-open { transform: translateX(0); }
+    .reader-fn-overlay {
+      position: fixed; inset: 0;
+      background: rgba(0,0,0,0.3);
+      z-index: 499;
+      opacity: 0; visibility: hidden;
+      transition: all 0.3s;
+    }
+    .reader-fn-overlay.is-open { opacity: 1; visibility: visible; }
 
     /* Article actions */
     .article-actions-bar {
@@ -184,7 +261,40 @@
       margin-top: 8px;
     }
 
-    /* Right sidebar for article */
+    .article-header-bar {
+      position: sticky;
+      top: 0;
+      width: 100%;
+      height: 60px;
+      background: var(--bg);
+      border-bottom: 2px solid var(--border);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0 40px;
+      z-index: 1000;
+      transition: background 0.5s ease;
+    }
+    body.theme-paper .article-header-bar { background: #fdfdf5; }
+    body.theme-minimal .article-header-bar { background: #ffffff; }
+    body.theme-typewriter .article-header-bar { background: #f4f1ea; }
+    body.theme-latenight .article-header-bar { background: #0a0a0a; border-bottom: 1px solid rgba(255,255,255,0.1); }
+
+    .btn-subscribe {
+      background: var(--text-primary);
+      color: var(--bg);
+      border: 2px solid var(--border);
+      font-size: 10px;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.1em;
+      padding: 8px 20px;
+      border-radius: 0;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+    .btn-subscribe:hover { background: var(--bg); color: var(--text-primary); }
+
     .article-sidebar {
       width: 300px;
       border-left: 1px solid var(--border);
@@ -197,6 +307,242 @@
       gap: 0;
       transition: background var(--t-slow) ease;
     }
+
+    /* Ambient Sound Bar */
+    .ambient-bar {
+      position: fixed;
+      bottom: 0; left: 0; right: 0;
+      background: rgba(12,18,32,0.95);
+      backdrop-filter: blur(24px);
+      border-top: 1px solid rgba(214,195,163,0.08);
+      padding: 12px 32px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 16px;
+      z-index: 300;
+      transform: translateY(100%);
+      transition: transform 0.4s var(--ease);
+    }
+    body.paper-mode .ambient-bar { background: rgba(245,241,234,0.97); }
+    .ambient-bar.is-visible { transform: translateY(0); }
+    .ambient-btn {
+      font-size: 11px;
+      padding: 6px 14px;
+      border: 1px solid var(--border);
+      border-radius: 0;
+      background: none;
+      color: var(--text-ghost);
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+    .ambient-btn:hover { color: var(--text-secondary); border-color: rgba(214,195,163,0.2); }
+    .ambient-btn.active {
+      color: var(--accent);
+      border-color: rgba(214,195,163,0.3);
+      background: rgba(214,195,163,0.06);
+    }
+    .ambient-vol {
+      -webkit-appearance: none;
+      appearance: none;
+      width: 80px;
+      height: 3px;
+      background: rgba(214,195,163,0.15);
+      border-radius: 2px;
+      outline: none;
+    }
+    .ambient-vol::-webkit-slider-thumb {
+      -webkit-appearance: none;
+      width: 10px;
+      height: 10px;
+      border-radius: 50%;
+      background: var(--accent);
+      cursor: pointer;
+    }
+
+    /* Reading Themes */
+    body.theme-minimal {
+      --bg: #fafaf7;
+      --text-primary: #2a2a2a;
+      --text-secondary: #555;
+      --text-ghost: #999;
+      --border: rgba(0,0,0,0.06);
+      --bg-sidebar: #f5f5f0;
+      --bg-card: #f0f0ea;
+    }
+    body.theme-typewriter {
+      --bg: #f4f1e4;
+      --text-primary: #2c2015;
+      --text-secondary: #4a3c2a;
+      --text-ghost: #8a7a60;
+      --border: rgba(100,80,50,0.12);
+      --bg-sidebar: #ece8d8;
+      --bg-card: #e8e4d4;
+      --font-sans: 'Courier New', monospace;
+    }
+    body.theme-typewriter .article-content { font-family: 'Courier New', monospace; }
+    body.theme-latenight {
+      --bg: #0a0a12;
+      --text-primary: rgba(200,195,185,0.9);
+      --text-secondary: rgba(160,155,145,0.7);
+      --text-ghost: rgba(120,115,105,0.5);
+      --border: rgba(214,195,163,0.04);
+      --bg-sidebar: #0f0f18;
+      --bg-card: #12121e;
+    }
+
+    /* Parallel Narrative */
+    .parallel-wrapper {
+      display: flex;
+      gap: 32px;
+      margin-top: 32px;
+    }
+    .parallel-layer {
+      flex: 1;
+      padding: 20px;
+      border-radius: 12px;
+      background: rgba(0,0,0,0.06);
+      border: 1px solid var(--border);
+    }
+    .parallel-layer-title {
+      font-size: 10px;
+      letter-spacing: 0.14em;
+      text-transform: uppercase;
+      color: var(--text-ghost);
+      margin-bottom: 14px;
+    }
+
+    /* Time-based reading */
+    .reader-block.time-hidden {
+      opacity: 0;
+      transform: translateY(12px);
+      transition: opacity 0.8s ease, transform 0.8s ease;
+    }
+    .reader-block.time-revealed {
+      opacity: 1;
+      transform: translateY(0);
+    }
+
+    /* Reading progress */
+    .reading-progress {
+      position: fixed;
+      top: 0; left: 0;
+      height: 2px;
+      background: var(--accent);
+      z-index: 999;
+      transition: width 0.1s linear;
+      opacity: 0.6;
+    }
+
+    /* Ambient Bar */
+    .ambient-bar {
+      position: fixed;
+      bottom: 40px;
+      left: 50%;
+      transform: translateX(-50%) translateY(100px);
+      background: rgba(10, 10, 10, 0.95);
+      backdrop-filter: blur(20px);
+      padding: 12px 24px;
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      border-radius: 100px;
+      display: flex;
+      align-items: center;
+      gap: 20px;
+      z-index: 2000;
+      transition: all 0.5s cubic-bezier(0.19, 1, 0.22, 1);
+      opacity: 0;
+      pointer-events: none;
+    }
+    .ambient-bar.is-visible {
+      transform: translateX(-50%) translateY(0);
+      opacity: 1;
+      pointer-events: all;
+    }
+    .ambient-btn {
+      background: none;
+      border: none;
+      color: rgba(255, 255, 255, 0.4);
+      font-size: 10px;
+      font-weight: 700;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      cursor: pointer;
+      padding: 4px 8px;
+      transition: all 0.2s;
+    }
+    .ambient-btn.active, .ambient-btn:hover {
+      color: #fff;
+    }
+    .ambient-vol {
+      width: 80px;
+      height: 2px;
+      accent-color: #fff;
+    }
+
+    /* Enhanced Focus Mode & Sidebar Toggles */
+    .dashboard-wrapper.focus-mode .sidebar-left,
+    .dashboard-wrapper.focus-mode .article-sidebar,
+    .dashboard-wrapper.focus-mode .article-header-bar {
+      display: none !important;
+    }
+    .dashboard-wrapper.focus-mode .article-main {
+      max-width: 1000px;
+      margin: 0 auto;
+      border: none;
+    }
+    .dashboard-wrapper.sidebars-hidden .sidebar-left,
+    .dashboard-wrapper.sidebars-hidden .article-sidebar {
+      display: none !important;
+    }
+    .dashboard-wrapper.sidebars-hidden .article-main {
+      border: none;
+    }
+    
+    /* Zen Exit Button */
+    .btn-exit-focus {
+      position: fixed;
+      top: 30px;
+      right: 40px;
+      padding: 8px 20px;
+      background: var(--bg);
+      border: 2px solid var(--border);
+      color: var(--text-primary);
+      font-size: 10px;
+      font-weight: 900;
+      text-transform: uppercase;
+      z-index: 2000;
+      display: none;
+      cursor: pointer;
+    }
+    .dashboard-wrapper.focus-mode .btn-exit-focus { display: block; }
+    
+    .btn-toggle-sidebars {
+      font-size: 10px;
+      font-weight: 700;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      color: var(--text-ghost);
+      margin-top: 20px;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    .btn-toggle-sidebars:hover { color: var(--text-primary); }
+
+    /* Reading Themes */
+    body.theme-paper { background: #fdfdf5 !important; color: #2a2a2a !important; font-family: 'Georgia', serif !important; }
+    body.theme-paper article, body.theme-paper .reader-block { border-color: rgba(0,0,0,0.05) !important; }
+    body.theme-minimal { background: #ffffff !important; color: #000000 !important; font-family: -apple-system, sans-serif !important; }
+    body.theme-typewriter { background: #f4f1ea !important; color: #333333 !important; font-family: 'Courier New', Courier, monospace !important; }
+    body.theme-latenight { background: #0a0a0a !important; color: #d1d1d1 !important; }
+    body.theme-latenight .reader-block { color: #888; }
+    body.theme-latenight .reader-block:hover { color: #eee; }
+    
+    .nav-item.active { color: var(--accent) !important; }
+    
+    /* Zero Radius Standard */
+    .nav-item, button, input, select { border-radius: 0 !important; }
   </style>
 </head>
 <body>
@@ -204,6 +550,7 @@
   <div class="cursor-ring"></div>
 
   <div class="dashboard-wrapper">
+    <button class="btn-exit-focus has-hover" id="zen-exit">Exit Focus Mode</button>
 
     <!-- Left Sidebar -->
     <aside class="sidebar-left">
@@ -217,14 +564,7 @@
           <svg class="nav-icon" viewBox="0 0 24 24"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
           Subscriptions
         </a>
-        <a href="#" class="nav-item has-hover">
-          <svg class="nav-icon" viewBox="0 0 24 24"><path d="M21 11.5a8.38 8.38 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.38 8.38 0 0 1-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 0 1-.9-3.8 8.5 8.5 0 0 1 4.7-7.6 8.38 8.38 0 0 1 3.8-.9h.5a8.48 8.48 0 0 1 8 8v.5z"/></svg>
-          Chat
-        </a>
-        <a href="#" class="nav-item has-hover">
-          <svg class="nav-icon" viewBox="0 0 24 24"><path d="M22 12h-4l-3 9L9 3l-3 9H2"/></svg>
-          Activity
-        </a>
+
         <a href="explore.html" class="nav-item has-hover">
           <svg class="nav-icon" viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
           Explore
@@ -233,9 +573,17 @@
           <svg class="nav-icon" viewBox="0 0 24 24"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
           Profile
         </a>
+        <a href="trails.html" class="nav-item has-hover">
+          <svg class="nav-icon" viewBox="0 0 24 24"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/></svg>
+          Trails
+        </a>
       </nav>
       <a href="create.html" class="btn-create has-hover">Create Something Worth Keeping</a>
       <div class="sidebar-bottom">
+        <a href="#" class="nav-item has-hover" id="btn-toggle-sidebars">
+          <svg class="nav-icon" viewBox="0 0 24 24"><path d="M18 6L6 18M6 6l12 12"/></svg>
+          Hide Sidebars
+        </a>
         <a href="#" class="nav-item has-hover">
           <svg class="nav-icon" viewBox="0 0 24 24"><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="18" x2="21" y2="18"/></svg>
           More
@@ -251,26 +599,44 @@
           Home
         </a>
         <div style="display:flex;gap:12px;align-items:center">
-          <button class="btn-subscribe has-hover" style="font-size:11px;padding:6px 16px">Subscribe to Maya</button>
+          <button class="nav-item has-hover" id="btn-focus-mode" style="font-size:10px; border:2px solid var(--border); background:none; padding:8px 20px; font-weight:900;">FOCUS</button>
+          <button class="btn-subscribe has-hover">Subscribe to Maya</button>
         </div>
+      </div>
+      <div class="page-header reveal-item" style="padding: 120px 80px 60px; height: auto; border-bottom: 2px solid var(--border); position: relative; align-items: flex-start; text-align: left;">
+        <!-- Corner Markers -->
+        <div style="position: absolute; top:0; left:0; width: 6px; height: 6px; background: var(--text-primary);"></div>
+        <div style="position: absolute; top:0; right:0; width: 6px; height: 6px; background: var(--text-primary);"></div>
+        <div style="position: absolute; bottom:0; left:0; width: 6px; height: 6px; background: var(--text-primary);"></div>
+        <div style="position: absolute; bottom:0; right:0; width: 6px; height: 6px; background: var(--text-primary);"></div>
+
+        <div class="writer-meta" style="font-size: 10px; font-weight: 700; letter-spacing: 0.25em; text-transform: uppercase; color: var(--text-ghost); margin-bottom: 24px; border-left: 3px solid var(--text-primary); padding-left: 12px; display: flex; align-items: center; gap: 12px;">
+          Archive // <span id="article-tone">Selected Series</span>
+          <span id="article-music" style="display:none; color:var(--accent);">🎵 LOADING...</span>
+        </div>
+        
+        <h1 class="page-title" id="article-title" style="font-size: 120px; line-height: 0.85; margin-bottom: 40px; font-weight: 900; letter-spacing: -0.06em; text-transform: uppercase; max-width: 900px;">Loading...</h1>
+        
+        <div class="article-author-row" style="display: flex; flex-direction: column; gap: 4px; border-top: 1px solid var(--border-dim); padding-top: 24px; width: 100%;">
+          <span id="author-name" style="font-size: 14px; font-weight: 800; color: var(--text-primary); text-transform: uppercase;">Maya Chukujama</span>
+          <span id="article-date" style="font-size: 11px; font-weight: 600; color: var(--text-ghost); letter-spacing: 0.1em; text-transform: uppercase;">March 2026</span>
+        </div>
+        <button class="nav-item active" id="btn-toggle-narrative" style="margin-top: 48px; border: 2px solid var(--text-primary); background: none; font-size: 10px; display: none;">PARALLEL LAYER</button>
       </div>
 
       <div class="article-body reveal-item">
-        <!-- Author row -->
-        <div class="article-meta-row">
-          <div class="article-author-avatar" style="background-image:url('../src/assets/images/image2.jpg')"></div>
-          <div class="article-author-info">
-            <p class="article-author-name">Maya Chukujama</p>
-            <p class="article-date">Mar 5 · 6 min read</p>
-          </div>
+        <!-- Reading Controls -->
+        <div style="display:flex; justify-content:center; gap:32px; padding: 40px 0; border-bottom: 1px solid var(--border-dim); margin-bottom: 60px; align-items: center;">
+            <select class="reading-theme-select" id="reading-theme-select" style="font-size: 10px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.1em; border: none; background: transparent; color: var(--text-ghost); cursor: pointer; outline: none;">
+              <option value="">Theme: Default</option>
+              <option value="paper">Paper</option>
+              <option value="minimal">Minimal</option>
+              <option value="typewriter">Typewriter</option>
+              <option value="latenight">Late Night</option>
+            </select>
+            <button class="nav-item has-hover" id="btn-ambient" style="font-size:10px; border:none; background:none; color:var(--text-ghost);">AMBIENT</button>
+            <button class="nav-item has-hover" id="btn-time-read" style="font-size:10px; border:none; background:none; color:var(--text-ghost);">TIME-READ</button>
         </div>
-
-        <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:18px;">
-          <span class="article-category" id="article-tag" style="margin-bottom:0;">Field Note</span>
-          <span id="article-music" title="Reading Atmosphere" style="display:none; font-size:10px; letter-spacing:0.5px; color:var(--text-secondary); background:rgba(0,0,0,0.15); border:1px solid rgba(214,195,163,0.15); padding:5px 12px; border-radius:999px;">🎵 Atmosphere</span>
-        </div>
-
-        <h1 class="article-title" id="article-title">Loading...</h1>
 
         <img class="article-image" id="article-image" style="display:none;" alt="Article header image">
 
@@ -370,6 +736,24 @@
 
   </div>
 
+  <!-- Reader Footnote Panel -->
+  <div class="reader-fn-overlay" id="fn-overlay"></div>
+  <div class="reader-fn-panel" id="fn-panel">
+    <button onclick="closeFnPanel()" style="position:absolute; top:16px; right:16px; width:28px; height:28px; border:1px solid var(--border); background:none; color:var(--text-ghost); display:flex; align-items:center; justify-content:center; font-size:10px; text-transform:uppercase;">CLOSE</button>
+    <p style="font-size:10px; letter-spacing:0.16em; text-transform:uppercase; color:var(--text-ghost); margin-bottom:20px;">Footnote</p>
+    <p id="fn-panel-num" style="font-size:13px; color:var(--accent); font-weight:600; margin-bottom:8px;"></p>
+    <p id="fn-panel-ref" style="font-size:13px; color:var(--text-ghost); font-style:italic; margin-bottom:16px;"></p>
+    <p id="fn-panel-content" style="font-size:15px; color:var(--text-secondary); line-height:1.8;"></p>
+  </div>
+
+  <script>
+    function closeFnPanel() {
+      document.getElementById('fn-panel').classList.remove('is-open');
+      document.getElementById('fn-overlay').classList.remove('is-open');
+    }
+    document.getElementById('fn-overlay')?.addEventListener('click', closeFnPanel);
+  </script>
+
   <script src="../js/pages.js"></script>
   <script>
     document.addEventListener("DOMContentLoaded", async () => {
@@ -383,7 +767,7 @@
           const article = await response.json();
 
           document.getElementById('article-title').textContent = article.title;
-          document.getElementById('article-tag').textContent = article.tone || "General";
+          document.getElementById('article-tone').textContent = article.tone || "General";
           
           if (article.coverImage) {
             const imgEl = document.getElementById('article-image');
@@ -394,7 +778,7 @@
           if (article.musicTrack) {
             // Restore the minimal pill
             const musicEl = document.getElementById('article-music');
-            musicEl.textContent = "🎵 " + article.musicTrack;
+            musicEl.textContent = article.musicTrack;
             musicEl.style.display = "inline-block";
             
             // Create a prominent suggestion box
@@ -413,7 +797,7 @@
                 <strong>${article.musicTrack}</strong>
               </p>
               <div id="audio-player-container">
-                <button id="load-audio-btn" style="background:var(--bg-sidebar); border:1px solid var(--border); color:var(--text-ghost); font-size:13px; cursor:pointer; padding:8px 20px; border-radius:6px; transition:all 0.2s;" onmouseover="this.style.color='var(--text-primary)'; this.style.borderColor='var(--accent)';" onmouseout="this.style.color='var(--text-ghost)'; this.style.borderColor='var(--border)'">▶ Load & Play Audio</button>
+                <button id="load-audio-btn" style="background:var(--bg-sidebar); border:1px solid var(--border); color:var(--text-ghost); font-size:11px; cursor:pointer; padding:8px 20px; text-transform:uppercase; transition:all 0.2s;" onmouseover="this.style.color='var(--text-primary)'; this.style.borderColor='var(--accent)';" onmouseout="this.style.color='var(--text-ghost)'; this.style.borderColor='var(--border)'">LOAD AUDIO</button>
               </div>
             `;
             
@@ -423,7 +807,7 @@
             
             document.getElementById('load-audio-btn').addEventListener('click', async (e) => {
                const btn = e.target;
-               btn.textContent = "⏳ Loading...";
+               btn.textContent = "LOADING...";
                try {
                   const res = await fetch(`https://itunes.apple.com/search?term=${encodeURIComponent(article.musicTrack)}&limit=1&entity=song`);
                   const data = await res.json();
@@ -443,8 +827,89 @@
             });
           }
           
-          const contentFormatted = article.content.split('\n').filter(p => p.trim()).map(p => `<p>${p}</p>`).join('');
-          document.getElementById('article-content').innerHTML = contentFormatted;
+          // Render blocks or fall back to plain content
+          const contentEl = document.getElementById('article-content');
+          if (article.blocks && article.blocks.length > 0) {
+            contentEl.innerHTML = '';
+            
+            // Container for Layer A
+            const layerA = document.createElement('div');
+            layerA.id = 'layer-primary';
+            article.blocks.forEach(block => {
+              const div = document.createElement('div');
+              div.className = 'reader-block';
+              div.setAttribute('data-type', block.type || 'paragraph');
+              if (block.type === 'image') {
+                div.innerHTML = `${block.meta?.src ? `<img src="${block.meta.src}" alt="">` : ''}${block.meta?.caption ? `<p class="reader-caption">${block.meta.caption}</p>` : ''}`;
+              } else { div.textContent = block.content || ''; }
+              layerA.appendChild(div);
+            });
+            contentEl.appendChild(layerA);
+
+            // Render Layer B if exists
+            if (article.parallelBlocks && article.parallelBlocks.length > 0) {
+              const layerB = document.createElement('div');
+              layerB.id = 'layer-parallel';
+              layerB.style.display = 'none';
+              layerB.style.opacity = '0.9';
+              layerB.style.fontStyle = 'italic';
+              article.parallelBlocks.forEach(block => {
+                const div = document.createElement('div');
+                div.className = 'reader-block parallel-voice';
+                div.textContent = block.content || '';
+                layerB.appendChild(div);
+              });
+              contentEl.appendChild(layerB);
+
+              // Show Toggle
+              const toggleBtn = document.getElementById('btn-toggle-narrative');
+              if (toggleBtn) {
+                toggleBtn.style.display = 'inline-block';
+                let isLayerB = false;
+                toggleBtn.addEventListener('click', () => {
+                  isLayerB = !isLayerB;
+                  layerA.style.display = isLayerB ? 'none' : 'block';
+                  layerB.style.display = isLayerB ? 'block' : 'none';
+                  toggleBtn.textContent = isLayerB ? 'PRIMARY LAYER' : 'PARALLEL LAYER';
+                  toggleBtn.classList.toggle('active', isLayerB);
+                });
+              }
+            }
+          } else {
+            const contentFormatted = (article.content || '').split('\n').filter(p => p.trim()).map(p => `<p>${p}</p>`).join('');
+            contentEl.innerHTML = contentFormatted;
+          }
+
+          // Render footnote references
+          if (article.footnotes && article.footnotes.length > 0) {
+            article.footnotes.forEach((fn, idx) => {
+              // Add footnote markers section at bottom
+              const fnSection = document.createElement('div');
+              fnSection.style.cssText = 'margin-top:48px; padding-top:24px; border-top:1px solid var(--border);';
+              fnSection.innerHTML = `<p style="font-size:10px; letter-spacing:0.16em; text-transform:uppercase; color:var(--text-ghost); margin-bottom:16px;">Footnotes</p>`;
+              article.footnotes.forEach((f, i) => {
+                fnSection.innerHTML += `<p style="font-size:13px; color:var(--text-secondary); margin-bottom:8px; line-height:1.6; cursor:pointer;" class="fn-reader-item" data-fn-idx="${i}"><sup style="color:var(--accent); font-weight:600;">${i+1}</sup> ${f.content || f.refText}</p>`;
+              });
+              contentEl.appendChild(fnSection);
+
+              // Click handlers for footnote panel
+              setTimeout(() => {
+                document.querySelectorAll('.fn-reader-item').forEach(item => {
+                  item.addEventListener('click', () => {
+                    const fi = parseInt(item.dataset.fnIdx);
+                    const footnote = article.footnotes[fi];
+                    document.getElementById('fn-panel-num').textContent = `Footnote ${fi + 1}`;
+                    document.getElementById('fn-panel-ref').textContent = `"${footnote.refText}"`;
+                    document.getElementById('fn-panel-content').textContent = footnote.content;
+                    const panel = document.getElementById('fn-panel');
+                    const overlay = document.getElementById('fn-overlay');
+                    if (panel) panel.classList.add('is-open');
+                    if (overlay) overlay.classList.add('is-open');
+                  });
+                });
+              }, 100);
+            });
+          }
         } catch (err) {
           console.error(err);
           document.getElementById('article-title').textContent = "Article not found";
@@ -460,6 +925,375 @@
       this.style.height = 'auto';
       this.style.height = this.scrollHeight + 'px';
     });
+
+    // ═══════════════════════════════════════════════════════════
+    // PHASE 3: AMBIENT READING, THEMES, TIME-BASED READING
+    // ═══════════════════════════════════════════════════════════
+
+    // ── Ambient Sounds (Web Audio API — no external URLs) ─────
+    let ambientCtx = null;
+    let ambientGain = null;
+    let ambientNodes = [];
+    let activeAmbientType = null;
+
+    function getAudioCtx() {
+      if (!ambientCtx) {
+        ambientCtx = new (window.AudioContext || window.webkitAudioContext)();
+        ambientGain = ambientCtx.createGain();
+        ambientGain.gain.value = 0.3;
+        ambientGain.connect(ambientCtx.destination);
+      }
+      if (ambientCtx.state === 'suspended') ambientCtx.resume();
+      return ambientCtx;
+    }
+
+    function stopAmbient() {
+      ambientNodes.forEach(n => { try { n.stop(); } catch(e) {} try { n.disconnect(); } catch(e) {} });
+      ambientNodes = [];
+      activeAmbientType = null;
+    }
+
+    function createRain() {
+      const ctx = getAudioCtx();
+      // Brown noise for rain
+      const bufferSize = ctx.sampleRate * 4;
+      const buffer = ctx.createBuffer(2, bufferSize, ctx.sampleRate);
+      for (let ch = 0; ch < 2; ch++) {
+        const data = buffer.getChannelData(ch);
+        let lastOut = 0;
+        for (let i = 0; i < bufferSize; i++) {
+          const white = Math.random() * 2 - 1;
+          data[i] = (lastOut + (0.02 * white)) / 1.02;
+          lastOut = data[i];
+          data[i] *= 3.5;
+        }
+      }
+      const source = ctx.createBufferSource();
+      source.buffer = buffer;
+      source.loop = true;
+
+      // Low-pass filter for rain character
+      const lp = ctx.createBiquadFilter();
+      lp.type = 'lowpass';
+      lp.frequency.value = 800;
+      lp.Q.value = 0.7;
+
+      // High frequencies for patter
+      const patter = ctx.createBufferSource();
+      const patterBuf = ctx.createBuffer(2, bufferSize, ctx.sampleRate);
+      for (let ch = 0; ch < 2; ch++) {
+        const d = patterBuf.getChannelData(ch);
+        for (let i = 0; i < bufferSize; i++) {
+          d[i] = (Math.random() * 2 - 1) * (Math.random() < 0.1 ? 0.3 : 0.02);
+        }
+      }
+      patter.buffer = patterBuf;
+      patter.loop = true;
+      const hp = ctx.createBiquadFilter();
+      hp.type = 'highpass';
+      hp.frequency.value = 4000;
+      const patterGain = ctx.createGain();
+      patterGain.gain.value = 0.15;
+
+      source.connect(lp).connect(ambientGain);
+      patter.connect(hp).connect(patterGain).connect(ambientGain);
+      source.start();
+      patter.start();
+      ambientNodes.push(source, patter);
+    }
+
+    function createCafe() {
+      const ctx = getAudioCtx();
+      // Pink noise for cafe murmur
+      const bufferSize = ctx.sampleRate * 4;
+      const buffer = ctx.createBuffer(2, bufferSize, ctx.sampleRate);
+      for (let ch = 0; ch < 2; ch++) {
+        const data = buffer.getChannelData(ch);
+        let b0=0,b1=0,b2=0,b3=0,b4=0,b5=0,b6=0;
+        for (let i = 0; i < bufferSize; i++) {
+          const white = Math.random() * 2 - 1;
+          b0 = 0.99886*b0 + white*0.0555179;
+          b1 = 0.99332*b1 + white*0.0750759;
+          b2 = 0.96900*b2 + white*0.1538520;
+          b3 = 0.86650*b3 + white*0.3104856;
+          b4 = 0.55000*b4 + white*0.5329522;
+          b5 = -0.7616*b5 - white*0.0168980;
+          data[i] = (b0+b1+b2+b3+b4+b5+b6+white*0.5362) * 0.11;
+          b6 = white * 0.115926;
+        }
+      }
+      const source = ctx.createBufferSource();
+      source.buffer = buffer;
+      source.loop = true;
+
+      const bp = ctx.createBiquadFilter();
+      bp.type = 'bandpass';
+      bp.frequency.value = 600;
+      bp.Q.value = 0.5;
+
+      // Occasional clink sounds
+      const clinkBuf = ctx.createBuffer(1, ctx.sampleRate * 4, ctx.sampleRate);
+      const clinkData = clinkBuf.getChannelData(0);
+      for (let i = 0; i < clinkData.length; i++) {
+        // Sparse random clicks
+        clinkData[i] = Math.random() < 0.0004 ? (Math.random() - 0.5) * 0.6 : 0;
+      }
+      const clink = ctx.createBufferSource();
+      clink.buffer = clinkBuf;
+      clink.loop = true;
+      const clinkFilter = ctx.createBiquadFilter();
+      clinkFilter.type = 'highpass';
+      clinkFilter.frequency.value = 2000;
+      const clinkGain = ctx.createGain();
+      clinkGain.gain.value = 0.2;
+
+      source.connect(bp).connect(ambientGain);
+      clink.connect(clinkFilter).connect(clinkGain).connect(ambientGain);
+      source.start();
+      clink.start();
+      ambientNodes.push(source, clink);
+    }
+
+    function createVinyl() {
+      const ctx = getAudioCtx();
+      // Vinyl crackle: sparse impulses + low hum
+      const bufferSize = ctx.sampleRate * 4;
+      const buffer = ctx.createBuffer(2, bufferSize, ctx.sampleRate);
+      for (let ch = 0; ch < 2; ch++) {
+        const data = buffer.getChannelData(ch);
+        for (let i = 0; i < bufferSize; i++) {
+          // Crackle: random sparse pops
+          const r = Math.random();
+          if (r < 0.001) data[i] = (Math.random() - 0.5) * 0.8; // big pop
+          else if (r < 0.01) data[i] = (Math.random() - 0.5) * 0.15; // soft crackle
+          else data[i] = (Math.random() - 0.5) * 0.008; // floor noise
+        }
+      }
+      const source = ctx.createBufferSource();
+      source.buffer = buffer;
+      source.loop = true;
+
+      // Warm filter
+      const lp = ctx.createBiquadFilter();
+      lp.type = 'lowpass';
+      lp.frequency.value = 5000;
+
+      // Low hum (turntable motor)
+      const osc = ctx.createOscillator();
+      osc.type = 'sine';
+      osc.frequency.value = 55;
+      const humGain = ctx.createGain();
+      humGain.gain.value = 0.03;
+
+      source.connect(lp).connect(ambientGain);
+      osc.connect(humGain).connect(ambientGain);
+      source.start();
+      osc.start();
+      ambientNodes.push(source, osc);
+    }
+
+    // Create ambient bar dynamically
+    const ambientBar = document.createElement('div');
+    ambientBar.className = 'ambient-bar';
+    ambientBar.id = 'ambient-bar';
+    ambientBar.innerHTML = `
+      <span style="font-size:10px; color:var(--text-ghost); letter-spacing:0.1em; text-transform:uppercase;">ambient</span>
+      <button class="ambient-btn ambient-sound-btn" data-type="rain">RAIN</button>
+      <button class="ambient-btn ambient-sound-btn" data-type="cafe">CAFE</button>
+      <button class="ambient-btn ambient-sound-btn" data-type="vinyl">VINYL</button>
+      <input type="range" class="ambient-vol" id="ambient-vol" min="0" max="100" value="30">
+      <button class="ambient-btn" id="ambient-close" style="font-size:10px;">CLOSE</button>
+    `;
+    document.body.appendChild(ambientBar);
+
+    document.getElementById('btn-ambient').addEventListener('click', () => {
+      ambientBar.classList.toggle('is-visible');
+    });
+    document.getElementById('ambient-close').addEventListener('click', () => {
+      ambientBar.classList.remove('is-visible');
+      stopAmbient();
+      document.querySelectorAll('.ambient-sound-btn').forEach(b => b.classList.remove('active'));
+    });
+
+    const ambientCreators = { rain: createRain, cafe: createCafe, vinyl: createVinyl };
+
+    document.querySelectorAll('.ambient-sound-btn').forEach(btn => {
+      btn.addEventListener('click', () => {
+        const type = btn.dataset.type;
+        if (activeAmbientType === type) {
+          stopAmbient();
+          btn.classList.remove('active');
+          return;
+        }
+        stopAmbient();
+        document.querySelectorAll('.ambient-sound-btn').forEach(b => b.classList.remove('active'));
+        btn.classList.add('active');
+        ambientCreators[type]();
+        activeAmbientType = type;
+      });
+    });
+
+    document.getElementById('ambient-vol').addEventListener('input', (e) => {
+      if (ambientGain) ambientGain.gain.value = e.target.value / 100;
+    });
+
+    // ── Reading Themes ────────────────────────────────────────
+    document.getElementById('reading-theme-select').addEventListener('change', (e) => {
+      const theme = e.target.value;
+      document.body.classList.remove('paper-mode', 'theme-minimal', 'theme-typewriter', 'theme-latenight');
+      if (theme === 'paper') document.body.classList.add('paper-mode');
+      else if (theme) document.body.classList.add(`theme-${theme}`);
+      localStorage.setItem('fn-reading-theme', theme);
+    });
+    // Restore saved theme
+    const savedReadingTheme = localStorage.getItem('fn-reading-theme');
+    if (savedReadingTheme) {
+      document.getElementById('reading-theme-select').value = savedReadingTheme;
+      if (savedReadingTheme === 'paper') document.body.classList.add('paper-mode');
+      else if (savedReadingTheme) document.body.classList.add(`theme-${savedReadingTheme}`);
+    }
+
+    // ── Time-Based Progressive Reading ────────────────────────
+    let timeReadActive = false;
+    document.getElementById('btn-time-read').addEventListener('click', () => {
+      timeReadActive = !timeReadActive;
+      const btn = document.getElementById('btn-time-read');
+      btn.classList.toggle('active', timeReadActive);
+
+      const blocks = document.querySelectorAll('.reader-block');
+      if (timeReadActive) {
+        blocks.forEach(b => { b.classList.add('time-hidden'); b.classList.remove('time-revealed'); });
+        // Reveal blocks progressively
+        blocks.forEach((b, i) => {
+          setTimeout(() => {
+            b.classList.add('time-revealed');
+          }, (i + 1) * 5000); // 5 seconds per block
+        });
+      } else {
+        blocks.forEach(b => { b.classList.remove('time-hidden', 'time-revealed'); });
+      }
+    });
+
+    // ── Reading Progress ──────────────────────────────────────
+    const progressBar = document.createElement('div');
+    progressBar.className = 'reading-progress';
+    progressBar.style.width = '0%';
+    document.body.appendChild(progressBar);
+
+    const articleMain = document.querySelector('.article-main');
+    if (articleMain) {
+      articleMain.addEventListener('scroll', () => {
+        const scrollTop = articleMain.scrollTop;
+        const scrollHeight = articleMain.scrollHeight - articleMain.clientHeight;
+        const progress = scrollHeight > 0 ? (scrollTop / scrollHeight) * 100 : 0;
+        progressBar.style.width = `${progress}%`;
+      });
+    }
+
+    // ── Parallel Narratives ───────────────────────────────────
+    // Will be rendered after article load if parallelBlocks exist
+    // (handled in the fetch callback above — we need to patch it in)
+
+    // ── Focus Mode ───────────────────────────────────────────
+    const btnFocus = document.getElementById('btn-focus-mode');
+    const zenExit = document.getElementById('zen-exit');
+    const wrapper = document.querySelector('.dashboard-wrapper');
+    
+    if (btnFocus && wrapper) {
+      const toggleFocus = () => {
+        const isFocus = wrapper.classList.toggle('focus-mode');
+        btnFocus.textContent = isFocus ? 'EXIT FOCUS' : 'FOCUS';
+        btnFocus.classList.toggle('active', isFocus);
+      };
+      btnFocus.addEventListener('click', toggleFocus);
+      if (zenExit) zenExit.addEventListener('click', toggleFocus);
+    }
+
+    // ── Sidebar Toggles ──────────────────────────────────────
+    const btnToggleSidebars = document.getElementById('btn-toggle-sidebars');
+    if (btnToggleSidebars && wrapper) {
+      btnToggleSidebars.addEventListener('click', (e) => {
+        e.preventDefault();
+        const isHidden = wrapper.classList.toggle('sidebars-hidden');
+        btnToggleSidebars.innerHTML = isHidden ? 
+          `<svg class="nav-icon" viewBox="0 0 24 24"><path d="M3 3h18v18H3z"/></svg> Show Sidebars` : 
+          `<svg class="nav-icon" viewBox="0 0 24 24"><path d="M18 6L6 18M6 6l12 12"/></svg> Hide Sidebars`;
+      });
+    }
+
+    // ── Subscriptions ────────────────────────────────────────
+    const btnSub = document.querySelector('.btn-subscribe');
+    if (btnSub) {
+      const token = localStorage.getItem("token");
+      const authorName = document.getElementById('author-name').textContent;
+      
+      // Check status
+      if (token) {
+        fetch("http://localhost:5001/api/auth/subscriptions", {
+          headers: { "Authorization": `Bearer ${token}` }
+        })
+        .then(res => res.json())
+        .then(data => {
+          const subs = data.subscriptions || [];
+          if (subs.find(s => s.name === authorName)) {
+            btnSub.textContent = "Subscribed";
+            btnSub.disabled = true;
+            btnSub.style.opacity = "0.6";
+          }
+        });
+      }
+
+      btnSub.addEventListener('click', async () => {
+        if (!token) {
+          alert("Please log in to subscribe");
+          return;
+        }
+
+        btnSub.textContent = "Saving...";
+        try {
+          const res = await fetch("http://localhost:5001/api/auth/subscribe", {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+              "Authorization": `Bearer ${token}`
+            },
+            body: JSON.stringify({
+              name: authorName,
+              bio: "Featured Author",
+              avatar: "../src/assets/images/image2.jpg"
+            })
+          });
+
+          if (res.ok) {
+            btnSub.textContent = "Subscribed";
+            btnSub.disabled = true;
+            btnSub.style.opacity = "0.6";
+          } else {
+            btnSub.textContent = "Subscribe to Maya";
+            alert("Error subscribing");
+          }
+        } catch(err) {
+          console.error(err);
+          btnSub.textContent = "Subscribe to Maya";
+        }
+      });
+    }
+
+    // ── Reading Time Tracking ─────────────────────────────────
+    let readingStartTime = Date.now();
+    window.addEventListener('beforeunload', () => {
+      const articleId = new URLSearchParams(window.location.search).get('id');
+      if (articleId) {
+        const timeSpentMs = Date.now() - readingStartTime;
+        fetch(`http://localhost:5001/api/articles/${articleId}/track-reading`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ timeSpentMs }),
+          keepalive: true
+        });
+      }
+    });
+
   </script>
 </body>
 </html>

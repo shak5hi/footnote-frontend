@@ -44,14 +44,16 @@ window.addEventListener('load', () => {
 const themeToggle = document.getElementById('themeToggle');
 if (themeToggle) {
   const saved = localStorage.getItem('fn-theme');
-  if (saved === 'paper') {
-    document.body.classList.add('paper-mode');
-    themeToggle.textContent = 'paper';
+  if (saved === 'deep') {
+    document.body.classList.add('deep-mode');
+    themeToggle.textContent = 'light';
+  } else {
+    themeToggle.textContent = 'deep';
   }
 
   themeToggle.addEventListener('click', () => {
-    const isPaper = document.body.classList.toggle('paper-mode');
-    themeToggle.textContent = isPaper ? 'paper' : 'deep';
-    localStorage.setItem('fn-theme', isPaper ? 'paper' : 'deep');
+    const isDeep = document.body.classList.toggle('deep-mode');
+    themeToggle.textContent = isDeep ? 'light' : 'deep';
+    localStorage.setItem('fn-theme', isDeep ? 'deep' : 'light');
   });
 }

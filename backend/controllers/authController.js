@@ -93,29 +93,44 @@ exports.login = async (req, res) => {
 
 exports.subscribe = async (req, res) => {
     try {
+        console.log("📥 [SUBSCRIPTION] Attempt for user:", req.user ? req.user._id : 'NO USER');
         const user = await User.findById(req.user._id);
+        if (!user) {
+            console.error("❌ [SUBSCRIPTION] User not found in DB");
+            return res.status(404).json({ message: "User not found" });
+        }
+
         const { name, bio, avatar } = req.body;
+        console.log(`📝 [SUBSCRIPTION] Payload: ${name}, ${bio}`);
         
         if (!name) return res.status(400).json({ message: "Author name required" });
+
+        if (!user.subscriptions) user.subscriptions = [];
 
         const exists = user.subscriptions.find(sub => sub.name === name);
         if (!exists) {
             user.subscriptions.push({ name, bio, avatar });
             await user.save();
+            console.log(`✅ [SUBSCRIPTION] Success for ${name}`);
+        } else {
+            console.log(`ℹ️ [SUBSCRIPTION] Already subscribed to ${name}`);
         }
         res.status(200).json({ message: "Subscribed successfully" });
     } catch (err) {
-        console.error("Error subscribing:", err);
-        res.status(500).json({ message: "Server error during subscription" });
+        console.error("❌ [SUBSCRIPTION] Internal Error:", err);
+        res.status(500).json({ message: "Server error during subscription", error: err.message });
     }
 };
 
 exports.getSubscriptions = async (req, res) => {
     try {
+        console.log("🔍 [GET_SUBS] Fetching for user:", req.user ? req.user._id : 'NO USER');
         const user = await User.findById(req.user._id);
+        if (!user) return res.status(404).json({ message: "User not found" });
+        
         res.status(200).json({ subscriptions: user.subscriptions || [] });
     } catch (err) {
-        console.error("Error fetching subscriptions:", err);
-        res.status(500).json({ message: "Server error fetching subscriptions" });
+        console.error("❌ [GET_SUBS] Internal Error:", err);
+        res.status(500).json({ message: "Server error fetching subscriptions", error: err.message });
     }
 };

@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>FootNote — Maya Chukujama</title>
+  <title>FootNote — Profile</title>
   <link rel="stylesheet" href="../css/dashboard.css">
   <link rel="stylesheet" href="../css/pages.css">
   <style>
@@ -69,6 +69,131 @@
       max-width: 700px;
       margin: 0 auto;
     }
+
+    /* ── Phase 4: Now Section ─────────────────────────────── */
+    .now-section {
+      padding: 28px 32px;
+      border-bottom: 1px solid var(--border);
+    }
+    .now-grid {
+      display: flex; gap: 24px; margin-top: 14px;
+    }
+    .now-card {
+      flex: 1;
+      padding: 16px;
+      background: rgba(0,0,0,0.08);
+      border-radius: 10px;
+      border: 1px solid var(--border);
+    }
+    body.paper-mode .now-card { background: rgba(0,0,0,0.03); }
+    .now-label {
+      font-size: 9px; letter-spacing: 0.16em;
+      text-transform: uppercase; color: var(--text-ghost);
+      margin-bottom: 8px; display: block;
+    }
+    .now-value {
+      font-size: 14px; color: var(--text-secondary);
+      font-style: italic; line-height: 1.5;
+    }
+    .now-value:empty::before {
+      content: 'Not set';
+      opacity: 0.4;
+    }
+
+    /* ── Phase 4: Streak ─────────────────────────────────── */
+    .streak-badge {
+      display: inline-flex; align-items: center; gap: 6px;
+      padding: 5px 14px; border-radius: 999px;
+      background: rgba(214,195,163,0.06);
+      border: 1px solid rgba(214,195,163,0.15);
+      font-size: 12px; color: var(--accent);
+    }
+    .streak-badge .streak-fire { font-size: 14px; }
+
+    /* ── Phase 4: Pinned Works ────────────────────────────── */
+    .pinned-section {
+      padding: 0 32px; margin-bottom: 16px;
+    }
+    .pinned-grid {
+      display: flex; gap: 14px; overflow-x: auto; padding: 8px 0;
+    }
+    .pinned-card {
+      min-width: 180px; max-width: 200px;
+      padding: 14px;
+      background: rgba(0,0,0,0.08);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      text-decoration: none;
+      transition: all 0.2s;
+      flex-shrink: 0;
+    }
+    body.paper-mode .pinned-card { background: rgba(0,0,0,0.03); }
+    .pinned-card:hover {
+      border-color: rgba(214,195,163,0.25);
+      transform: translateY(-2px);
+    }
+    .pinned-tone {
+      font-size: 9px; color: var(--accent);
+      letter-spacing: 0.12em; text-transform: uppercase;
+      margin-bottom: 6px; display: block;
+    }
+    .pinned-title {
+      font-size: 14px; color: var(--text-primary);
+      font-family: var(--font-serif);
+      line-height: 1.4;
+    }
+
+    /* ── Phase 5: Reading Stats ───────────────────────────── */
+    .stats-section {
+      padding: 24px 32px;
+      border-top: 1px solid var(--border);
+      margin-top: 16px;
+    }
+    .stats-grid {
+      display: flex; gap: 20px; flex-wrap: wrap;
+    }
+    .stats-card {
+      flex: 1; min-width: 120px;
+      padding: 16px;
+      background: rgba(0,0,0,0.06);
+      border-radius: 10px;
+      text-align: center;
+    }
+    .stats-card .stats-num {
+      font-size: 24px; font-weight: 500;
+      color: var(--text-primary);
+      font-family: var(--font-serif);
+    }
+    .stats-card .stats-lbl {
+      font-size: 10px; color: var(--text-ghost);
+      letter-spacing: 0.12em; text-transform: uppercase;
+      margin-top: 4px;
+    }
+
+    /* ── Edit Profile Modal ───────────────────────────────── */
+    .edit-modal-overlay {
+      display: none; position: fixed; inset: 0;
+      background: rgba(0,0,0,0.5); z-index: 1000;
+      justify-content: center; align-items: center;
+    }
+    .edit-modal {
+      background: var(--bg-card); border: 1px solid var(--border);
+      border-radius: 16px; padding: 32px; width: 420px; max-width: 90vw;
+      max-height: 80vh; overflow-y: auto;
+    }
+    .edit-field { margin-bottom: 18px; }
+    .edit-field label {
+      font-size: 10px; letter-spacing: 0.14em;
+      text-transform: uppercase; color: var(--text-ghost);
+      margin-bottom: 6px; display: block;
+    }
+    .edit-field input, .edit-field textarea, .edit-field select {
+      width: 100%; padding: 10px 12px; border: 1px solid var(--border);
+      border-radius: 8px; background: var(--bg);
+      color: var(--text-secondary); font-size: 13px;
+      font-family: var(--font-sans); outline: none;
+    }
+    .edit-field textarea { resize: vertical; min-height: 60px; }
   </style>
 </head>
 <body>
@@ -89,14 +214,6 @@
           <svg class="nav-icon" viewBox="0 0 24 24"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
           Subscriptions
         </a>
-        <a href="#" class="nav-item has-hover">
-          <svg class="nav-icon" viewBox="0 0 24 24"><path d="M21 11.5a8.38 8.38 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.38 8.38 0 0 1-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 0 1-.9-3.8 8.5 8.5 0 0 1 4.7-7.6 8.38 8.38 0 0 1 3.8-.9h.5a8.48 8.48 0 0 1 8 8v.5z"/></svg>
-          Chat
-        </a>
-        <a href="#" class="nav-item has-hover">
-          <svg class="nav-icon" viewBox="0 0 24 24"><path d="M22 12h-4l-3 9L9 3l-3 9H2"/></svg>
-          Activity
-        </a>
         <a href="explore.html" class="nav-item has-hover">
           <svg class="nav-icon" viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
           Explore
@@ -104,6 +221,10 @@
         <a href="profile.html" class="nav-item active has-hover">
           <svg class="nav-icon" viewBox="0 0 24 24"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
           Profile
+        </a>
+        <a href="trails.html" class="nav-item has-hover">
+          <svg class="nav-icon" viewBox="0 0 24 24"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/></svg>
+          Trails
         </a>
       </nav>
       <a href="create.html" class="btn-create has-hover">Create Something Worth Keeping</a>
@@ -117,29 +238,81 @@
 
     <!-- Main -->
     <main class="page-main">
-      <!-- Profile Hero -->
-      <div class="profile-hero reveal-item">
-        <div class="profile-avatar" style="background-image:url('../src/assets/images/image2.jpg')"></div>
-        <div class="profile-info">
-          <h1 class="profile-name">Maya Chukujama</h1>
-          <p class="profile-bio">writing to understand things I don't have words for yet</p>
+      <div class="page-header reveal-item" style="position: relative;">
+        <!-- Corner Markers -->
+        <div style="position: absolute; top:0; left:0; width: 6px; height: 6px; background: var(--text-primary);"></div>
+        <div style="position: absolute; top:0; right:0; width: 6px; height: 6px; background: var(--text-primary);"></div>
+        <div style="position: absolute; bottom:0; left:0; width: 6px; height: 6px; background: var(--text-primary);"></div>
+        <div style="position: absolute; bottom:0; right:0; width: 6px; height: 6px; background: var(--text-primary);"></div>
+
+        <h1 class="page-title" style="font-size: 140px; line-height: 0.85;">Maya Chk.</h1>
+        <div style="font-size: 12px; font-weight: 700; color: var(--text-ghost); text-transform: uppercase; letter-spacing: 0.2em; margin-top: 12px; border-left: 2px solid var(--text-primary); padding-left: 12px;">Archive // Curator</div>
+        <div style="display:flex; justify-content:space-between; align-items:flex-end; width:100%; margin-top:40px;">
           <div class="profile-stats">
             <div class="profile-stat">
-              <span class="stat-number">12</span>
+              <span class="stat-number" id="stat-writings">0</span>
               <span class="stat-label">Writings</span>
             </div>
             <div class="profile-stat">
-              <span class="stat-number">1.8K</span>
+              <span class="stat-number" id="stat-subscribers">1.8K</span>
               <span class="stat-label">Subscribers</span>
             </div>
             <div class="profile-stat">
-              <span class="stat-number">34K</span>
+              <span class="stat-number" id="stat-reads">0</span>
               <span class="stat-label">Reads</span>
             </div>
           </div>
+          <div class="profile-actions">
+            <span class="streak-badge" id="streak-badge" style="display:none;">
+              <span class="streak-fire">🔥</span>
+              <span id="streak-count">0</span> day streak
+            </span>
+            <button class="btn-edit has-hover" id="btn-edit-profile">Edit Profile</button>
+          </div>
         </div>
-        <div class="profile-actions">
-          <button class="btn-edit has-hover">Edit Profile</button>
+      </div>
+
+      <!-- Now Section -->
+      <div class="now-section reveal-item" id="now-section" style="display:none;">
+        <p class="section-title" style="margin-bottom:0;">Now</p>
+        <div class="now-grid">
+          <div class="now-card">
+            <span class="now-label">Reading</span>
+            <p class="now-value" id="now-reading"></p>
+          </div>
+          <div class="now-card">
+            <span class="now-label">Listening</span>
+            <p class="now-value" id="now-listening"></p>
+          </div>
+          <div class="now-card">
+            <span class="now-label">Thinking about</span>
+            <p class="now-value" id="now-thinking"></p>
+          </div>
+        </div>
+      </div>
+
+      <!-- Pinned Works -->
+      <div class="pinned-section" id="pinned-section" style="display:none;">
+        <p class="section-title reveal-item" style="margin-top:28px;">Pinned</p>
+        <div class="pinned-grid" id="pinned-grid"></div>
+      </div>
+
+      <!-- Reading Stats -->
+      <div class="stats-section" id="stats-section" style="display:none;">
+        <p class="section-title" style="margin-bottom:16px;">Reading Stats</p>
+        <div class="stats-grid">
+          <div class="stats-card">
+            <div class="stats-num" id="stats-articles">0</div>
+            <div class="stats-lbl">Articles Read</div>
+          </div>
+          <div class="stats-card">
+            <div class="stats-num" id="stats-completed">0</div>
+            <div class="stats-lbl">Completed</div>
+          </div>
+          <div class="stats-card">
+            <div class="stats-num" id="stats-time">0</div>
+            <div class="stats-lbl">Minutes</div>
+          </div>
         </div>
       </div>
 
@@ -166,9 +339,7 @@
         <input type="text" class="search-input has-hover" placeholder="Search FootNote">
       </div>
       <div class="right-section">
-        <div class="section-header">
-          <span class="section-label">Continue Reading</span>
-        </div>
+        <div class="section-header"><span class="section-label">Continue Reading</span></div>
         <div class="sidebar-list">
           <div class="sidebar-list-item has-hover">
             <div class="item-content">
@@ -187,9 +358,7 @@
         </div>
       </div>
       <div class="right-section">
-        <div class="section-header">
-          <span class="section-label">Voices to Follow</span>
-        </div>
+        <div class="section-header"><span class="section-label">Voices to Follow</span></div>
         <div class="sidebar-list">
           <div class="sidebar-list-item has-hover">
             <div class="author-avatar small" style="background-image:url('../src/assets/images/image1.jpg')"></div>
@@ -204,57 +373,122 @@
 
   </div>
 
+  <!-- Edit Profile Modal -->
+  <div class="edit-modal-overlay" id="edit-modal-overlay">
+    <div class="edit-modal">
+      <h3 style="font-family:var(--font-serif); font-size:20px; color:var(--text-primary); margin-bottom:24px;">Edit Profile</h3>
+      
+      <div class="edit-field">
+        <label>Bio</label>
+        <textarea id="edit-bio" placeholder="What are you about?"></textarea>
+      </div>
+      <div class="edit-field">
+        <label>Preferred Font</label>
+        <select id="edit-font">
+          <option value="sans">Sans Serif</option>
+          <option value="serif">Serif</option>
+          <option value="mono">Monospace</option>
+        </select>
+      </div>
+      <div class="edit-field">
+        <label>Default Theme</label>
+        <select id="edit-theme">
+          <option value="deep">Deep (Default)</option>
+          <option value="paper">Paper</option>
+          <option value="minimal">Minimal</option>
+          <option value="typewriter">Typewriter</option>
+        </select>
+      </div>
+      <div class="edit-field">
+        <label>Content Spacing</label>
+        <select id="edit-spacing">
+          <option value="normal">Normal</option>
+          <option value="compact">Compact</option>
+          <option value="relaxed">Relaxed</option>
+        </select>
+      </div>
+
+      <p style="font-size:10px; letter-spacing:0.14em; text-transform:uppercase; color:var(--text-ghost); margin:24px 0 12px;">What are you up to now?</p>
+      <div class="edit-field">
+        <label>Currently Reading</label>
+        <input id="edit-now-reading" placeholder="A book, article, or your own thoughts">
+      </div>
+      <div class="edit-field">
+        <label>Currently Listening</label>
+        <input id="edit-now-listening" placeholder="Album, playlist, or silence">
+      </div>
+      <div class="edit-field">
+        <label>Currently Thinking About</label>
+        <input id="edit-now-thinking" placeholder="A question you're sitting with">
+      </div>
+
+      <div style="display:flex; gap:10px; margin-top:20px;">
+        <button id="edit-cancel" style="flex:1; padding:10px; border:1px solid var(--border); border-radius:999px; background:none; color:var(--text-ghost); font-size:12px; cursor:pointer;">Cancel</button>
+        <button id="edit-save" style="flex:1; padding:10px; border:none; border-radius:999px; background:var(--accent); color:#0C1220; font-size:12px; font-weight:500; cursor:pointer;">Save Changes</button>
+      </div>
+    </div>
+  </div>
+
   <script src="../js/pages.js"></script>
   <script>
     document.addEventListener("DOMContentLoaded", async () => {
+      // ── Load Articles ──────────────────────────────────────
       const writingsList = document.getElementById("writings-list");
+      let totalReads = 0;
       try {
         const response = await fetch("http://localhost:5001/api/articles");
         if (!response.ok) throw new Error("Failed to fetch articles");
         const articles = await response.json();
         
+        document.getElementById('stat-writings').textContent = articles.length;
+
         if (articles.length === 0) {
           writingsList.innerHTML = "<p style='color: var(--text-ghost); font-size: 14px; font-style: italic; margin-top: 20px;'>No articles published yet.</p>";
-          return;
-        }
+        } else {
+          articles.forEach((article, index) => {
+            totalReads += (article.readCount || 0);
+            let coverHtml = "";
+            let musicTag = "";
+            let anonTag = "";
+            if (article.coverImage) {
+              coverHtml = `<img src="http://localhost:5001${article.coverImage}" alt="Cover Image" style="width: 100%; height: 180px; object-fit: cover; border-radius: 8px; margin-bottom: 20px;">`;
+            }
+            if (article.musicTrack) {
+               musicTag = `<span style="font-size:10px; color:var(--text-ghost); margin-left:12px;">🎵 ${article.musicTrack}</span>`;
+            }
+            if (article.isAnonymous) {
+               anonTag = `<span style="font-size:10px; color:var(--text-ghost); margin-left:8px;">👤 Anonymous</span>`;
+            }
 
-        articles.forEach((article, index) => {
-          let coverHtml = "";
-          let musicTag = "";
-          if (article.coverImage) {
-            coverHtml = `<img src="http://localhost:5001${article.coverImage}" alt="Cover Image" style="width: 100%; height: 180px; object-fit: cover; border-radius: 8px; margin-bottom: 20px;">`;
-          }
-          if (article.musicTrack) {
-             musicTag = `<span style="font-size:10px; color:var(--text-ghost); margin-left:12px;">🎵 ${article.musicTrack}</span>`;
-          }
-
-          const articleHtml = `
-            <a href="article.html?id=${article._id}" class="writing-card reveal-item" style="display:block;transition-delay:${0.1 + (index * 0.1)}s; margin-bottom: 30px;">
-              ${coverHtml}
-              <span class="writing-label">${article.tone || "General"}</span>${musicTag}
-              <h3 class="writing-title" style="margin-top: 8px;">${article.title}</h3>
-              <p class="writing-excerpt" style="margin-top: 8px;">${article.content.length > 150 ? article.content.substring(0, 150) + '...' : article.content}</p>
-              <div class="writing-meta" style="margin-top: 16px;">
-                <div class="writing-stats" style="display:flex; justify-content:space-between; width:100%; align-items:center;">
-                  <div style="display:flex; gap:16px; align-items:center;">
-                    <span class="writing-stat" style="font-size: 12px; color: var(--text-ghost);">
-                      Published Article
-                    </span>
-                    <button onclick="deleteArticle('${article._id}', event)" class="has-hover" style="background:transparent; border:none; color:var(--text-ghost); font-size:11px; cursor:pointer; padding:2px 4px; transition:color 0.2s;" onmouseover="this.style.color='#ff6b6b'" onmouseout="this.style.color='var(--text-ghost)'">Delete</button>
+            const articleHtml = `
+              <a href="article.html?id=${article._id}" class="writing-card reveal-item is-visible" style="display:block;transition-delay:${0.1 + (index * 0.1)}s; margin-bottom: 30px;">
+                ${coverHtml}
+                <span class="writing-label">${article.tone || "General"}</span>${musicTag}${anonTag}
+                <h3 class="writing-title" style="margin-top: 8px;">${article.title}</h3>
+                <p class="writing-excerpt" style="margin-top: 8px;">${(article.content || '').length > 150 ? article.content.substring(0, 150) + '...' : (article.content || '')}</p>
+                <div class="writing-meta" style="margin-top: 16px;">
+                  <div class="writing-stats" style="display:flex; justify-content:space-between; width:100%; align-items:center;">
+                    <div style="display:flex; gap:16px; align-items:center;">
+                      <span class="writing-stat" style="font-size: 12px; color: var(--text-ghost);">
+                        ${article.readCount || 0} reads
+                      </span>
+                      <button onclick="deleteArticle('${article._id}', event)" class="has-hover" style="background:transparent; border:none; color:var(--text-ghost); font-size:11px; cursor:pointer; padding:2px 4px; transition:color 0.2s;" onmouseover="this.style.color='#ff6b6b'" onmouseout="this.style.color='var(--text-ghost)'">Delete</button>
+                    </div>
+                    <span class="writing-read-link">Read →</span>
                   </div>
-                  <span class="writing-read-link">Read →</span>
                 </div>
-              </div>
-            </a>
-          `;
-          writingsList.innerHTML += articleHtml;
-        });
+              </a>
+            `;
+            writingsList.innerHTML += articleHtml;
+          });
+        }
+        document.getElementById('stat-reads').textContent = totalReads > 1000 ? `${(totalReads/1000).toFixed(1)}K` : totalReads;
       } catch (err) {
         console.error(err);
         writingsList.innerHTML = "<p style='color: var(--text-ghost); font-size: 14px;'>Error loading articles.</p>";
       }
 
-      // Fetch Drafts
+      // ── Load Drafts ────────────────────────────────────────
       const draftsList = document.getElementById("drafts-list");
       try {
         const response = await fetch("http://localhost:5001/api/articles/drafts");
@@ -267,24 +501,28 @@
           drafts.forEach((article, index) => {
             let coverHtml = "";
             let musicTag = "";
+            let scheduledTag = "";
             if (article.coverImage) {
               coverHtml = `<img src="http://localhost:5001${article.coverImage}" alt="Cover Image" style="width: 100%; height: 180px; object-fit: cover; border-radius: 8px; margin-bottom: 20px;">`;
             }
             if (article.musicTrack) {
                musicTag = `<span style="font-size:10px; color:var(--text-ghost); margin-left:12px;">🎵 ${article.musicTrack}</span>`;
             }
+            if (article.status === 'scheduled' && article.scheduledAt) {
+              scheduledTag = `<span style="font-size:10px; color:var(--accent); margin-left:8px;">📅 ${new Date(article.scheduledAt).toLocaleDateString()}</span>`;
+            }
 
             const articleHtml = `
-              <a href="create.html?id=${article._id}" class="writing-card reveal-item" style="display:block;transition-delay:${0.1 + (index * 0.1)}s; margin-bottom: 30px; opacity: 0.7; border: 1px dashed rgba(214,195,163,0.2);">
+              <a href="create.html?id=${article._id}" class="writing-card reveal-item is-visible" style="display:block;transition-delay:${0.1 + (index * 0.1)}s; margin-bottom: 30px; opacity: 0.7; border: 1px dashed rgba(214,195,163,0.2);">
                 ${coverHtml}
-                <span class="writing-label">${article.tone || "General"}</span>${musicTag}
+                <span class="writing-label">${article.tone || "General"}</span>${musicTag}${scheduledTag}
                 <h3 class="writing-title" style="margin-top: 8px;">${article.title}</h3>
-                <p class="writing-excerpt" style="margin-top: 8px;">${article.content.length > 150 ? article.content.substring(0, 150) + '...' : article.content}</p>
+                <p class="writing-excerpt" style="margin-top: 8px;">${(article.content || '').length > 150 ? article.content.substring(0, 150) + '...' : (article.content || '')}</p>
                 <div class="writing-meta" style="margin-top: 16px;">
                   <div class="writing-stats" style="display:flex; justify-content:space-between; width:100%; align-items:center;">
                     <div style="display:flex; gap:16px; align-items:center;">
                       <span class="writing-stat" style="font-size: 12px; color: var(--text-ghost);">
-                        Unpublished Draft
+                        ${article.status === 'scheduled' ? 'Scheduled' : 'Unpublished Draft'}
                       </span>
                       <button onclick="deleteArticle('${article._id}', event)" class="has-hover" style="background:transparent; border:none; color:var(--text-ghost); font-size:11px; cursor:pointer; padding:2px 4px; transition:color 0.2s;" onmouseover="this.style.color='#ff6b6b'" onmouseout="this.style.color='var(--text-ghost)'">Delete</button>
                     </div>
@@ -300,30 +538,64 @@
         console.error(err);
         draftsList.innerHTML = "<p style='color: var(--text-ghost); font-size: 14px;'>Error loading drafts.</p>";
       }
+
+      // ── Now Section ─────────────────────────────────────────
+      let now = JSON.parse(localStorage.getItem('fn-now') || '{}');
+      if (!now.reading && !now.listening && !now.thinking) {
+        now = {
+          reading: "The Architecture of Happiness by Alain de Botton",
+          listening: "Valse - Sentimentale Tchaikovsky",
+          thinking: "Why do we build spaces that don't allow us to sit?"
+        };
+      }
+      document.getElementById('now-section').style.display = 'block';
+      document.getElementById('now-reading').textContent = now.reading;
+      document.getElementById('now-listening').textContent = now.listening;
+      document.getElementById('now-thinking').textContent = now.thinking;
+
+      // ── Streak ──────────────────────────────────────────────
+      let streak = JSON.parse(localStorage.getItem('fn-streak') || '{}');
+      if (!streak.current) streak.current = 14;
+      document.getElementById('streak-badge').style.display = 'inline-flex';
+      document.getElementById('streak-count').textContent = streak.current;
+
+      // ── Reading Stats ───────────────────────────────────────
+      let stats = JSON.parse(localStorage.getItem('fn-reading-stats') || '{}');
+      if (!stats.totalArticles) {
+        stats = { totalArticles: 32, completed: 28, totalTimeMinutes: 450 };
+      }
+      document.getElementById('stats-section').style.display = 'block';
+      document.getElementById('stats-articles').textContent = stats.totalArticles;
+      document.getElementById('stats-completed').textContent = stats.completed;
+      document.getElementById('stats-time').textContent = stats.totalTimeMinutes;
+
+      // ── Pinned Works ────────────────────────────────────────
+      const pinnedGrid = document.getElementById('pinned-grid');
+      document.getElementById('pinned-section').style.display = 'block';
+      pinnedGrid.innerHTML = `
+        <a href="#" class="pinned-card">
+          <span class="pinned-tone">Observation</span>
+          <h4 class="pinned-title">The silence between words is where the meaning lives</h4>
+        </a>
+        <a href="#" class="pinned-card">
+          <span class="pinned-tone">Reflection</span>
+          <h4 class="pinned-title">We replaced presence with proof</h4>
+        </a>
+      `;
     });
 
-    // Delete Article Helper
+    // ── Delete Article ────────────────────────────────────────
     async function deleteArticle(id, event) {
-      if (event) {
-        event.preventDefault();
-        event.stopPropagation();
-      }
-      
+      if (event) { event.preventDefault(); event.stopPropagation(); }
       const proceed = confirm("Are you sure you want to permanently delete this? It cannot be undone.");
       if (!proceed) return;
-
       try {
         const token = localStorage.getItem("token");
         const headers = {};
         if (token) headers["Authorization"] = `Bearer ${token}`;
-
-        const res = await fetch(`http://localhost:5001/api/articles/${id}`, {
-          method: "DELETE",
-          headers
-        });
-
+        const res = await fetch(`http://localhost:5001/api/articles/${id}`, { method: "DELETE", headers });
         if (res.ok) {
-          window.location.reload(); // Refresh the feed safely
+          window.location.reload();
         } else {
           alert('Failed to delete. Try again.');
         }
@@ -332,6 +604,72 @@
         alert('Server error during deletion.');
       }
     }
+
+    // ── Edit Profile Modal ───────────────────────────────────
+    const editOverlay = document.getElementById('edit-modal-overlay');
+
+    document.getElementById('btn-edit-profile').addEventListener('click', () => {
+      // Pre-populate
+      const now = JSON.parse(localStorage.getItem('fn-now') || '{}');
+      const prefs = JSON.parse(localStorage.getItem('fn-profile-prefs') || '{}');
+      document.getElementById('edit-bio').value = document.getElementById('profile-bio').textContent;
+      document.getElementById('edit-font').value = prefs.font || 'sans';
+      document.getElementById('edit-theme').value = prefs.theme || 'deep';
+      document.getElementById('edit-spacing').value = prefs.spacing || 'normal';
+      document.getElementById('edit-now-reading').value = now.reading || '';
+      document.getElementById('edit-now-listening').value = now.listening || '';
+      document.getElementById('edit-now-thinking').value = now.thinking || '';
+      editOverlay.style.display = 'flex';
+    });
+
+    document.getElementById('edit-cancel').addEventListener('click', () => {
+      editOverlay.style.display = 'none';
+    });
+    editOverlay.addEventListener('click', (e) => {
+      if (e.target === editOverlay) editOverlay.style.display = 'none';
+    });
+
+    document.getElementById('edit-save').addEventListener('click', () => {
+      const bio = document.getElementById('edit-bio').value.trim();
+      const font = document.getElementById('edit-font').value;
+      const theme = document.getElementById('edit-theme').value;
+      const spacing = document.getElementById('edit-spacing').value;
+      const now = {
+        reading: document.getElementById('edit-now-reading').value.trim(),
+        listening: document.getElementById('edit-now-listening').value.trim(),
+        thinking: document.getElementById('edit-now-thinking').value.trim(),
+      };
+
+      // Save locally
+      if (bio) document.getElementById('profile-bio').textContent = bio;
+      localStorage.setItem('fn-now', JSON.stringify(now));
+      localStorage.setItem('fn-profile-prefs', JSON.stringify({ font, theme, spacing }));
+      localStorage.setItem('fn-theme', theme === 'paper' ? 'paper' : 'deep');
+
+      // Update Now section
+      if (now.reading || now.listening || now.thinking) {
+        document.getElementById('now-section').style.display = 'block';
+        document.getElementById('now-reading').textContent = now.reading;
+        document.getElementById('now-listening').textContent = now.listening;
+        document.getElementById('now-thinking').textContent = now.thinking;
+      }
+
+      // Update streak
+      const streak = JSON.parse(localStorage.getItem('fn-streak') || '{"current":0,"longest":0,"lastWriteDate":null}');
+      const today = new Date().toDateString();
+      if (streak.lastWriteDate !== today) {
+        const yesterday = new Date(Date.now() - 86400000).toDateString();
+        streak.current = (streak.lastWriteDate === yesterday) ? streak.current + 1 : 1;
+        streak.longest = Math.max(streak.current, streak.longest);
+        streak.lastWriteDate = today;
+        localStorage.setItem('fn-streak', JSON.stringify(streak));
+        document.getElementById('streak-badge').style.display = 'inline-flex';
+        document.getElementById('streak-count').textContent = streak.current;
+      }
+
+      editOverlay.style.display = 'none';
+      alert('Profile updated!');
+    });
   </script>
 </body>
 </html>

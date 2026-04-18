@@ -19,42 +19,45 @@
 
 .page-header {
   position: sticky; top: 0; z-index: 10;
-  background: rgba(12,18,32,0.92);
-  backdrop-filter: blur(24px);
-  -webkit-backdrop-filter: blur(24px);
-  padding: 24px 48px;
-  border-bottom: 1px solid var(--border);
+  background: var(--bg);
+  padding: 80px 80px 40px;
+  border-bottom: 2px solid var(--border);
   display: flex;
-  align-items: center;
-  justify-content: space-between;
-  transition: background var(--t-slow) ease;
+  flex-direction: column;
+  align-items: flex-start;
+  text-align: left;
+  gap: 12px;
+  transition: none;
 }
-body.paper-mode .page-header { background: rgba(245,241,234,0.95); }
+body.deep-mode .page-header { background: var(--bg); }
 
 .page-title {
-  font-family: var(--font-serif);
-  font-size: 20px;
-  font-weight: 400;
+  font-family: var(--font-header);
+  font-size: clamp(48px, 12vw, 120px);
+  line-height: 0.9;
+  font-weight: 900;
   color: var(--text-primary);
-  letter-spacing: 0.01em;
+  letter-spacing: -0.06em;
+  text-transform: uppercase;
 }
 
 .page-container {
-  max-width: 700px;
+  max-width: 640px;
   margin: 0 auto;
-  padding: 52px 32px 100px;
+  padding: 80px 32px 160px;
 }
 
 /* ── SECTION HEADERS ─────────────────────────────────────────── */
 .section-title {
-  font-size: 10.5px;
+  font-size: 10px;
   font-weight: 500;
-  letter-spacing: 0.18em;
+  letter-spacing: 0.25em;
   text-transform: uppercase;
   color: var(--text-ghost);
-  margin-bottom: 24px;
-  padding-bottom: 12px;
+  margin-bottom: 48px;
+  padding-bottom: 16px;
   border-bottom: 1px solid var(--border);
+  text-align: center;
 }
 
 /* ── WRITER CARD (profile rows) ──────────────────────────────── */
@@ -109,42 +112,44 @@ body.paper-mode .btn-subscribe:hover { color: #fff; }
 
 /* ── WRITING CARD (compact, list view) ───────────────────────── */
 .writing-card {
-  padding: 28px 32px;
-  background: var(--bg-card);
-  border-radius: 12px;
-  border: 1px solid var(--border);
-  margin-bottom: 16px;
-  transition: transform var(--t-slow) var(--ease),
-              box-shadow var(--t-slow) var(--ease),
-              border-color var(--t-slow) ease;
+  padding: 40px 0;
+  background: transparent;
+  border-radius: 0;
+  border: none;
+  border-bottom: 1px solid var(--border-dim);
+  margin-bottom: 0;
+  transition: opacity var(--t-fast);
 }
 .writing-card:hover {
-  transform: translateY(-3px);
-  box-shadow: 0 16px 48px rgba(0,0,0,0.3);
-  border-color: rgba(214,195,163,0.1);
+  opacity: 0.7;
+  transform: none;
+  box-shadow: none;
 }
 .writing-label {
   font-size: 10px;
-  font-weight: 500;
-  letter-spacing: 0.16em;
+  font-weight: 700;
+  letter-spacing: 0.2em;
   text-transform: uppercase;
-  color: var(--accent);
-  margin-bottom: 10px;
+  color: var(--text-ghost);
+  margin-bottom: 12px;
   display: block;
 }
 .writing-title {
-  font-family: var(--font-serif);
-  font-size: 22px;
-  font-weight: 500;
-  line-height: 1.35;
+  font-family: var(--font-header);
+  font-size: 40px;
+  font-weight: 800;
+  line-height: 1.1;
   color: var(--text-primary);
-  margin-bottom: 10px;
+  margin-bottom: 12px;
+  letter-spacing: -0.04em;
+  text-transform: uppercase;
 }
 .writing-excerpt {
-  font-size: 14.5px;
-  line-height: 1.7;
+  font-size: 14px;
+  line-height: 1.6;
   color: var(--text-secondary);
-  margin-bottom: 18px;
+  max-width: 480px;
+  margin-bottom: 24px;
 }
 .writing-meta {
   display: flex;

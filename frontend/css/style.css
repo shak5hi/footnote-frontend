@@ -1,14 +1,15 @@
 :root {
-      --bg-primary: #FAFAF7;
-      --bg-secondary: #F0EDE6;
-      --navy: #0D1B2A;
-      --navy-deep: #0A1520;
-      --ink: #1A1A18;
-      --mist: #5C5C52;
-      --cream: #E8E4DC;
-      --gold: #C8B89A;
-      --overlay-dark: rgba(13, 27, 42, 0.38);
-    }
+  --bg-primary: #FFFFFF;
+  --bg-secondary: #FBFBFB;
+  --bg-dark: #000000;
+  --ink: #000000;
+  --mist: #666666;
+  --cream: #FFFFFF;
+  --accent: #000000;
+  --border: #000000;
+  --border-dim: rgba(0,0,0,0.1);
+  --gold: #000000; /* No gold in sharp minimalism */
+}
 
     *,
     *::before,
@@ -41,16 +42,15 @@
     }
 
     body {
-      background-color: var(--bg-primary);
-      color: var(--ink);
-      font-family: 'DM Sans', sans-serif;
-      font-weight: 300;
-      font-size: 14px;
-      line-height: 1.85;
-      -webkit-font-smoothing: antialiased;
-      -moz-osx-font-smoothing: grayscale;
-      overflow-x: hidden;
-    }
+  background-color: var(--bg-primary);
+  color: var(--ink);
+  font-family: 'Inter', sans-serif;
+  font-weight: 400;
+  font-size: 14px;
+  line-height: 1.8;
+  -webkit-font-smoothing: antialiased;
+  overflow-x: hidden;
+}
 
     a {
       text-decoration: none;
@@ -74,15 +74,17 @@
     }
 
     .font-serif {
-      font-family: 'Cormorant Garamond', serif;
-      font-weight: 400;
-      line-height: 1.1;
-    }
+  font-family: 'Inter', sans-serif;
+  font-weight: 800;
+  letter-spacing: -0.04em;
+  text-transform: uppercase;
+  line-height: 1.1;
+}
 
-    .font-sans {
-      font-family: 'DM Sans', sans-serif;
-      font-weight: 300;
-    }
+.font-sans {
+  font-family: 'Inter', sans-serif;
+  font-weight: 400;
+}
 
     .italic {
       font-style: italic;
@@ -323,22 +325,22 @@
     }
 
     .nav-btn {
-      font-family: 'DM Sans', sans-serif;
-      font-weight: 400;
-      text-transform: uppercase;
-      font-size: 10px;
-      letter-spacing: 0.1em;
-      padding: 8px 20px;
-      border: 1px solid var(--ink);
-      background: transparent;
-      color: var(--ink);
-      transition: all 0.3s ease;
-    }
+  font-family: 'Inter', sans-serif;
+  font-weight: 600;
+  text-transform: uppercase;
+  font-size: 10px;
+  letter-spacing: 0.2em;
+  padding: 10px 24px;
+  border: 1px solid var(--ink);
+  background: transparent;
+  color: var(--ink);
+  transition: all 0.3s ease;
+}
 
-    .nav-btn:hover {
-      background: var(--ink);
-      color: var(--bg-primary);
-    }
+.nav-btn:hover {
+  background: var(--ink);
+  color: #FFFFFF;
+}
 
     /* Curtain CSS */
     #fn-curtain {
@@ -403,40 +405,40 @@
     }
 
     .curtain-rule-top {
-      width: 48px;
-      height: 1px;
-      background: var(--gold);
-      position: absolute;
-      top: 80px;
-      left: 50%;
-      transform: translateX(-50%);
-    }
+  width: 60px;
+  height: 2px;
+  background: var(--ink);
+  position: absolute;
+  top: 80px;
+  left: 50%;
+  transform: translateX(-50%);
+}
 
-    .curtain-wordmark {
-      font-family: 'Cormorant Garamond', serif;
-      font-weight: 400;
-      font-size: 28px;
-      letter-spacing: 0.06em;
-      color: var(--ink);
-      position: absolute;
-      top: 105px;
-      left: 50%;
-      transform: translateX(-50%);
-    }
+.curtain-wordmark {
+  font-family: 'Inter', sans-serif;
+  font-weight: 900;
+  font-size: 32px;
+  letter-spacing: -0.05em;
+  color: var(--ink);
+  position: absolute;
+  top: 105px;
+  left: 50%;
+  transform: translateX(-50%);
+}
 
-    .curtain-vol {
-      font-family: 'DM Sans', sans-serif;
-      text-transform: uppercase;
-      font-weight: 400;
-      font-size: 9px;
-      letter-spacing: 0.2em;
-      color: var(--mist);
-      position: absolute;
-      top: 153px;
-      left: 50%;
-      transform: translateX(-50%);
-      width: 100%;
-    }
+.curtain-vol {
+  font-family: 'Inter', sans-serif;
+  text-transform: uppercase;
+  font-weight: 800;
+  font-size: 10px;
+  letter-spacing: 0.25em;
+  color: var(--mist);
+  position: absolute;
+  top: 153px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 100%;
+}
 
     .curtain-headline {
       font-family: 'Cormorant Garamond', serif;
@@ -548,29 +550,29 @@
     }
 
     .nav-logo {
-      font-family: 'Cormorant Garamond', serif;
-      font-weight: 400;
-      font-size: 18px;
-      color: var(--ink);
-      letter-spacing: 0.08em;
-    }
+  font-family: 'Inter', sans-serif;
+  font-weight: 900;
+  font-size: 24px;
+  color: var(--ink);
+  letter-spacing: -0.05em;
+}
 
-    .nav-menu-btn {
-      cursor: pointer;
-      display: flex;
-      flex-direction: column;
-      gap: 5px;
-      background: none;
-      border: none;
-      padding: 8px;
-    }
+.nav-menu-btn {
+  cursor: pointer;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  background: none;
+  border: none;
+  padding: 8px;
+}
 
-    .nav-menu-line {
-      width: 22px;
-      height: 1.5px;
-      background: var(--ink);
-      transition: 0.25s ease;
-    }
+.nav-menu-line {
+  width: 24px;
+  height: 2px;
+  background: var(--ink);
+  transition: 0.25s ease;
+}
 
     .nav-menu-btn:hover .nav-menu-line:first-child {
       transform: translateY(-2px);

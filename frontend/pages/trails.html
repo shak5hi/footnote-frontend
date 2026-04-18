@@ -1,0 +1,410 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>FootNote — Reading Trails</title>
+  <link rel="stylesheet" href="../css/dashboard.css">
+  <link rel="stylesheet" href="../css/pages.css">
+  <style>
+    .trails-header {
+      padding: 48px 40px 28px;
+      border-bottom: 1px solid var(--border);
+    }
+    .trails-header h1 {
+      font-family: var(--font-serif);
+      font-size: 28px;
+      font-weight: 500;
+      color: var(--text-primary);
+      margin-bottom: 8px;
+    }
+    .trails-header p {
+      font-size: 14px;
+      color: var(--text-ghost);
+      line-height: 1.6;
+    }
+    .trails-content {
+      padding: 32px 40px 80px;
+      max-width: 800px;
+    }
+    .trail-card {
+      display: block;
+      padding: 28px;
+      border: 1px solid var(--border);
+      border-radius: 14px;
+      background: rgba(0,0,0,0.06);
+      margin-bottom: 20px;
+      text-decoration: none;
+      transition: all 0.3s var(--ease);
+    }
+    body.paper-mode .trail-card { background: rgba(0,0,0,0.02); }
+    .trail-card:hover {
+      border-color: rgba(214,195,163,0.25);
+      transform: translateY(-2px);
+      box-shadow: 0 8px 32px rgba(0,0,0,0.15);
+    }
+    .trail-title {
+      font-family: var(--font-serif);
+      font-size: 20px;
+      color: var(--text-primary);
+      margin-bottom: 8px;
+    }
+    .trail-desc {
+      font-size: 14px;
+      color: var(--text-secondary);
+      line-height: 1.6;
+      margin-bottom: 16px;
+    }
+    .trail-articles {
+      display: flex;
+      gap: 10px;
+      flex-wrap: wrap;
+    }
+    .trail-article-chip {
+      font-size: 11px;
+      padding: 5px 12px;
+      border: 1px solid var(--border);
+      border-radius: 999px;
+      color: var(--text-ghost);
+      background: rgba(0,0,0,0.05);
+    }
+    .trail-meta {
+      display: flex;
+      align-items: center;
+      gap: 16px;
+      margin-top: 14px;
+      padding-top: 14px;
+      border-top: 1px solid var(--border);
+    }
+    .trail-meta span {
+      font-size: 11px;
+      color: var(--text-ghost);
+    }
+    .trail-actions {
+      display: flex;
+      gap: 8px;
+      margin-left: auto;
+    }
+    .trail-action-btn {
+      font-size: 10px;
+      padding: 4px 12px;
+      border: 1px solid var(--border);
+      border-radius: 999px;
+      background: none;
+      color: var(--text-ghost);
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+    .trail-action-btn:hover { color: var(--text-secondary); border-color: rgba(214,195,163,0.25); }
+    .trail-action-btn.delete:hover { color: #ff6b6b; border-color: rgba(255,107,107,0.3); }
+
+    /* Create Trail Form */
+    .create-trail-form {
+      padding: 28px;
+      border: 1px dashed rgba(214,195,163,0.2);
+      border-radius: 14px;
+      margin-bottom: 32px;
+    }
+    .create-trail-form h3 {
+      font-family: var(--font-serif);
+      font-size: 18px;
+      color: var(--text-primary);
+      margin-bottom: 18px;
+    }
+    .trail-input {
+      width: 100%;
+      padding: 12px 16px;
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      background: var(--bg);
+      color: var(--text-secondary);
+      font-size: 14px;
+      font-family: var(--font-sans);
+      outline: none;
+      margin-bottom: 12px;
+      transition: border-color 0.2s;
+    }
+    .trail-input:focus { border-color: rgba(214,195,163,0.3); }
+    .trail-input::placeholder { color: var(--text-ghost); opacity: 0.6; }
+    textarea.trail-input { resize: vertical; min-height: 60px; }
+
+    .article-picker {
+      margin: 16px 0;
+    }
+    .article-picker-label {
+      font-size: 10px;
+      letter-spacing: 0.14em;
+      text-transform: uppercase;
+      color: var(--text-ghost);
+      margin-bottom: 10px;
+      display: block;
+    }
+    .article-picker-list {
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+      max-height: 200px;
+      overflow-y: auto;
+      padding: 8px;
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      background: rgba(0,0,0,0.04);
+    }
+    .article-picker-item {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      padding: 8px 12px;
+      border-radius: 6px;
+      cursor: pointer;
+      transition: background 0.15s;
+    }
+    .article-picker-item:hover { background: rgba(214,195,163,0.06); }
+    .article-picker-item input[type="checkbox"] {
+      accent-color: var(--accent);
+    }
+    .article-picker-item label {
+      font-size: 13px;
+      color: var(--text-secondary);
+      cursor: pointer;
+      flex: 1;
+    }
+    .article-picker-item .picker-tone {
+      font-size: 10px;
+      color: var(--text-ghost);
+    }
+    .btn-create-trail {
+      padding: 10px 24px;
+      border: none;
+      border-radius: 999px;
+      background: var(--accent);
+      color: #0C1220;
+      font-size: 12px;
+      font-weight: 500;
+      cursor: pointer;
+      transition: opacity 0.2s;
+    }
+    .btn-create-trail:hover { opacity: 0.85; }
+
+    .empty-state {
+      text-align: center;
+      padding: 60px 20px;
+      color: var(--text-ghost);
+    }
+    .empty-state p {
+      font-size: 14px;
+      font-style: italic;
+      margin-bottom: 8px;
+    }
+  </style>
+</head>
+<body>
+  <div class="cursor-dot"></div>
+  <div class="cursor-ring"></div>
+
+  <div class="dashboard-wrapper">
+
+    <!-- Left Sidebar -->
+    <aside class="sidebar-left">
+      <div class="brand-logo">FOOTNOTE</div>
+      <nav class="nav-menu">
+        <a href="dashboard.html" class="nav-item has-hover">
+          <svg class="nav-icon" viewBox="0 0 24 24"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>
+          Home
+        </a>
+        <a href="subscriptions.html" class="nav-item has-hover">
+          <svg class="nav-icon" viewBox="0 0 24 24"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
+          Subscriptions
+        </a>
+        <a href="explore.html" class="nav-item has-hover">
+          <svg class="nav-icon" viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+          Explore
+        </a>
+        <a href="profile.html" class="nav-item has-hover">
+          <svg class="nav-icon" viewBox="0 0 24 24"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+          Profile
+        </a>
+        <a href="trails.html" class="nav-item active has-hover">
+          <svg class="nav-icon" viewBox="0 0 24 24"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/></svg>
+          Trails
+        </a>
+      </nav>
+      <a href="create.html" class="btn-create has-hover">Create Something Worth Keeping</a>
+      <div class="sidebar-bottom">
+        <a href="#" class="nav-item has-hover">
+          <svg class="nav-icon" viewBox="0 0 24 24"><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="18" x2="21" y2="18"/></svg>
+          More
+        </a>
+      </div>
+    </aside>
+
+    <!-- Main -->
+    <main class="page-main">
+      <div class="page-header reveal-item" style="position: relative;">
+        <!-- Corner Markers -->
+        <div style="position: absolute; top:0; left:0; width: 6px; height: 6px; background: var(--text-primary);"></div>
+        <div style="position: absolute; top:0; right:0; width: 6px; height: 6px; background: var(--text-primary);"></div>
+        <div style="position: absolute; bottom:0; left:0; width: 6px; height: 6px; background: var(--text-primary);"></div>
+        <div style="position: absolute; bottom:0; right:0; width: 6px; height: 6px; background: var(--text-primary);"></div>
+
+        <h1 class="page-title" style="font-size: 140px; line-height: 0.85;">Trails</h1>
+        <div style="font-size: 12px; font-weight: 700; color: var(--text-ghost); text-transform: uppercase; letter-spacing: 0.2em; margin-top: 12px; border-left: 2px solid var(--text-primary); padding-left: 12px;">Sequence 002 // Curation</div>
+      </div>
+
+      <div class="trails-content">
+        <!-- Create New Trail -->
+        <div class="create-trail-form reveal-item" id="create-trail-form">
+          <h3>Create a New Trail</h3>
+          <input type="text" class="trail-input" id="trail-title" placeholder="Trail name (e.g. 'Things I learned about loss')">
+          <textarea class="trail-input" id="trail-desc" placeholder="A short description of what this trail explores"></textarea>
+          
+          <div class="article-picker">
+            <span class="article-picker-label">Select articles to include</span>
+            <div class="article-picker-list" id="article-picker-list">
+              <p style="font-size:12px; color:var(--text-ghost); padding:8px;">Loading articles...</p>
+            </div>
+          </div>
+
+          <button class="btn-create-trail" id="btn-create-trail">Create Trail</button>
+        </div>
+
+        <!-- Trail List -->
+        <p class="section-title reveal-item" style="margin-bottom:20px;">Your Trails</p>
+        <div id="trails-list">
+          <div class="empty-state">
+            <p>Loading trails...</p>
+          </div>
+        </div>
+      </div>
+    </main>
+
+    <!-- Right Sidebar -->
+    <aside class="sidebar-right">
+      <div class="theme-toggle-row">
+        <button class="theme-toggle has-hover" id="themeToggle" title="Toggle theme">deep</button>
+      </div>
+      <div class="right-section">
+        <div class="section-header"><span class="section-label">About Trails</span></div>
+        <p style="font-size:13px; color:var(--text-secondary); line-height:1.7; padding:0 4px;">
+          A trail is a curated path through your writings. Think of it as an album — a sequence of articles meant to be read together, in order.
+        </p>
+        <p style="font-size:13px; color:var(--text-ghost); line-height:1.7; padding:14px 4px 0; font-style:italic;">
+          Share a trail link and let readers experience your ideas the way you intended.
+        </p>
+      </div>
+    </aside>
+  </div>
+
+  <script src="../js/pages.js"></script>
+  <script>
+    document.addEventListener("DOMContentLoaded", async () => {
+      // ── Load published articles for the picker ──────────────
+      let allArticles = [];
+      try {
+        const res = await fetch("http://localhost:5001/api/articles");
+        if (res.ok) allArticles = await res.json();
+      } catch(e) { console.error(e); }
+
+      const pickerList = document.getElementById("article-picker-list");
+      if (allArticles.length === 0) {
+        pickerList.innerHTML = '<p style="font-size:12px; color:var(--text-ghost); padding:8px; font-style:italic;">No published articles to add to a trail.</p>';
+      } else {
+        pickerList.innerHTML = '';
+        allArticles.forEach((a) => {
+          const item = document.createElement('div');
+          item.className = 'article-picker-item';
+          item.innerHTML = `
+            <input type="checkbox" id="pick-${a._id}" value="${a._id}">
+            <label for="pick-${a._id}">${a.title}</label>
+            <span class="picker-tone">${a.tone || 'General'}</span>
+          `;
+          pickerList.appendChild(item);
+        });
+      }
+
+      // ── Create Trail ────────────────────────────────────────
+      document.getElementById('btn-create-trail').addEventListener('click', async () => {
+        const title = document.getElementById('trail-title').value.trim();
+        const description = document.getElementById('trail-desc').value.trim();
+        const checked = [...document.querySelectorAll('#article-picker-list input:checked')].map(c => c.value);
+
+        if (!title) { alert('Please give your trail a name.'); return; }
+        if (checked.length === 0) { alert('Select at least one article.'); return; }
+
+        try {
+          const res = await fetch("http://localhost:5001/api/trails", {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ title, description, articles: checked })
+          });
+          if (res.ok) {
+            document.getElementById('trail-title').value = '';
+            document.getElementById('trail-desc').value = '';
+            document.querySelectorAll('#article-picker-list input:checked').forEach(c => c.checked = false);
+            loadTrails();
+          } else {
+            alert('Failed to create trail.');
+          }
+        } catch(e) {
+          console.error(e);
+          alert('Server error.');
+        }
+      });
+
+      // ── Load Trails ─────────────────────────────────────────
+      async function loadTrails() {
+        const container = document.getElementById('trails-list');
+        try {
+          const res = await fetch("http://localhost:5001/api/trails");
+          if (!res.ok) throw new Error("Failed");
+          const trails = await res.json();
+
+          if (trails.length === 0) {
+            container.innerHTML = '<div class="empty-state"><p>No trails yet.</p><p style="font-size:12px;">Create your first reading trail above.</p></div>';
+            return;
+          }
+
+          container.innerHTML = '';
+          trails.forEach(trail => {
+            const card = document.createElement('div');
+            card.className = 'trail-card reveal-item';
+            card.innerHTML = `
+              <h3 class="trail-title">${trail.title}</h3>
+              ${trail.description ? `<p class="trail-desc">${trail.description}</p>` : ''}
+              <div class="trail-articles">
+                ${(trail.articles || []).map(a => `<a href="article.html?id=${a._id || a}" class="trail-article-chip">${a.title || 'Article'}</a>`).join('')}
+              </div>
+              <div class="trail-meta">
+                <span>${(trail.articles || []).length} articles</span>
+                <span>${new Date(trail.createdAt).toLocaleDateString()}</span>
+                <div class="trail-actions">
+                  <button class="trail-action-btn" onclick="copyTrailLink('${trail._id}')">Share</button>
+                  <button class="trail-action-btn delete" onclick="deleteTrail('${trail._id}')">Delete</button>
+                </div>
+              </div>
+            `;
+            container.appendChild(card);
+          });
+        } catch(e) {
+          container.innerHTML = '<div class="empty-state"><p>Could not load trails. Is the server running?</p></div>';
+        }
+      }
+
+      loadTrails();
+    });
+
+    async function deleteTrail(id) {
+      if (!confirm('Delete this trail?')) return;
+      try {
+        await fetch(`http://localhost:5001/api/trails/${id}`, { method: 'DELETE' });
+        window.location.reload();
+      } catch(e) { alert('Error deleting trail.'); }
+    }
+
+    function copyTrailLink(id) {
+      const url = `${window.location.origin}/pages/trails.html?view=${id}`;
+      navigator.clipboard.writeText(url).then(() => alert('Trail link copied!')).catch(() => alert(url));
+    }
+  </script>
+</body>
+</html>

@@ -50,6 +50,15 @@
       color: var(--text-primary);
       line-height: 1.4;
     }
+    
+    /* Sidebar Toggle Classes */
+    .dashboard-wrapper.sidebars-hidden .sidebar-left,
+    .dashboard-wrapper.sidebars-hidden .sidebar-right {
+      display: none !important;
+    }
+    .dashboard-wrapper.sidebars-hidden .page-main {
+      border: none;
+    }
   </style>
 </head>
 <body>
@@ -70,14 +79,7 @@
           <svg class="nav-icon" viewBox="0 0 24 24"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
           Subscriptions
         </a>
-        <a href="#" class="nav-item has-hover">
-          <svg class="nav-icon" viewBox="0 0 24 24"><path d="M21 11.5a8.38 8.38 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.38 8.38 0 0 1-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 0 1-.9-3.8 8.5 8.5 0 0 1 4.7-7.6 8.38 8.38 0 0 1 3.8-.9h.5a8.48 8.48 0 0 1 8 8v.5z"/></svg>
-          Chat
-        </a>
-        <a href="#" class="nav-item has-hover">
-          <svg class="nav-icon" viewBox="0 0 24 24"><path d="M22 12h-4l-3 9L9 3l-3 9H2"/></svg>
-          Activity
-        </a>
+
         <a href="explore.html" class="nav-item has-hover">
           <svg class="nav-icon" viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
           Explore
@@ -86,9 +88,17 @@
           <svg class="nav-icon" viewBox="0 0 24 24"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
           Profile
         </a>
+        <a href="trails.html" class="nav-item has-hover">
+          <svg class="nav-icon" viewBox="0 0 24 24"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/></svg>
+          Trails
+        </a>
       </nav>
       <a href="create.html" class="btn-create has-hover">Create Something Worth Keeping</a>
       <div class="sidebar-bottom">
+        <a href="#" class="nav-item has-hover" id="btn-toggle-sidebars">
+          <svg class="nav-icon" viewBox="0 0 24 24"><path d="M18 6L6 18M6 6l12 12"/></svg>
+          Hide Sidebars
+        </a>
         <a href="#" class="nav-item has-hover">
           <svg class="nav-icon" viewBox="0 0 24 24"><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="18" x2="21" y2="18"/></svg>
           More
@@ -98,8 +108,15 @@
 
     <!-- Main -->
     <main class="page-main">
-      <div class="page-header">
-        <h1 class="page-title">Subscriptions</h1>
+      <div class="page-header reveal-item" style="position: relative;">
+        <!-- Corner Markers -->
+        <div style="position: absolute; top:0; left:0; width: 6px; height: 6px; background: var(--text-primary);"></div>
+        <div style="position: absolute; top:0; right:0; width: 6px; height: 6px; background: var(--text-primary);"></div>
+        <div style="position: absolute; bottom:0; left:0; width: 6px; height: 6px; background: var(--text-primary);"></div>
+        <div style="position: absolute; bottom:0; right:0; width: 6px; height: 6px; background: var(--text-primary);"></div>
+
+        <h1 class="page-title" style="font-size: 140px; line-height: 0.85;">Voices</h1>
+        <div style="font-size: 12px; font-weight: 700; color: var(--text-ghost); text-transform: uppercase; letter-spacing: 0.2em; margin-top: 12px; border-left: 2px solid var(--text-primary); padding-left: 12px;">Network 04 // Subscriptions</div>
       </div>
 
       <div class="page-container">
@@ -177,89 +194,130 @@
     document.addEventListener("DOMContentLoaded", async () => {
       const token = localStorage.getItem("token");
       const container = document.getElementById("subscriptions-container");
+      const wrapper = document.querySelector('.dashboard-wrapper');
+
+      // Sidebar Toggle
+      const btnToggleSidebars = document.getElementById('btn-toggle-sidebars');
+      if (btnToggleSidebars && wrapper) {
+        btnToggleSidebars.addEventListener('click', (e) => {
+          e.preventDefault();
+          const isHidden = wrapper.classList.toggle('sidebars-hidden');
+          btnToggleSidebars.innerHTML = isHidden ? 
+            `<svg class="nav-icon" viewBox="0 0 24 24"><path d="M3 3h18v18H3z"/></svg> Show Sidebars` : 
+            `<svg class="nav-icon" viewBox="0 0 24 24"><path d="M18 6L6 18M6 6l12 12"/></svg> Hide Sidebars`;
+        });
+      }
 
       if (!token) {
-        container.innerHTML = "<p style='color: var(--text-ghost); font-size: 13px; font-style: italic; margin-top: 16px;'>Please log in to see your subscriptions.</p>";
+        container.innerHTML = `
+          <div style="text-align:center; padding: 40px 0;">
+            <p style='color: var(--text-ghost); font-size: 13px; font-style: italic; margin-bottom: 20px;'>Please log in to see your subscriptions.</p>
+            <a href="dashboard.html" class="btn-subscribe" style="text-decoration:none; display:inline-block;">Go to Login</a>
+          </div>
+        `;
         return;
       }
 
-      try {
-        const res = await fetch("http://localhost:5001/api/auth/subscriptions", {
-          headers: { "Authorization": `Bearer ${token}` }
-        });
-        
-        if (res.ok) {
-          const data = await res.json();
-          const subs = data.subscriptions || [];
-
-          if (subs.length === 0) {
-            container.innerHTML = "<p style='color: var(--text-ghost); font-size: 13px; font-style: italic; margin-top: 16px;'>You haven't subscribed to anyone yet. Go to Explore to find writers.</p>";
-            return;
-          }
-
-          container.innerHTML = "";
-          subs.forEach((sub, idx) => {
-            const html = `
-              <div class="writer-row" style="opacity:0; animation: fadeUp 0.6s var(--ease) forwards; animation-delay: ${idx * 0.1}s">
-                <div class="writer-avatar" style="background-image:url('${sub.avatar}')"></div>
-                <div class="writer-info">
-                  <p class="writer-name">${sub.name}</p>
-                  <p class="writer-bio">${sub.bio}</p>
-                </div>
-                <button class="btn-subscribe has-hover" style="border-color:rgba(214,195,163,0.15);color:var(--text-ghost)">Subscribed</button>
-              </div>
-            `;
-            container.innerHTML += html;
+      async function loadSubscriptions() {
+        container.innerHTML = "<p style='color: var(--text-ghost); font-size: 13px; font-style: italic; margin-top: 16px;'>Loading subscriptions...</p>";
+        try {
+          const res = await fetch("http://localhost:5001/api/auth/subscriptions", {
+            headers: { "Authorization": `Bearer ${token}` }
           });
-
-          // Phase 2: Native feed matching
-          const feedContainer = document.getElementById("subscriptions-feed-container");
-          const recentSection = document.getElementById("recent-feed-section");
           
-          const mockArticlesDB = {
-            "Nicole Walters": [
-              { title: "rest is not something you earn", tone: "Self" },
-              { title: "you don't need a new routine, just a slower one", tone: "Reflection" },
-              { title: "becoming a place you don't need to escape from", tone: "Personal" }
-            ],
-            "Aarav Sen": [
-              { title: "your pace is allowed to be different", tone: "Personal" },
-              { title: "burnout is not always loud", tone: "Work" }
-            ],
-            "Elina Verne": [
-              { title: "not everything that matters needs to be shared", tone: "Field Note" },
-              { title: "the quiet hours", tone: "Observation" }
-            ]
-          };
+          if (res.ok) {
+            const data = await res.json();
+            const subs = data.subscriptions || [];
 
-          let feedHtml = "";
-          subs.forEach(sub => {
-            const mockArticles = mockArticlesDB[sub.name] || [];
-            mockArticles.forEach((article, idx) => {
-              feedHtml += `
-                <a href="article.html" class="recent-writing" style="display:flex;text-decoration:none; opacity:0; animation: fadeUp 0.6s var(--ease) forwards; animation-delay: ${idx * 0.15}s">
-                  <div class="recent-writing-info">
-                    <p class="recent-author">${sub.name} <span style="text-transform:none; margin-left:8px; opacity:0.5;">· ${article.tone}</span></p>
-                    <h3 class="recent-title">${article.title}</h3>
+            if (subs.length === 0) {
+              container.innerHTML = "<p style='color: var(--text-ghost); font-size: 13px; font-style: italic; margin-top: 16px;'>You haven't subscribed to anyone yet. Go to Explore to find writers.</p>";
+              return;
+            }
+
+            container.innerHTML = "";
+            subs.forEach((sub, idx) => {
+              const html = `
+                <div class="writer-row" style="opacity:0; animation: fadeUp 0.6s var(--ease) forwards; animation-delay: ${idx * 0.1}s">
+                  <div class="writer-avatar" style="background-image:url('${sub.avatar}')"></div>
+                  <div class="writer-info">
+                    <p class="writer-name" style="color:var(--text-primary); font-weight:700;">${sub.name}</p>
+                    <p class="writer-bio" style="color:var(--text-secondary); font-size:12px;">${sub.bio}</p>
                   </div>
-                  <span class="writing-read-link" style="flex-shrink:0">Read →</span>
-                </a>
+                  <button class="btn-subscribe has-hover" style="border-color:var(--border); color:var(--text-primary); font-weight:900;">SUBSCRIBED</button>
+                </div>
               `;
+              container.innerHTML += html;
             });
-          });
 
-          if (feedHtml.length > 0) {
-            feedContainer.innerHTML = feedHtml;
-            recentSection.style.display = "block";
+            // Phase 2: Native feed matching (Mocked for now as per original)
+            const feedContainer = document.getElementById("subscriptions-feed-container");
+            const recentSection = document.getElementById("recent-feed-section");
+            
+            const mockArticlesDB = {
+              "Nicole Walters": [
+                { title: "rest is not something you earn", tone: "Self" },
+                { title: "you don't need a new routine, just a slower one", tone: "Reflection" }
+              ],
+              "Aarav Sen": [
+                { title: "your pace is allowed to be different", tone: "Personal" }
+              ],
+              "Elina Verne": [
+                { title: "not everything that matters needs to be shared", tone: "Field Note" }
+              ],
+              "Maya Chukujama": [
+                { title: "The Weight of Quiet Things", tone: "Selected Series" },
+                { title: "Presence over Proof", tone: "Observation" }
+              ]
+            };
+
+            let feedHtml = "";
+            subs.forEach(sub => {
+              const mockArticles = mockArticlesDB[sub.name] || [];
+              mockArticles.forEach((article, idx) => {
+                feedHtml += `
+                  <a href="article.html" class="recent-writing" style="display:flex;text-decoration:none; opacity:0; animation: fadeUp 0.6s var(--ease) forwards; animation-delay: ${idx * 0.15}s">
+                    <div class="recent-writing-info">
+                      <p class="recent-author">${sub.name} <span style="text-transform:none; margin-left:8px; opacity:0.5;">· ${article.tone}</span></p>
+                      <h3 class="recent-title">${article.title}</h3>
+                    </div>
+                    <span class="writing-read-link" style="flex-shrink:0">Read →</span>
+                  </a>
+                `;
+              });
+            });
+
+            if (feedHtml.length > 0) {
+              feedContainer.innerHTML = feedHtml;
+              recentSection.style.display = "block";
+            }
+
+          } else {
+            console.error("Subscription fetch failed with status:", res.status);
+            if (res.status === 401) {
+              container.innerHTML = "<p style='color: var(--text-ghost); font-size: 13px;'>Session expired. Please log in again.</p>";
+            } else {
+              container.innerHTML = `
+                <div style="padding: 20px 0;">
+                  <p style='color: var(--text-ghost); font-size: 13px; margin-bottom: 12px;'>Error loading subscriptions (Status: ${res.status}).</p>
+                  <button id="btn-retry" class="btn-subscribe" style="font-size:10px; padding:6px 16px;">RETRY</button>
+                </div>
+              `;
+              document.getElementById('btn-retry').onclick = loadSubscriptions;
+            }
           }
-
-        } else {
-          container.innerHTML = "<p style='color: var(--text-ghost); font-size: 13px;'>Error loading subscriptions.</p>";
+        } catch (e) {
+          console.error("Fetch error:", e);
+          container.innerHTML = `
+            <div style="padding: 20px 0;">
+              <p style='color: var(--text-ghost); font-size: 13px; margin-bottom: 12px;'>Failed to reach server.</p>
+              <button id="btn-retry-network" class="btn-subscribe" style="font-size:10px; padding:6px 16px;">RETRY</button>
+            </div>
+          `;
+          document.getElementById('btn-retry-network').onclick = loadSubscriptions;
         }
-      } catch (e) {
-        console.error(e);
-        container.innerHTML = "<p style='color: var(--text-ghost); font-size: 13px;'>Failed to reach server.</p>";
       }
+
+      loadSubscriptions();
     });
   </script>
 </body>
