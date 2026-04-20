@@ -6,11 +6,19 @@ let mongod;
 
 const connectDB = async () => {
     try {
-        mongod = await MongoMemoryServer.create();
-        const uri = mongod.getUri();
-        console.log("Connecting to local In-Memory MongoDB (Bypassing Atlas IP block)...");
+        let uri = process.env.MONGO_URI;
+
+        if (uri && !uri.includes("your_actual_mongo_uri_here")) {
+            console.log("Connecting to persistent MongoDB...");
+        } else {
+            console.log("Connecting to local In-Memory MongoDB (Bypassing Atlas IP block)...");
+            mongod = await MongoMemoryServer.create();
+            uri = mongod.getUri();
+        }
+
         await mongoose.connect(uri);
-        console.log("✅ In-Memory MongoDB Connected!");
+        console.log("✅ MongoDB Connected!");
+
 
         // Seed DB if empty
         const count = await Article.countDocuments();

@@ -4,7 +4,11 @@ const generateToken = require("../utils/generateToken");
 
 exports.signup = async (req, res) => {
     try {
-        const { firstName, lastName, email, password } = req.body;
+        let { firstName, lastName, email, password } = req.body;
+
+        // Normalize email
+        if (email) email = email.toLowerCase().trim();
+
 
         // Check if all fields filled
         if (!firstName || !lastName || !email || !password) {
@@ -53,7 +57,11 @@ exports.signup = async (req, res) => {
 
 exports.login = async (req, res) => {
     try {
-        const { email, password } = req.body;
+        let { email, password } = req.body;
+
+        // Normalize email
+        if (email) email = email.toLowerCase().trim();
+
 
         // Check if email and password provided
         if (!email || !password) {

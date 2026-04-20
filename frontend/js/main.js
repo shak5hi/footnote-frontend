@@ -1,22 +1,25 @@
 // Curtain Logic
-    const curtain = document.getElementById('fn-curtain');
-    const page = document.getElementById('fn-page');
+const curtain = document.getElementById('fn-curtain');
+const page = document.getElementById('fn-page');
 
-    function liftCurtain() {
-      if (curtain.classList.contains('is-lifting')) return;
-      curtain.classList.add('is-lifting');
-      page.classList.add('is-revealed');
+function liftCurtain() {
+  if (!curtain || curtain.classList.contains('is-lifting')) return;
+  curtain.classList.add('is-lifting');
+  if (page) page.classList.add('is-revealed');
 
-      setTimeout(() => {
-        curtain.classList.add('is-gone');
-        document.body.style.overflow = '';
-      }, 1800);
-    }
+  setTimeout(() => {
+    curtain.classList.add('is-gone');
+    document.body.style.overflow = '';
+  }, 1800);
+}
 
-    curtain.addEventListener('click', liftCurtain);
-    const autoLift = setTimeout(liftCurtain, 6000);
-    curtain.addEventListener('click', () => clearTimeout(autoLift), { once: true });
-    document.body.style.overflow = 'hidden';
+if (curtain) {
+  curtain.addEventListener('click', liftCurtain);
+  const autoLift = setTimeout(liftCurtain, 6000);
+  curtain.addEventListener('click', () => clearTimeout(autoLift), { once: true });
+  document.body.style.overflow = 'hidden';
+}
+
 
     document.addEventListener('DOMContentLoaded', () => {
       // Nav fade on scroll
