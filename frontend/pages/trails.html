@@ -368,23 +368,28 @@
           trails.forEach(trail => {
             const card = document.createElement('div');
             card.className = 'trail-card reveal-item';
-            card.innerHTML = `
-              <h3 class="trail-title">${trail.title}</h3>
-              ${trail.description ? `<p class="trail-desc">${trail.description}</p>` : ''}
-              <div class="trail-articles">
-                ${(trail.articles || []).map(a => `<a href="article.html?id=${a._id || a}" class="trail-article-chip">${a.title || 'Article'}</a>`).join('')}
-              </div>
-              <div class="trail-meta">
-                <span>${(trail.articles || []).length} articles</span>
-                <span>${new Date(trail.createdAt).toLocaleDateString()}</span>
-                <div class="trail-actions">
-                  <button class="trail-action-btn" onclick="copyTrailLink('${trail._id}')">Share</button>
-                  <button class="trail-action-btn delete" onclick="deleteTrail('${trail._id}')">Delete</button>
+              card.innerHTML = `
+                <h3 class="trail-title">${trail.title}</h3>
+                ${trail.description ? `<p class="trail-desc">${trail.description}</p>` : ''}
+                <div class="trail-articles">
+                  ${(trail.articles || []).map(a => `<a href="article.html?id=${a._id || a}" class="trail-article-chip">${a.title || 'Article'}</a>`).join('')}
                 </div>
-              </div>
-            `;
-            container.appendChild(card);
-          });
+                <div class="trail-meta">
+                  <span>${(trail.articles || []).length} articles</span>
+                  <span>${new Date(trail.createdAt).toLocaleDateString()}</span>
+                  <div class="trail-actions">
+                    <button class="trail-action-btn" onclick="copyTrailLink('${trail._id}')">Share</button>
+                    <button class="trail-action-btn delete" onclick="deleteTrail('${trail._id}')">Delete</button>
+                  </div>
+                </div>
+              `;
+              container.appendChild(card);
+            });
+
+            // Trigger reveal animation for dynamic items
+            setTimeout(() => {
+              container.querySelectorAll('.reveal-item').forEach(el => el.classList.add('is-visible'));
+            }, 100);
         } catch(e) {
           container.innerHTML = '<div class="empty-state"><p>Could not load trails. Is the server running?</p></div>';
         }

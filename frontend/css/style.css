@@ -348,7 +348,7 @@
       top: 0;
       left: 0;
       width: 100%;
-      height: 93vh;
+      height: 100vh;
       background: #FAFAF7;
       z-index: 1000;
       display: flex;
@@ -356,11 +356,13 @@
       justify-content: center;
       cursor: pointer;
       box-shadow: 0 12px 60px rgba(13, 27, 42, 0.18), 0 4px 20px rgba(13, 27, 42, 0.1);
-      transition: transform 1.4s cubic-bezier(0.76, 0, 0.24, 1),
-        opacity 0.4s ease 1.1s;
+      transition: transform 1.6s cubic-bezier(0.85, 0, 0.15, 1),
+                  opacity 0.6s ease 1.1s;
       transform: translateY(0);
+      will-change: transform, opacity;
       animation: curtain-enter 0.9s cubic-bezier(0.25, 0.46, 0.45, 0.94) forwards;
     }
+
 
     #fn-curtain.is-lifting {
       transform: translateY(-100%);
@@ -524,8 +526,9 @@
 
     #fn-page {
       transform: translateY(16px);
-      transition: transform 1.4s cubic-bezier(0.76, 0, 0.24, 1);
+      transition: transform 1.6s cubic-bezier(0.85, 0, 0.15, 1);
     }
+
 
     #fn-page.is-revealed {
       transform: translateY(0);

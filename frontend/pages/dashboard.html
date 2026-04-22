@@ -7,6 +7,19 @@
   <link rel="stylesheet" href="../css/dashboard.css">
 </head>
 <body>
+  <script>
+    // Immediate script to prevent sidebar flicker
+    (function() {
+      // Default to collapsed if no preference set yet
+      if (localStorage.getItem('sidebar-collapsed') === null) {
+        localStorage.setItem('sidebar-collapsed', 'true');
+      }
+      const isCollapsed = localStorage.getItem('sidebar-collapsed') === 'true';
+      if (isCollapsed) {
+        document.documentElement.classList.add('sidebar-initial-collapsed');
+      }
+    })();
+  </script>
 
   <div class="cursor-dot"></div>
   <div class="cursor-ring"></div>
@@ -15,12 +28,17 @@
 
     <!-- 1. Left Sidebar -->
     <aside class="sidebar-left" style="position: relative; border-right: 1px solid var(--border-dim);">
+      <button class="sidebar-toggle has-hover" id="sidebar-toggle-btn" title="Toggle Sidebar">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 18 9 12 15 6"></polyline></svg>
+      </button>
+
       <!-- Corner Markers for sidebar -->
       <div style="position: absolute; top:0; left:0; width: 6px; height: 6px; background: var(--text-primary);"></div>
       <div style="position: absolute; bottom:0; left:0; width: 6px; height: 6px; background: var(--text-primary);"></div>
       
       <div class="brand-logo" style="border:none; padding: 24px 0; margin-bottom: 80px;">
         <span style="font-size: 24px; font-weight: 900; letter-spacing: -0.05em; color: var(--text-primary);">FOOTNOTE</span>
+        <div class="brand-logo-line"></div>
       </div>
 
       <nav class="nav-menu">
@@ -54,10 +72,6 @@
           <svg class="nav-icon" viewBox="0 0 24 24"><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="18" x2="21" y2="18"/></svg>
           More
         </a>
-        <button id="btn-focus-toggle" class="nav-item has-hover" style="width:100%; text-align:left; background:none; cursor:pointer; margin-top:24px;">
-          <svg class="nav-icon" viewBox="0 0 24 24"><path d="M4 14h6v6H4v-6zm10 0h6v6h-6v-6zM4 4h6v6H4V4zm10 0h6v6h-6V4z"/></svg>
-          Focus
-        </button>
       </div>
     </aside>
 
@@ -311,11 +325,30 @@
       }, 80);
     });
 
-    // Focus Mode Toggle
+    // Sidebar Toggle
+    const sidebarToggleBtn = document.getElementById('sidebar-toggle-btn');
+    const wrapper = document.querySelector('.dashboard-wrapper');
+    if (sidebarToggleBtn && wrapper) {
+      sidebarToggleBtn.addEventListener('click', () => {
+        // Remove initial class to enable transitions
+        document.documentElement.classList.remove('sidebar-initial-collapsed');
+        
+        const isCollapsed = wrapper.classList.toggle('sidebars-collapsed');
+        localStorage.setItem('sidebar-collapsed', isCollapsed);
+      });
+    }
+
+    // Apply persisted state to the dashboard-wrapper
+    // (localStorage is initialized to 'true' in the IIFE if empty)
+    if (localStorage.getItem('sidebar-collapsed') === 'true') {
+      wrapper.classList.add('sidebars-collapsed');
+    }
+
+    // Focus Mode Toggle (legacy button, keep for now but point to same class if needed)
     const focusToggle = document.getElementById('btn-focus-toggle');
     if (focusToggle) {
       focusToggle.addEventListener('click', () => {
-        document.querySelector('.dashboard-wrapper').classList.toggle('sidebars-collapsed');
+        wrapper.classList.toggle('sidebars-collapsed');
       });
     }
 

@@ -21,7 +21,7 @@
 
     .article-header-bar {
       position: sticky; top: 0; z-index: 10;
-      background: rgba(12,18,32,0.92);
+      background: var(--bg);
       backdrop-filter: blur(24px);
       -webkit-backdrop-filter: blur(24px);
       padding: 20px 48px;
@@ -31,7 +31,7 @@
       justify-content: space-between;
       transition: background var(--t-slow) ease;
     }
-    body.paper-mode .article-header-bar { background: rgba(245,241,234,0.95); }
+    body.paper-mode .article-header-bar { background: var(--bg); }
     .article-back {
       display: flex;
       align-items: center;
@@ -546,6 +546,13 @@
   </style>
 </head>
 <body>
+  <script>
+    // Immediate script to prevent sidebar flicker
+    // For articles, we want it CLOSED by default every time as requested.
+    (function() {
+      document.documentElement.classList.add('sidebar-initial-collapsed');
+    })();
+  </script>
   <div class="cursor-dot"></div>
   <div class="cursor-ring"></div>
 
@@ -553,8 +560,15 @@
     <button class="btn-exit-focus has-hover" id="zen-exit">Exit Focus Mode</button>
 
     <!-- Left Sidebar -->
-    <aside class="sidebar-left">
-      <div class="brand-logo">FOOTNOTE</div>
+    <aside class="sidebar-left" style="position: relative;">
+      <button class="sidebar-toggle has-hover" id="sidebar-toggle-btn" title="Toggle Sidebar">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 18 9 12 15 6"></polyline></svg>
+      </button>
+      
+      <div class="brand-logo">
+        FOOTNOTE
+        <div class="brand-logo-line"></div>
+      </div>
       <nav class="nav-menu">
         <a href="dashboard.html" class="nav-item has-hover">
           <svg class="nav-icon" viewBox="0 0 24 24"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>
@@ -580,10 +594,6 @@
       </nav>
       <a href="create.html" class="btn-create has-hover">Create Something Worth Keeping</a>
       <div class="sidebar-bottom">
-        <a href="#" class="nav-item has-hover" id="btn-toggle-sidebars">
-          <svg class="nav-icon" viewBox="0 0 24 24"><path d="M18 6L6 18M6 6l12 12"/></svg>
-          Hide Sidebars
-        </a>
         <a href="#" class="nav-item has-hover">
           <svg class="nav-icon" viewBox="0 0 24 24"><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="18" x2="21" y2="18"/></svg>
           More
@@ -599,7 +609,7 @@
           Home
         </a>
         <div style="display:flex;gap:12px;align-items:center">
-          <button class="nav-item has-hover" id="btn-focus-mode" style="font-size:10px; border:2px solid var(--border); background:none; padding:8px 20px; font-weight:900;">FOCUS</button>
+          <button class="nav-item has-hover" id="btn-focus-mode" style="font-size:10px; border:2px solid var(--border); background:none; padding:8px 36px; font-weight:900; letter-spacing: 0.15em;">FOCUS</button>
           <button class="btn-subscribe has-hover">Subscribe to Maya</button>
         </div>
       </div>
@@ -1210,16 +1220,21 @@
     }
 
     // ── Sidebar Toggles ──────────────────────────────────────
-    const btnToggleSidebars = document.getElementById('btn-toggle-sidebars');
-    if (btnToggleSidebars && wrapper) {
-      btnToggleSidebars.addEventListener('click', (e) => {
-        e.preventDefault();
-        const isHidden = wrapper.classList.toggle('sidebars-hidden');
-        btnToggleSidebars.innerHTML = isHidden ? 
-          `<svg class="nav-icon" viewBox="0 0 24 24"><path d="M3 3h18v18H3z"/></svg> Show Sidebars` : 
-          `<svg class="nav-icon" viewBox="0 0 24 24"><path d="M18 6L6 18M6 6l12 12"/></svg> Hide Sidebars`;
+    const sidebarToggleBtn = document.getElementById('sidebar-toggle-btn');
+    if (sidebarToggleBtn && wrapper) {
+      sidebarToggleBtn.addEventListener('click', () => {
+        // Remove initial class to enable transitions
+        document.documentElement.classList.remove('sidebar-initial-collapsed');
+        
+        const isCollapsed = wrapper.classList.toggle('sidebars-collapsed');
+        localStorage.setItem('sidebar-collapsed', isCollapsed);
       });
     }
+
+    // Apply default collapsed state to the dashboard-wrapper for articles
+    wrapper.classList.add('sidebars-collapsed');
+    // We don't overwrite localStorage here so their global preference for dashboard is kept,
+    // but the article view always starts clean.
 
     // ── Subscriptions ────────────────────────────────────────
     const btnSub = document.querySelector('.btn-subscribe');

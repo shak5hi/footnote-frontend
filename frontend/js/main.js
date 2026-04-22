@@ -10,7 +10,8 @@ function liftCurtain() {
   setTimeout(() => {
     curtain.classList.add('is-gone');
     document.body.style.overflow = '';
-  }, 1800);
+  }, 2000);
+
 }
 
 if (curtain) {
