@@ -288,7 +288,11 @@
       font-weight: 700;
       text-transform: uppercase;
       letter-spacing: 0.1em;
-      padding: 8px 20px;
+      padding: 0 20px;
+      height: 36px;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
       border-radius: 0;
       cursor: pointer;
       transition: all 0.2s;
@@ -560,7 +564,7 @@
     <button class="btn-exit-focus has-hover" id="zen-exit">Exit Focus Mode</button>
 
     <!-- Left Sidebar -->
-    <aside class="sidebar-left" style="position: relative;">
+    <aside class="sidebar-left" style="position: relative; z-index: 1010;">
       <button class="sidebar-toggle has-hover" id="sidebar-toggle-btn" title="Toggle Sidebar">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 18 9 12 15 6"></polyline></svg>
       </button>
@@ -609,7 +613,7 @@
           Home
         </a>
         <div style="display:flex;gap:12px;align-items:center">
-          <button class="nav-item has-hover" id="btn-focus-mode" style="font-size:10px; border:2px solid var(--border); background:none; padding:8px 36px; font-weight:900; letter-spacing: 0.15em;">FOCUS</button>
+          <button class="nav-item has-hover" id="btn-focus-mode" style="font-size:10px; border:2px solid var(--border); background:none; padding:0 36px; height:36px; display:inline-flex; align-items:center; justify-content:center; font-weight:900; letter-spacing: 0.15em;">FOCUS</button>
           <button class="btn-subscribe has-hover">Subscribe to Maya</button>
         </div>
       </div>
@@ -631,7 +635,7 @@
           <span id="author-name" style="font-size: 14px; font-weight: 800; color: var(--text-primary); text-transform: uppercase;">Maya Chukujama</span>
           <span id="article-date" style="font-size: 11px; font-weight: 600; color: var(--text-ghost); letter-spacing: 0.1em; text-transform: uppercase;">March 2026</span>
         </div>
-        <button class="nav-item active" id="btn-toggle-narrative" style="margin-top: 48px; border: 2px solid var(--text-primary); background: none; font-size: 10px; display: none;">PARALLEL LAYER</button>
+        <button class="nav-item active" id="btn-toggle-narrative" style="margin-top: 48px; border: 2px solid var(--text-primary); background: none; font-size: 10px; display: none; padding: 10px 20px; white-space: nowrap; width: max-content;">PARALLEL LAYER</button>
       </div>
 
       <div class="article-body reveal-item">

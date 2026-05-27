@@ -255,4 +255,52 @@ if (curtain) {
           }
         }, { passive: true });
       }
+      // Theme Toggle Logic
+      const themeToggles = document.querySelectorAll('.theme-toggle');
+      const savedTheme = localStorage.getItem('fn-theme');
+      
+      if (savedTheme === 'deep') {
+        document.body.classList.add('theme-deep');
+      }
+
+      themeToggles.forEach(toggle => {
+        toggle.addEventListener('click', () => {
+          document.body.classList.toggle('theme-deep');
+          const isDeep = document.body.classList.contains('theme-deep');
+          localStorage.setItem('fn-theme', isDeep ? 'deep' : 'light');
+        });
+      });
+
+      // Subtle 3D Hover Tracking for Magazine Cards
+      const cards3D = document.querySelectorAll('.magazine-card, .essay-card');
+      cards3D.forEach(card => {
+        card.addEventListener('mousemove', (e) => {
+          const rect = card.getBoundingClientRect();
+          const x = e.clientX - rect.left - rect.width / 2;
+          const y = e.clientY - rect.top - rect.height / 2;
+          // Apply minimal rotation based on mouse pos
+          card.style.transform = `perspective(1200px) rotateY(${x * 0.05}deg) rotateX(${-y * 0.05}deg)`;
+        });
+
+        card.addEventListener('mouseleave', () => {
+          card.style.transform = 'perspective(1200px) rotateY(0deg) rotateX(0deg)';
+        });
+        
+        card.style.transition = 'transform 0.4s ease-out';
+      });
+
+      // 3D Floating Curtain Effect
+      const curtainInner = document.querySelector('.curtain-inner');
+      if (curtain && curtainInner) {
+        curtain.addEventListener('mousemove', (e) => {
+          if (curtain.classList.contains('is-lifting')) return;
+          const x = (e.clientX / window.innerWidth - 0.5) * 2;
+          const y = (e.clientY / window.innerHeight - 0.5) * 2;
+          curtainInner.style.transform = `perspective(1000px) rotateY(${x * 3}deg) rotateX(${-y * 3}deg)`;
+        });
+        curtain.addEventListener('mouseleave', () => {
+          curtainInner.style.transform = 'perspective(1000px) rotateY(0deg) rotateX(0deg)';
+        });
+      }
+
     });
