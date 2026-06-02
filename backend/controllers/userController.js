@@ -16,7 +16,15 @@ exports.getProfile = async (req, res) => {
 // Update profile aesthetics
 exports.updateProfile = async (req, res) => {
   try {
+    const existingUser = await User.findById(req.params.id);
+    if (!existingUser) return res.status(404).json({ message: "User not found" });
+
     const { bio, font, theme, spacing, now } = req.body;
+
+    if (font && font !== "sans" && !existingUser.isPremium) {
+      return res.status(403).json({ message: "Font customization is a premium feature. Please upgrade your plan." });
+    }
+
     const update = {};
     
     if (bio !== undefined) update['profile.bio'] = bio;

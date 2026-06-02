@@ -201,7 +201,17 @@
         <!-- Cover -->
         <div class="cover-area">
           <input type="file" id="cover-image-input" accept="image/*" style="display:none;">
-          <button id="add-cover-btn" class="has-hover">+ Add Cover Image</button>
+          <div style="display:flex; gap:10px; align-items:center; margin-bottom:12px;">
+            <button id="add-cover-btn" class="has-hover" style="margin-bottom:0;">+ Add Cover Image</button>
+            <button id="btn-suggest-covers" class="has-hover" style="font-size:11px; background:transparent; border:1px solid rgba(214,195,163,0.2); color:var(--text-secondary); border-radius:999px; padding:5px 14px; cursor:pointer; transition:all 0.2s; text-transform:uppercase;">SUGGEST COVERS</button>
+          </div>
+
+          <!-- AI Recommended Covers Previews -->
+          <div id="ai-covers-container" style="display:none; margin-bottom:16px;">
+            <p style="font-size:11px; color:var(--text-ghost); font-style:italic; margin-bottom:8px;">AI Suggested Covers (click to select):</p>
+            <div id="ai-cover-options" style="display:flex; gap:12px; flex-wrap:wrap;"></div>
+          </div>
+
           <img id="cover-preview" />
         </div>
 
@@ -217,6 +227,7 @@
         <!-- Parallel Narrative Toggle -->
         <div id="parallel-controls" style="display:flex; align-items:center; gap:10px; margin-bottom:12px;">
           <button id="btn-toggle-parallel" class="has-hover" style="font-size:11px; padding:5px 14px; border:2px solid var(--border); border-radius:0; background:none; color:var(--text-ghost); cursor:pointer; transition:all 0.2s; font-weight:900;">PARALLEL NARRATIVE</button>
+          <button id="btn-ai-write" class="has-hover" style="font-size:11px; padding:5px 14px; border:2px solid var(--accent); border-radius:0; background:rgba(214,195,163,0.05); color:var(--accent); cursor:pointer; transition:all 0.2s; font-weight:900;">WRITE WITH AI</button>
           <span id="parallel-layer-label" style="display:none; font-size:10px; letter-spacing:0.12em; text-transform:uppercase; color:var(--accent);">Layer A — Primary</span>
         </div>
 
@@ -325,6 +336,41 @@
     </div>
   </div>
 
+  <!-- AI Write Modal -->
+  <div id="ai-write-overlay" style="display:none; position:fixed; inset:0; background:rgba(0,0,0,0.5); z-index:1000; justify-content:center; align-items:center;">
+    <div style="background:var(--bg-card); border:1px solid var(--border); border-radius:16px; padding:36px; width:450px; max-width:90vw;">
+      <h3 style="font-family:var(--font-serif); font-size:22px; color:var(--text-primary); margin-bottom:10px;">Write with AI</h3>
+      <p style="font-size:12px; color:var(--text-ghost); margin-bottom:20px;">Describe what you want your article to be about, and Gemini will compose it for you.</p>
+
+      <!-- Topic Prompt -->
+      <div style="margin-bottom:20px;">
+        <label for="ai-prompt-input" style="display:block; font-size:12px; color:var(--text-secondary); margin-bottom:8px; font-weight:900; letter-spacing:0.05em; text-transform:uppercase;">What is the article about?</label>
+        <textarea id="ai-prompt-input" placeholder="e.g. A slow, introspective observation on the changing of seasons and how modern architecture disconnects us from nature..." style="width:100%; height:120px; background:var(--bg); border:1px solid var(--border); color:var(--text-primary); padding:12px; border-radius:8px; font-size:13px; outline:none; resize:none; line-height:1.5; font-family:inherit;"></textarea>
+      </div>
+
+      <!-- Generate Parallel Narrative toggle -->
+      <div style="display:flex; align-items:center; justify-content:space-between; padding:14px 0; border-top:1px solid var(--border); border-bottom:1px solid var(--border); margin-bottom:20px;">
+        <div>
+          <p style="font-size:13px; color:var(--text-primary); font-weight:500;">Generate Parallel Narrative</p>
+          <p style="font-size:11px; color:var(--text-ghost);">Creates a Layer B (subtext/alternative voice)</p>
+        </div>
+        <label style="position:relative; width:40px; height:22px; cursor:pointer;">
+          <input type="checkbox" id="ai-parallel-toggle" style="opacity:0; width:0; height:0;">
+          <span style="position:absolute; inset:0; background:var(--bg-hover); border-radius:999px; transition:0.3s;" class="toggle-track"></span>
+          <span style="position:absolute; left:3px; top:3px; width:16px; height:16px; background:var(--text-ghost); border-radius:50%; transition:0.3s;" class="toggle-thumb"></span>
+        </label>
+      </div>
+
+      <!-- Loading / Error Message Container -->
+      <div id="ai-write-status" style="display:none; margin-bottom:15px; padding:10px 14px; border-radius:8px; font-size:12px; line-height:1.4;"></div>
+
+      <div style="display:flex; gap:10px;">
+        <button id="ai-write-cancel" style="flex:1; padding:10px; border:1px solid var(--border); border-radius:999px; background:none; color:var(--text-ghost); font-size:12px; cursor:pointer;">Cancel</button>
+        <button id="ai-write-generate" style="flex:1; padding:10px; border:none; border-radius:999px; background:var(--accent); color:#0C1220; font-size:12px; font-weight:500; cursor:pointer;">Generate</button>
+      </div>
+    </div>
+  </div>
+
   <!-- Floating Toolbar -->
   <div class="floating-toolbar" id="floating-toolbar">
     <button class="toolbar-btn has-hover" data-cmd="bold" title="Bold"><strong>B</strong></button>
@@ -352,6 +398,7 @@
     let editDraftId = null;
     let activeTone = "Reflection";
     let selectedMusicTrack = "";
+    let selectedAiCoverUrl = "";
     let footnoteCounter = 0;
     let footnotes = [];
     let autoSaveTimer = null;
@@ -767,7 +814,11 @@
       if (selectedMusicTrack) formData.append("musicTrack", selectedMusicTrack);
 
       const selectedFile = document.getElementById('cover-image-input').files?.[0];
-      if (selectedFile) formData.append("coverImage", selectedFile);
+      if (selectedFile) {
+        formData.append("coverImage", selectedFile);
+      } else if (selectedAiCoverUrl) {
+        formData.append("coverImage", selectedAiCoverUrl);
+      }
 
       try {
         const token = localStorage.getItem("token");
@@ -805,6 +856,22 @@
 
     // ── Load Draft ─────────────────────────────────────────────
     document.addEventListener("DOMContentLoaded", async () => {
+      // ── Check User Premium status ──
+      try {
+        const token = localStorage.getItem("token");
+        if (token) {
+          const res = await fetch("http://localhost:5001/api/auth/me", {
+            headers: { "Authorization": `Bearer ${token}` }
+          });
+          if (res.ok) {
+            const user = await res.json();
+            // All features unlocked (payment/premium walls removed)
+          }
+        }
+      } catch (e) {
+        console.error("Error verifying premium status:", e);
+      }
+
       const params = new URLSearchParams(window.location.search);
       const id = params.get('id');
 
@@ -854,7 +921,10 @@
             // Cover image
             if (article.coverImage) {
               const coverPreview = document.getElementById('cover-preview');
-              coverPreview.src = `http://localhost:5001${article.coverImage}`;
+              coverPreview.src = article.coverImage.startsWith('http') ? article.coverImage : `http://localhost:5001${article.coverImage}`;
+              if (article.coverImage.startsWith('http')) {
+                selectedAiCoverUrl = article.coverImage;
+              }
               coverPreview.style.display = 'block';
               document.getElementById('add-cover-btn').textContent = "Change Cover";
             }
@@ -888,16 +958,15 @@
       });
     });
 
-    // ── Tone Tags ──────────────────────────────────────────────
     document.querySelectorAll('.tone-tag').forEach(tag => {
       tag.addEventListener('click', () => {
         document.querySelectorAll('.tone-tag').forEach(t => t.classList.remove('active'));
         tag.classList.add('active');
-        activeTone = tag.textContent;
+        activeTone = tag.textContent.trim();
         isDirty = true;
-        const mc = document.getElementById('music-suggestions-container');
-        if (mc && mc.style.display === 'block') {
-          document.getElementById('btn-suggest-music').click();
+        const cc = document.getElementById('ai-covers-container');
+        if (cc && cc.style.display === 'block') {
+          document.getElementById('btn-suggest-covers').click();
         }
       });
     });
@@ -917,6 +986,77 @@
         };
         reader.readAsDataURL(e.target.files[0]);
         isDirty = true;
+      }
+    });
+
+    // ── Cover Suggestions Logic ────────────────────────────────
+    const btnSuggestCovers = document.getElementById('btn-suggest-covers');
+    const aiCoversContainer = document.getElementById('ai-covers-container');
+    const aiCoverOptions = document.getElementById('ai-cover-options');
+
+    btnSuggestCovers.addEventListener('click', async () => {
+      aiCoversContainer.style.display = 'block';
+      aiCoverOptions.innerHTML = "<p style='font-size:12px; color:var(--text-ghost);'>Generating cover suggestions...</p>";
+      try {
+        const title = document.getElementById('article-title').value.trim();
+        const blocksData = getBlocksData();
+        const content = blocksData.map(b => b.content).filter(Boolean).join('\n\n');
+
+        const res = await fetch("http://localhost:5001/api/articles/cover-suggestions", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json"
+          },
+          body: JSON.stringify({
+            tone: activeTone,
+            title,
+            content
+          })
+        });
+
+        if (!res.ok) throw new Error("Failed");
+        const data = await res.json();
+        aiCoverOptions.innerHTML = "";
+
+        if (data.images && data.images.length > 0) {
+          data.images.forEach(imgObj => {
+            const wrapper = document.createElement('div');
+            wrapper.style.cssText = "width:110px; height:70px; border-radius:8px; overflow:hidden; border:2px solid var(--border); cursor:pointer; transition:all 0.2s; position:relative; box-sizing:border-box;";
+            
+            if (selectedAiCoverUrl === imgObj.url) {
+              wrapper.style.borderColor = "var(--accent)";
+            }
+
+            const img = document.createElement('img');
+            img.src = imgObj.url;
+            img.style.cssText = "width:100%; height:100%; object-fit:cover;";
+            img.title = imgObj.description;
+
+            wrapper.appendChild(img);
+
+            wrapper.addEventListener('click', () => {
+              Array.from(aiCoverOptions.children).forEach(c => c.style.borderColor = "var(--border)");
+              wrapper.style.borderColor = "var(--accent)";
+              selectedAiCoverUrl = imgObj.url;
+
+              document.getElementById('cover-image-input').value = "";
+
+              const coverPreview = document.getElementById('cover-preview');
+              coverPreview.src = imgObj.url;
+              coverPreview.style.display = 'block';
+              document.getElementById('add-cover-btn').textContent = "Change Cover";
+
+              isDirty = true;
+            });
+
+            aiCoverOptions.appendChild(wrapper);
+          });
+        } else {
+          aiCoverOptions.innerHTML = "<p style='font-size:12px; color:var(--text-ghost);'>No suggestions found.</p>";
+        }
+      } catch(e) {
+        console.error(e);
+        aiCoverOptions.innerHTML = "<p style='font-size:12px; color:#ff6b6b;'>Error loading cover suggestions.</p>";
       }
     });
 
@@ -978,12 +1118,31 @@
 
     btnSuggest.addEventListener('click', async () => {
       musicContainer.style.display = 'block';
+      
+      const title = document.getElementById('article-title').value.trim();
+      const blocksData = getBlocksData();
+      const content = blocksData.map(b => b.content).filter(Boolean).join('\n\n');
+
+      if (!title && !content) {
+        musicOptions.innerHTML = "<p style='font-size:12px; color:var(--text-ghost);'>Please write a title or some content first to get music suggestions.</p>";
+        return;
+      }
+
       musicOptions.innerHTML = "<p style='font-size:12px; color:var(--text-ghost);'>Fetching AI recommendations...</p>";
       try {
-        const res = await fetch(`http://localhost:5001/api/articles/music-suggestions?tone=${activeTone}`);
+        const res = await fetch(`http://localhost:5001/api/articles/music-suggestions`, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json'
+          },
+          body: JSON.stringify({
+            title,
+            content
+          })
+        });
         if (!res.ok) throw new Error("Failed");
         const data = await res.json();
-        musicOptions.innerHTML = "<p style='font-size:12px; color:var(--text-ghost); margin-bottom:6px; font-style:italic;'>AI Suggestions based on your Tone:</p>";
+        musicOptions.innerHTML = "<p style='font-size:12px; color:var(--text-ghost); margin-bottom:6px; font-style:italic;'>AI Suggestions matching your content:</p>";
         data.tracks.forEach(t => createAudioRow(t, musicOptions, false));
       } catch(e) {
         musicOptions.innerHTML = "<p style='font-size:12px; color:#ff6b6b;'>Error loading suggestions.</p>";
@@ -1047,6 +1206,118 @@
       publishOverlay.style.display = 'none';
     });
 
+    // ── AI Writing Assistant Logic ──────────────────────────────
+    const aiWriteOverlay = document.getElementById('ai-write-overlay');
+    const aiPromptInput = document.getElementById('ai-prompt-input');
+    const aiParallelToggle = document.getElementById('ai-parallel-toggle');
+    const aiWriteStatus = document.getElementById('ai-write-status');
+    const aiWriteGenerateBtn = document.getElementById('ai-write-generate');
+
+    document.getElementById('btn-ai-write').addEventListener('click', () => {
+      aiWriteOverlay.style.display = 'flex';
+      aiPromptInput.focus();
+      aiWriteStatus.style.display = 'none';
+      aiWriteStatus.textContent = '';
+    });
+
+    document.getElementById('ai-write-cancel').addEventListener('click', () => {
+      aiWriteOverlay.style.display = 'none';
+    });
+
+    aiWriteOverlay.addEventListener('click', (e) => {
+      if (e.target === aiWriteOverlay) {
+        aiWriteOverlay.style.display = 'none';
+      }
+    });
+
+    aiParallelToggle?.addEventListener('change', () => {
+      const track = aiParallelToggle.parentElement.querySelector('.toggle-track');
+      const thumb = aiParallelToggle.parentElement.querySelector('.toggle-thumb');
+      if (aiParallelToggle.checked) {
+        track.style.background = 'var(--accent)';
+        thumb.style.transform = 'translateX(18px)';
+        thumb.style.background = '#0C1220';
+      } else {
+        track.style.background = 'var(--bg-hover)';
+        thumb.style.transform = 'translateX(0)';
+        thumb.style.background = 'var(--text-ghost)';
+      }
+    });
+
+    aiWriteGenerateBtn.addEventListener('click', async () => {
+      const prompt = aiPromptInput.value.trim();
+      if (!prompt) {
+        alert("Please describe what your article should be about.");
+        return;
+      }
+
+      aiWriteStatus.style.display = 'block';
+      aiWriteStatus.style.background = 'rgba(214,195,163,0.05)';
+      aiWriteStatus.style.border = '1px solid var(--border)';
+      aiWriteStatus.style.color = 'var(--text-secondary)';
+      aiWriteStatus.textContent = "Writing article... Please wait.";
+      aiWriteGenerateBtn.disabled = true;
+
+      try {
+        const res = await fetch("http://localhost:5001/api/articles/generate", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json"
+          },
+          body: JSON.stringify({
+            prompt,
+            tone: activeTone,
+            title: document.getElementById('article-title').value.trim(),
+            generateParallel: aiParallelToggle.checked
+          })
+        });
+
+        const data = await res.json();
+        if (!res.ok) {
+          throw new Error(data.message || "Failed to generate article");
+        }
+
+        // Set Title
+        const titleEl = document.getElementById('article-title');
+        titleEl.value = data.title;
+        titleEl.style.height = 'auto';
+        titleEl.style.height = titleEl.scrollHeight + 'px';
+
+        // Insert Layer A Blocks
+        editorBlocks.innerHTML = '';
+        data.blocks.forEach(b => {
+          const block = createBlock(b.type || 'paragraph', b.content || '');
+          editorBlocks.appendChild(block);
+        });
+
+        // Insert Layer B Blocks (Parallel Narrative)
+        if (data.parallelBlocks && data.parallelBlocks.length > 0) {
+          if (!parallelActive) {
+            document.getElementById('btn-toggle-parallel').click();
+          }
+          parallelBlocks.innerHTML = '';
+          data.parallelBlocks.forEach(b => {
+            const block = createBlock(b.type || 'paragraph', b.content || '');
+            parallelBlocks.appendChild(block);
+          });
+        }
+
+        isDirty = true;
+        aiWriteOverlay.style.display = 'none';
+        aiPromptInput.value = '';
+        scheduleAutoSave();
+
+      } catch (err) {
+        console.error(err);
+        aiWriteStatus.style.background = 'rgba(255,107,107,0.05)';
+        aiWriteStatus.style.border = '1px solid rgba(255,107,107,0.2)';
+        aiWriteStatus.style.color = '#ff6b6b';
+        aiWriteStatus.textContent = err.message || "Error generating article. Please try again.";
+      } finally {
+        aiWriteGenerateBtn.disabled = false;
+      }
+    });
+
     document.getElementById('btn-save-draft').addEventListener('click', async () => {
       const title = document.getElementById('article-title').value.trim() || 'Untitled Draft';
       const blocksData = getBlocksData();
@@ -1061,7 +1332,11 @@
       if (selectedMusicTrack) formData.append("musicTrack", selectedMusicTrack);
 
       const selectedFile = document.getElementById('cover-image-input').files?.[0];
-      if (selectedFile) formData.append("coverImage", selectedFile);
+      if (selectedFile) {
+        formData.append("coverImage", selectedFile);
+      } else if (selectedAiCoverUrl) {
+        formData.append("coverImage", selectedAiCoverUrl);
+      }
       formData.append("isAnonymous", anonToggle.checked ? 'true' : 'false');
       formData.append("status", "draft");
 
@@ -1116,7 +1391,11 @@
       if (selectedMusicTrack) formData.append("musicTrack", selectedMusicTrack);
 
       const selectedFile = document.getElementById('cover-image-input').files?.[0];
-      if (selectedFile) formData.append("coverImage", selectedFile);
+      if (selectedFile) {
+        formData.append("coverImage", selectedFile);
+      } else if (selectedAiCoverUrl) {
+        formData.append("coverImage", selectedAiCoverUrl);
+      }
 
       // Anonymous
       formData.append("isAnonymous", anonToggle.checked ? 'true' : 'false');
@@ -1148,6 +1427,10 @@
           window.location.href = "dashboard.html";
         } else {
           alert(data.message || "Failed to publish");
+          if (response.status === 403) {
+            publishOverlay.style.display = 'none';
+            window.location.href = "profile.html";
+          }
         }
       } catch(err) {
         console.error(err);

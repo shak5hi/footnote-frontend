@@ -8,68 +8,7 @@
   --accent: #000000;
   --border: #000000;
   --border-dim: rgba(0,0,0,0.1);
-  --gold: #000000; 
-}
-
-body {
-  transition: background-color 0.8s ease, color 0.8s ease;
-}
-
-body.theme-deep {
-  --bg-primary: #0a0a0a;
-  --bg-secondary: #111111;
-  --bg-dark: #000000;
-  --ink: #e8e8e8;
-  --mist: #888888;
-  --cream: #0c0c0c;
-  --accent: #ffffff;
-  --border: #333333;
-  --border-dim: rgba(255,255,255,0.1);
-  --gold: #e8e8e8;
-  background-color: var(--bg-primary);
-  color: var(--ink);
-}
-
-.nav-actions {
-  display: flex;
-  align-items: center;
-  gap: 24px;
-}
-.theme-toggle, .nav-action-btn {
-  background: none;
-  border: none;
-  font-family: inherit;
-  font-size: 13px;
-  font-weight: 600;
-  letter-spacing: 0.05em;
-  text-transform: uppercase;
-  color: var(--ink);
-  cursor: pointer;
-  opacity: 0.6;
-  transition: opacity 0.3s ease;
-}
-.theme-toggle:hover, .nav-action-btn:hover {
-  opacity: 1;
-}
-
-/* Subtle 3D Engine Setup */
-#fn-curtain, .magazine-card, .essay-card {
-  perspective: 1200px;
-}
-#fn-curtain > div {
-  transform-style: preserve-3d;
-  transition: transform 0.2s ease-out;
-}
-.magazine-card a, .essay-card a {
-  transform-style: preserve-3d;
-  display: block;
-}
-.magazine-img-wrapper img, .essay-img-box .essay-img {
-  transition: transform 0.4s ease-out;
-}
-.magazine-card:hover .magazine-img-wrapper img,
-.essay-card:hover .essay-img-box .essay-img {
-  transform: scale(1.03) translateZ(15px);
+  --gold: #000000; /* No gold in sharp minimalism */
 }
 
     *,
@@ -2259,18 +2198,4 @@ body.theme-deep {
   letter-spacing: 0.05em;
 }
 
-/* Deep Theme Contrast Overrides for "Enter the Frequency" */
-.magazine-issue {
-  background-color: var(--bg-primary) !important;
-  transition: background-color 0.8s ease;
-}
-.magazine-issue .magazine-title, 
-.magazine-issue .magazine-card-title, 
-.magazine-issue .magazine-desc, 
-.magazine-issue .magazine-meta {
-  color: var(--ink) !important;
-  transition: color 0.8s ease;
-}
-.magazine-issue .magazine-divider {
-  background-color: var(--border) !important;
-}
+

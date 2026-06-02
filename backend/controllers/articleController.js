@@ -1,4 +1,7 @@
 const Article = require("../models/Article");
+const { GoogleGenerativeAI } = require("@google/generative-ai");
+const musicCatalog = require("../config/musicCatalog");
+const imageCatalog = require("../config/imageCatalog");
 
 exports.createArticle = async (req, res) => {
   try {
@@ -7,6 +10,8 @@ exports.createArticle = async (req, res) => {
 
     if (req.file) {
       coverImage = `/uploads/${req.file.filename}`;
+    } else if (req.body.coverImage) {
+      coverImage = req.body.coverImage;
     }
 
     let parsedBlocks = [];
@@ -22,12 +27,45 @@ exports.createArticle = async (req, res) => {
       ? parsedBlocks.map(b => b.content || '').filter(Boolean).join('\n\n')
       : (content || '');
 
+    const isPremium = true;
+
+    // Check Anonymous publishing
+    const wantAnonymous = isAnonymous === 'true' || isAnonymous === true;
+    if (wantAnonymous && !isPremium) {
+      return res.status(403).json({ message: "Anonymous publishing is a premium feature. Please upgrade your plan." });
+    }
+
     // Determine final status
     let finalStatus = status || "draft";
     let scheduledDate = null;
     if (scheduledAt) {
       finalStatus = "scheduled";
       scheduledDate = new Date(scheduledAt);
+    }
+
+    // Check Scheduling
+    const wantScheduled = finalStatus === "scheduled";
+    if (wantScheduled && !isPremium) {
+      return res.status(403).json({ message: "Scheduling articles is a premium feature. Please upgrade your plan." });
+    }
+
+    // Check Publish Limit for Free users
+    if ((finalStatus === "published" || finalStatus === "scheduled") && !isPremium) {
+      const now = new Date();
+      const startOfMonth = new Date(now.getFullYear(), now.getMonth(), 1);
+      const endOfMonth = new Date(now.getFullYear(), now.getMonth() + 1, 0, 23, 59, 59, 999);
+
+      const count = await Article.countDocuments({
+        author: req.user._id,
+        status: { $in: ["published", "scheduled"] },
+        createdAt: { $gte: startOfMonth, $lte: endOfMonth }
+      });
+
+      if (count >= 5) {
+        return res.status(403).json({
+          message: "You have reached your limit of 5 published articles for this month. Upgrade to Premium for unlimited publishing."
+        });
+      }
     }
 
     const article = new Article({
@@ -39,9 +77,10 @@ exports.createArticle = async (req, res) => {
       status: finalStatus,
       musicTrack,
       coverImage,
-      isAnonymous: isAnonymous === 'true' || isAnonymous === true,
+      isAnonymous: wantAnonymous,
       scheduledAt: scheduledDate,
       parallelBlocks: parsedParallelBlocks,
+      author: req.user ? req.user._id : null
     });
 
     await article.save();
@@ -102,7 +141,19 @@ exports.deleteArticle = async (req, res) => {
 
 exports.updateArticle = async (req, res) => {
   try {
+    const existing = await Article.findById(req.params.id);
+    if (!existing) return res.status(404).json({ message: "Article not found" });
+
     const { title, content, tone, status, musicTrack, blocks, footnotes, isAnonymous, scheduledAt, parallelBlocks } = req.body;
+    
+    const isPremium = true;
+
+    // Check Anonymous publishing
+    const wantAnonymous = isAnonymous === 'true' || isAnonymous === true;
+    if (wantAnonymous && !isPremium) {
+      return res.status(403).json({ message: "Anonymous publishing is a premium feature. Please upgrade your plan." });
+    }
+
     let updateFields = { title, tone, musicTrack };
     
     let parsedBlocks = [];
@@ -125,23 +176,62 @@ exports.updateArticle = async (req, res) => {
     if (parsedParallelBlocks.length > 0) updateFields.parallelBlocks = parsedParallelBlocks;
 
     // Status & scheduling
+    let nextStatus = existing.status;
+    let nextScheduledAt = existing.scheduledAt;
+
     if (scheduledAt) {
-      updateFields.status = "scheduled";
-      updateFields.scheduledAt = new Date(scheduledAt);
+      nextStatus = "scheduled";
+      nextScheduledAt = new Date(scheduledAt);
     } else if (status) {
-      updateFields.status = status;
-      if (status !== 'scheduled') updateFields.scheduledAt = null;
+      nextStatus = status;
+      if (status !== 'scheduled') nextScheduledAt = null;
     }
 
-    if (isAnonymous !== undefined) updateFields.isAnonymous = isAnonymous === 'true' || isAnonymous === true;
+    // Check Scheduling
+    if (nextStatus === "scheduled" && !isPremium) {
+      return res.status(403).json({ message: "Scheduling articles is a premium feature. Please upgrade your plan." });
+    }
+
+    updateFields.status = nextStatus;
+    updateFields.scheduledAt = nextScheduledAt;
+
+    // Check Publish Limit for Free users transitioning from draft to published/scheduled
+    const currentStatus = existing.status || "draft";
+    const isTransitioningToPublish = (currentStatus === "draft") && (nextStatus === "published" || nextStatus === "scheduled");
+
+    if (isTransitioningToPublish && !isPremium) {
+      const now = new Date();
+      const startOfMonth = new Date(now.getFullYear(), now.getMonth(), 1);
+      const endOfMonth = new Date(now.getFullYear(), now.getMonth() + 1, 0, 23, 59, 59, 999);
+
+      const count = await Article.countDocuments({
+        author: req.user._id,
+        status: { $in: ["published", "scheduled"] },
+        createdAt: { $gte: startOfMonth, $lte: endOfMonth }
+      });
+
+      if (count >= 5) {
+        return res.status(403).json({
+          message: "You have reached your limit of 5 published articles for this month. Upgrade to Premium for unlimited publishing."
+        });
+      }
+    }
+
+    if (isAnonymous !== undefined) updateFields.isAnonymous = wantAnonymous;
 
     if (req.file) {
       updateFields.coverImage = `/uploads/${req.file.filename}`;
+    } else if (req.body.coverImage) {
+      updateFields.coverImage = req.body.coverImage;
+    }
+
+    // Set/update author just in case
+    if (!existing.author && req.user) {
+      updateFields.author = req.user._id;
     }
 
     // Save a version snapshot before updating
-    const existing = await Article.findById(req.params.id);
-    if (existing && existing.blocks && existing.blocks.length > 0) {
+    if (existing.blocks && existing.blocks.length > 0) {
       const versionSnapshot = {
         blocks: existing.blocks,
         content: existing.content,
@@ -223,93 +313,269 @@ exports.trackReading = async (req, res) => {
   }
 };
 
-// Music suggestions (unchanged)
+// Music suggestions powered by Gemini AI
 exports.suggestMusic = async (req, res) => {
-  try {
-    const tone = req.query.tone || "General";
-    
-    const recommendations = {
-      "Reflection": [
-        "Spiegel im Spiegel Arvo Part",
-        "Avril 14th Aphex Twin",
-        "Clair de Lune Claude Debussy",
-        "Gymnopedie No 1 Erik Satie",
-        "Valse Sentimentale Tchaikovsky",
-        "Nocturne Op 9 No 2 Chopin",
-        "To Build A Home Cinematic Orchestra"
-      ],
-      "Personal": [
-        "Mystery of Love Sufjan Stevens",
-        "Holocene Bon Iver",
-        "Youth Daughter",
-        "Sparks Coldplay",
-        "Cherry Wine Hozier",
-        "Liability Lorde",
-        "Rosyln Bon Iver"
-      ],
-      "Observation": [
-        "Weightless Marconi Union",
-        "A Walk Tycho",
-        "Halcyon On and On Orbital",
-        "Daydreaming Radiohead",
-        "Intro The xx",
-        "Space Song Beach House",
-        "Teardrop Massive Attack"
-      ],
-      "Essay": [
-        "Time Hans Zimmer",
-        "On the Nature of Daylight Max Richter",
-        "Experience Ludovico Einaudi",
-        "Arrival of the Birds Cinematic Orchestra",
-        "Light of the Seven Ramin Djawadi",
-        "Interstellar Main Theme Hans Zimmer",
-        "Opus Eric Prydz"
-      ],
-      "Field Note": [
-        "Comptine d'un autre Yann Tiersen",
-        "The Winner Is Mychael Danna",
-        "Astrovan Mt Joy",
-        "Ends of the Earth Lord Huron",
-        "Society Eddie Vedder",
-        "Gooey Glass Animals",
-        "Naked As We Came Iron & Wine"
-      ],
-      "General": [
-        "Nuvole Bianche Ludovico Einaudi",
-        "River Flows in You Yiruma",
-        "Cornfield Chase Hans Zimmer",
-        "Flight from the City Johann Johannsson",
-        "Merry Christmas Mr Lawrence Ryuichi Sakamoto",
-        "Kiss the Rain Yiruma",
-        "Una Mattina Ludovico Einaudi"
-      ]
-    };
+  const title = req.body.title || "";
+  const content = req.body.content || "";
 
-    let trackPool = recommendations[tone] || recommendations["General"];
-    let shuffled = trackPool.sort(() => 0.5 - Math.random());
-    let trackNames = shuffled.slice(0, 3);
+  if (!title.trim() && !content.trim()) {
+    return res.status(400).json({ error: "Please provide a title or content for music suggestions." });
+  }
 
-    const resolvedTracks = await Promise.all(trackNames.map(async (trackName) => {
-      try {
-        const response = await fetch(`https://itunes.apple.com/search?term=${encodeURIComponent(trackName)}&limit=1&entity=song`);
-        const data = await response.json();
-        
-        let url = "https://www.soundhelix.com/examples/mp3/SoundHelix-Song-1.mp3";
-        if (data.results && data.results.length > 0 && data.results[0].previewUrl) {
-           url = data.results[0].previewUrl;
-        }
-        
-        const prettyName = trackName.replace(/ ([^-]{4,})$/, ' - $1'); 
-        return { name: prettyName, url };
-      } catch (err) {
-        console.error("iTunes fetch error for track:", trackName, err);
-        return { name: trackName, url: "https://www.soundhelix.com/examples/mp3/SoundHelix-Song-1.mp3" };
-      }
+  // Fallback/shuffle that doesn't rely on tone
+  const getRandomFallback = () => {
+    let shuffled = [...musicCatalog].sort(() => 0.5 - Math.random());
+    return shuffled.slice(0, 3).map(track => ({
+      name: `${track.title} - ${track.artist}`,
+      url: track.url
     }));
+  };
 
-    res.status(200).json({ tracks: resolvedTracks });
+  try {
+    const apiKey = process.env.GEMINI_API_KEY;
+    if (!apiKey || apiKey.startsWith("your_gemini_api_key")) {
+      console.log("⚠️ GEMINI_API_KEY not set. Using random catalog fallback.");
+      return res.status(200).json({ tracks: getRandomFallback() });
+    }
+
+    const genAI = new GoogleGenerativeAI(apiKey);
+    const model = genAI.getGenerativeModel({
+      model: "gemini-1.5-flash",
+      generationConfig: { responseMimeType: "application/json" }
+    });
+
+    const prompt = `
+You are an expert music supervisor and curator for a premium literary/blog platform called "FootNote".
+Your task is to select the top 3 best matching ambient, instrumental, or lo-fi tracks from our curated music catalog for the following article:
+
+Article Title: "${title}"
+Article Content:
+"${content}"
+
+Here is the music catalog to choose from (each item contains title, artist, description, tones, and url):
+${JSON.stringify(musicCatalog, null, 2)}
+
+Constraints:
+1. You MUST select the 3 tracks that best match the vibe, theme, and atmospheric quality of the written article title and content.
+2. Rely purely on the meaning and context of the text written by the author, rather than any pre-selected tone.
+
+Response format MUST be a JSON object with a single "tracks" array containing objects with "title", "artist", and "url" copied exactly from the catalog.
+Example output format:
+{
+  "tracks": [
+    {
+      "title": "Quiet Observations",
+      "artist": "Holographic Dusk",
+      "url": "https://www.soundhelix.com/examples/mp3/SoundHelix-Song-2.mp3"
+    },
+    ...
+  ]
+}
+`;
+
+    const result = await model.generateContent(prompt);
+    const text = result.response.text();
+    const parsed = JSON.parse(text);
+
+    if (parsed && Array.isArray(parsed.tracks)) {
+      const formattedTracks = parsed.tracks.map(track => {
+        const matched = musicCatalog.find(
+          c => c.title.toLowerCase() === track.title?.toLowerCase()
+        );
+        return {
+          name: `${matched ? matched.title : track.title} - ${matched ? matched.artist : track.artist}`,
+          url: matched ? matched.url : (track.url || "https://www.soundhelix.com/examples/mp3/SoundHelix-Song-1.mp3")
+        };
+      });
+
+      if (formattedTracks.length >= 3) {
+        return res.status(200).json({ tracks: formattedTracks.slice(0, 3) });
+      }
+    }
+
+    console.log("⚠️ Gemini response parsing failed or returned insufficient tracks. Using fallback.");
+    res.status(200).json({ tracks: getRandomFallback() });
+
   } catch (error) {
-    console.error("Error suggesting music:", error);
-    res.status(500).json({ message: "Server error generating music suggestions" });
+    console.error("Error suggesting music via Gemini:", error);
+    try {
+      res.status(200).json({ tracks: getRandomFallback() });
+    } catch (innerErr) {
+      console.error("INNER FALLBACK ERROR:", innerErr);
+      res.status(500).json({ message: "Server error generating music suggestions" });
+    }
+  }
+};
+
+exports.generateArticle = async (req, res) => {
+  try {
+    const { prompt, tone, title, generateParallel } = req.body;
+
+    if (!prompt) {
+      return res.status(400).json({ message: "Prompt is required" });
+    }
+
+    const apiKey = process.env.GEMINI_API_KEY;
+    if (!apiKey || apiKey.startsWith("your_gemini_api_key")) {
+      return res.status(400).json({ 
+        message: "Please configure your GEMINI_API_KEY in the backend .env file to enable the AI Writing Assistant." 
+      });
+    }
+
+    const genAI = new GoogleGenerativeAI(apiKey);
+    const model = genAI.getGenerativeModel({
+      model: "gemini-1.5-flash",
+      generationConfig: { responseMimeType: "application/json" }
+    });
+
+    const isParallel = generateParallel === true || generateParallel === "true";
+
+    const systemPrompt = `
+You are a brilliant writer and AI co-author for a premium, high-aesthetic blog/essay platform called "FootNote".
+Your task is to write a deep, engaging, and beautiful article based on the following instructions:
+
+Article Topic/Prompt: "${prompt}"
+Tone: "${tone || "General"}"
+Proposed Title: "${title || ""}"
+
+FootNote articles are written in structured blocks of different types:
+- "heading": Used for section headings/subtitles.
+- "paragraph": Used for standard paragraphs.
+- "quote": Used for blockquotes.
+- "poetry": Used for poetic passages or indented lyrics.
+
+Constraints:
+1. The writing must feel extremely premium, literary, and evocative (avoid standard corporate or generic AI language).
+2. Format your response strictly as a JSON object containing a "title" field and a "blocks" array.
+3. Each block object in the "blocks" array must have:
+   - "type": "paragraph" | "heading" | "quote" | "poetry"
+   - "content": "The text content for this block"
+4. If the "generateParallel" constraint is true (${isParallel}), you must also write a parallel narrative ("Layer B"). A parallel narrative runs alongside the primary text as an alternative voice, subtext, inner monologue, or commentary. In this case, you must include a "parallelBlocks" array of block objects in the same block format.
+5. Example JSON response format:
+{
+  "title": "Generated Title",
+  "blocks": [
+    { "type": "heading", "content": "I. The Echo Chamber" },
+    { "type": "paragraph", "content": "..." },
+    { "type": "quote", "content": "..." }
+  ],
+  "parallelBlocks": [ // Only include if generateParallel is true
+    { "type": "paragraph", "content": "..." }
+  ]
+}
+`;
+
+    const result = await model.generateContent(systemPrompt);
+    const text = result.response.text();
+    const parsed = JSON.parse(text);
+
+    if (parsed && Array.isArray(parsed.blocks)) {
+      return res.status(200).json({
+        title: parsed.title || title || "Untitled Generated Article",
+        blocks: parsed.blocks,
+        parallelBlocks: parsed.parallelBlocks || []
+      });
+    }
+
+    throw new Error("Invalid output format from Gemini model");
+
+  } catch (error) {
+    console.error("Error generating article via Gemini:", error);
+    res.status(500).json({ 
+      message: "Server error generating article. Please try again.", 
+      error: error.message 
+    });
+  }
+};
+
+exports.suggestCovers = async (req, res) => {
+  let tone = req.query.tone || req.body.tone || "General";
+  if (typeof tone === "string") tone = tone.trim();
+  const title = req.body.title || "";
+  const content = req.body.content || "";
+
+  // Fallback/shuffle that prioritizes the active tone
+  const getRandomFallback = () => {
+    let filtered = imageCatalog.filter(img => img.tones && img.tones.includes(tone));
+    if (filtered.length < 3) {
+      const extra = imageCatalog.filter(img => !filtered.includes(img));
+      filtered = filtered.concat(extra);
+    }
+    let shuffled = [...filtered].sort(() => 0.5 - Math.random());
+    return shuffled.slice(0, 3);
+  };
+
+  try {
+    const apiKey = process.env.GEMINI_API_KEY;
+    if (!apiKey || apiKey.startsWith("your_gemini_api_key")) {
+      console.log("⚠️ GEMINI_API_KEY not set. Using random image catalog fallback.");
+      return res.status(200).json({ images: getRandomFallback() });
+    }
+
+    const genAI = new GoogleGenerativeAI(apiKey);
+    const model = genAI.getGenerativeModel({
+      model: "gemini-1.5-flash",
+      generationConfig: { responseMimeType: "application/json" }
+    });
+
+    const prompt = `
+You are an expert design director and visual curator for a premium literary/blog platform called "FootNote".
+Your task is to select the top 3 best matching cover images from our curated image catalog for the following article:
+
+Article Title: "${title}"
+Article Tone: "${tone}"
+Article Content:
+"${content}"
+
+Here is the image catalog to choose from (each item contains description, tones, and url):
+${JSON.stringify(imageCatalog, null, 2)}
+
+Constraints:
+1. You MUST prioritize images whose "tones" array matches the specified Article Tone ("${tone}").
+2. Select exactly 3 images from the catalog that best match the theme, mood, and visual resonance of the article.
+3. Response format MUST be a JSON object with a single "images" array containing objects with "description" and "url" copied exactly from the catalog.
+Example output format:
+{
+  "images": [
+    {
+      "description": "Abstract beige paint strokes",
+      "url": "https://images.unsplash.com/photo-1541701494587-cb58502866ab?auto=format&fit=crop&q=80&w=800"
+    },
+    ...
+  ]
+}
+`;
+
+    const result = await model.generateContent(prompt);
+    const text = result.response.text();
+    const parsed = JSON.parse(text);
+
+    if (parsed && Array.isArray(parsed.images)) {
+      const validatedImages = parsed.images.map(img => {
+        const matched = imageCatalog.find(
+          c => c.url === img.url
+        );
+        return {
+          description: matched ? matched.description : img.description,
+          url: matched ? matched.url : (img.url || "https://images.unsplash.com/photo-1541701494587-cb58502866ab?auto=format&fit=crop&q=80&w=800")
+        };
+      });
+
+      if (validatedImages.length >= 3) {
+        return res.status(200).json({ images: validatedImages.slice(0, 3) });
+      }
+    }
+
+    console.log("⚠️ Gemini response parsing failed or returned insufficient images. Using fallback.");
+    res.status(200).json({ images: getRandomFallback() });
+
+  } catch (error) {
+    console.error("Error suggesting covers via Gemini:", error);
+    try {
+      res.status(200).json({ images: getRandomFallback() });
+    } catch (innerErr) {
+      console.error("INNER FALLBACK ERROR:", innerErr);
+      res.status(500).json({ message: "Server error generating cover suggestions" });
+    }
   }
 };

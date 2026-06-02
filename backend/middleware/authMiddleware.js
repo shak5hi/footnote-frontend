@@ -26,4 +26,8 @@ const protect = async (req, res, next) => {
   }
 };
 
-module.exports = { protect };
+const premiumOnly = (req, res, next) => {
+  return next();
+};
+
+module.exports = { protect, premiumOnly };

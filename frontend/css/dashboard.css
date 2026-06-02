@@ -134,7 +134,6 @@ html.sidebar-initial-collapsed .dashboard-wrapper .sidebar-right {
   transition: all 0.4s var(--ease), background var(--t-slow) ease;
   overflow: visible; /* Changed to visible for toggle button placement */
   z-index: 100;
-  min-height: 0; 
 }
 
 /* Sidebar Toggle Button */
@@ -180,18 +179,7 @@ html.sidebar-initial-collapsed .dashboard-wrapper .sidebar-right {
   margin-top: 8px;
 }
 
-.nav-menu { 
-  display: flex; 
-  flex-direction: column; 
-  gap: 4px; 
-  flex: 1; 
-  min-height: 0;
-  overflow-y: auto;
-  scrollbar-width: thin;
-  scrollbar-color: var(--border-dim) transparent;
-}
-.nav-menu::-webkit-scrollbar { width: 3px; }
-.nav-menu::-webkit-scrollbar-thumb { background: var(--border-dim); border-radius: 3px; }
+.nav-menu { display: flex; flex-direction: column; gap: 4px; flex: 1; }
 
 .nav-item {
   display: flex;

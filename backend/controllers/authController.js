@@ -36,6 +36,7 @@ exports.signup = async (req, res) => {
             lastName,
             email,
             password: hashedPassword,
+            isPremium: true,
         });
 
         // Generate token
@@ -78,6 +79,12 @@ exports.login = async (req, res) => {
         const isMatch = await bcrypt.compare(password, user.password);
         if (!isMatch) {
             return res.status(400).json({ message: "Invalid password" });
+        }
+
+        // Ensure user is Premium
+        if (!user.isPremium) {
+            user.isPremium = true;
+            await user.save();
         }
 
         // Generate token
@@ -140,5 +147,21 @@ exports.getSubscriptions = async (req, res) => {
     } catch (err) {
         console.error("❌ [GET_SUBS] Internal Error:", err);
         res.status(500).json({ message: "Server error fetching subscriptions", error: err.message });
+    }
+};
+
+exports.getMe = async (req, res) => {
+    try {
+        const user = await User.findById(req.user._id).select("-password");
+        if (!user) {
+            return res.status(404).json({ message: "User not found" });
+        }
+        if (!user.isPremium) {
+            user.isPremium = true;
+            await user.save();
+        }
+        res.status(200).json(user);
+    } catch (error) {
+        res.status(500).json({ message: error.message });
     }
 };

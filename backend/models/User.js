@@ -59,6 +59,19 @@ const userSchema = new mongoose.Schema({
         timeSpentMs: { type: Number, default: 0 },
         completed: { type: Boolean, default: false },
     }],
+    // Stripe Subscription Fields
+    stripeCustomerId: {
+        type: String,
+        default: null
+    },
+    stripeSubscriptionId: {
+        type: String,
+        default: null
+    },
+    isPremium: {
+        type: Boolean,
+        default: true
+    },
 });
 
 module.exports = mongoose.model("User", userSchema);

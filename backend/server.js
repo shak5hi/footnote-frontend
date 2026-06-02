@@ -7,11 +7,20 @@ const authRoutes = require("./routes/authRoutes");
 const articleRoutes = require("./routes/articleRoutes");
 const userRoutes = require("./routes/userRoutes");
 const trailRoutes = require("./routes/trailRoutes");
+const billingRoutes = require("./routes/billingRoutes");
 const { swaggerUi, swaggerSpec } = require("./config/swagger");
 
 const app = express();
 
 app.use(cors());
+
+// Stripe Webhook needs raw body parsing, register it BEFORE express.json()
+app.post(
+  "/api/billing/webhook",
+  express.raw({ type: "application/json" }),
+  require("./controllers/billingController").handleWebhook
+);
+
 app.use(express.json());
 
 connectDB();
@@ -20,6 +29,7 @@ app.use("/api/auth", authRoutes);
 app.use("/api/articles", articleRoutes);
 app.use("/api/users", userRoutes);
 app.use("/api/trails", trailRoutes);
+app.use("/api/billing", billingRoutes);
 app.use("/uploads", express.static("uploads"));
 
 // Swagger route
