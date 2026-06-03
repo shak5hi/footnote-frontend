@@ -330,7 +330,7 @@ export default function VinylHero() {
               <br />
               of deep focus &mdash; and the space to actually read.
             </p>
-            <a href="http://localhost:5173/login.html" className={styles.cta}>
+            <a href="/login.html" className={styles.cta}>
               ENTER FR <span className={styles.ctaArrow}>&rarr;</span>
             </a>
           </div>
@@ -358,7 +358,7 @@ export default function VinylHero() {
             <div className={styles.magazineContainer}>
               <div className={styles.magazineHeader}>
                 <h2 className={styles.magazineTitle}>Enter the Frequency</h2>
-                <a href="http://localhost:5173/login.html" className={styles.magazineViewAll}>View All</a>
+                <a href="/login.html" className={styles.magazineViewAll}>View All</a>
               </div>
               <div className={styles.magazineDivider} />
               <div className={styles.magazineGridWrapper}>
@@ -448,7 +448,7 @@ export default function VinylHero() {
               <span className={styles.featureMicro}>02 &mdash; IMMERSION</span>
               <h3 className={styles.featureTitle}>Reading, Reimagined</h3>
               <p className={styles.featureDesc}>Reading becomes spatial, not silent. A second layer of editorial intention.</p>
-              <a href="http://localhost:5173/login.html" className={styles.featureLink}>Explore &rarr;</a>
+              <a href="/login.html" className={styles.featureLink}>Explore &rarr;</a>
             </article>
 
             {/* Block 3 */}
@@ -516,7 +516,7 @@ export default function VinylHero() {
   
           {/* Bottom CTA */}
           <div className={`${styles.atmospheresCta} ${styles.animFadeUp} ${styles.stagger4}`}>
-            <a href="http://localhost:5173/login.html" className={styles.atmospheresLink}>View Full Collection &rarr;</a>
+            <a href="/login.html" className={styles.atmospheresLink}>View Full Collection &rarr;</a>
           </div>
         </div>
       </section>
@@ -616,11 +616,11 @@ export default function VinylHero() {
             </div>
             <div className={styles.footerRight}>
               <div className={styles.footerCol}>
-                <a href="http://localhost:5173/login.html" className={styles.footerLink}>Listen</a>
-                <a href="http://localhost:5173/login.html" className={styles.footerLink}>Read</a>
-                <a href="http://localhost:5173/login.html" className={styles.footerLink}>Archive</a>
-                <a href="http://localhost:5173/login.html" className={styles.footerLink}>About</a>
-                <a href="http://localhost:5173/login.html" className={styles.footerLink}>Manifesto</a>
+                <a href="/login.html" className={styles.footerLink}>Listen</a>
+                <a href="/login.html" className={styles.footerLink}>Read</a>
+                <a href="/login.html" className={styles.footerLink}>Archive</a>
+                <a href="/login.html" className={styles.footerLink}>About</a>
+                <a href="/login.html" className={styles.footerLink}>Manifesto</a>
               </div>
             </div>
           </div>
