@@ -38,7 +38,7 @@
     }
 
     html {
-      scroll-behavior: smooth;
+      /* scroll-behavior: smooth; — disabled, Lenis handles smooth scroll */
     }
 
     body {
@@ -585,58 +585,108 @@
       transform: translateY(2px);
     }
 
-    /* Scroll Animation Container */
-    .hero-scroll-container {
-      height: 300vh;
+    /* ─── Hero Scroll Track ─── */
+    #hero-scroll-track {
       position: relative;
-    }
-
-    .hero-sticky-layer {
-      position: sticky;
-      top: 0;
-      height: 100vh;
-      overflow: hidden;
-    }
-
-    .hero-bg-layer {
-      position: absolute;
-      top: 0;
-      left: 0;
       width: 100%;
-      height: 100vh;
-      background: #1a2533;
-      /* Matches image band */
-      z-index: 1;
     }
 
-    .hero-white-layer {
-      position: absolute;
+    /* Canvas — pinned by GSAP */
+    .hero-vinyl-canvas-wrap {
+      position: absolute; /* GSAP will turn this to fixed when pinned */
       top: 0;
       left: 0;
       width: 100%;
       height: 100vh;
       z-index: 2;
-      will-change: transform, opacity;
-      transform-origin: center center;
+      pointer-events: none; /* Let clicks pass through */
     }
 
-    /* Section 2: Hero */
-    .hero-wrapper {
-      background: transparent;
-      padding: 0 0 24px 0;
-      cursor: pointer;
+    #hero-vinyl-canvas {
+      width: 100%;
+      height: 100%;
+      display: block;
     }
 
-    .hero {
-      height: calc(100vh - 24px);
+    /* Section 1: Architecture of Sound Text */
+    .hero-vinyl-section {
+      position: relative;
+      width: 100%;
+      height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
       background: var(--bg-primary);
+      z-index: 1; /* Below the canvas */
+    }
+
+    /* Section 2: Blank Page */
+    .hero-blank-section {
+      position: relative;
+      width: 100%;
+      height: 100vh;
+      background: var(--bg-primary);
+      z-index: 1; /* Below the canvas */
+    }
+
+    /* Text content styling */
+    .hero-vinyl-text {
+      position: relative;
       display: flex;
       flex-direction: column;
       align-items: center;
       justify-content: center;
+      text-align: center;
+      padding: 0 24px;
+    }
+
+    /* Text starts visible (not hidden) — vinyl overlaps it */
+    .hero-anim-el {
+      opacity: 1;
+      transform: none;
+    }
+
+    .hero-vinyl-text .hero-eyebrow {
+      margin-bottom: 24px;
+    }
+
+    .hero-vinyl-text .hero-headline {
+      padding-top: 12px;
+    }
+
+    .hero-vinyl-text .hero-body {
+      max-width: 380px;
+    }
+
+    .hero-vinyl-text .hero-links {
+      margin-top: 36px;
       position: relative;
-      box-shadow: 0 8px 32px rgba(0, 0, 0, 0.06), 0 0 0 1px rgba(0, 0, 0, 0.03);
-      /* Soft shadow and contrast edge */
+      z-index: 3; /* CTA stays clickable above canvas */
+      pointer-events: auto;
+    }
+
+    .hero-vinyl-text .hero-rule {
+      margin: 36px auto;
+    }
+
+    /* Mobile: hide canvas, show text only */
+    @media (max-width: 768px) {
+      .hero-vinyl-canvas-wrap {
+        display: none;
+      }
+      .hero-vinyl-section {
+        height: auto;
+        min-height: 100vh;
+      }
+      .hero-vinyl-inner {
+        position: relative;
+      }
+    }
+
+    /* Section 2: Hero (shared text styles) */
+    .hero-wrapper {
+      background: transparent;
+      padding: 0 0 24px 0;
     }
 
     .hero-eyebrow {
@@ -652,7 +702,7 @@
     .hero-h1 {
       font-family: 'Cormorant Garamond', serif;
       font-weight: 400;
-      font-size: clamp(64px, 8vw, 96px);
+      font-size: clamp(64px, 8vw, 120px);
       line-height: 1.05;
       color: var(--ink);
       text-align: center;

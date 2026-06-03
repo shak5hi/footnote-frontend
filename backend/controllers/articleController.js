@@ -415,10 +415,57 @@ exports.generateArticle = async (req, res) => {
       return res.status(400).json({ message: "Prompt is required" });
     }
 
+    const isParallel = generateParallel === true || generateParallel === "true";
     const apiKey = process.env.GEMINI_API_KEY;
     if (!apiKey || apiKey.startsWith("your_gemini_api_key")) {
-      return res.status(400).json({ 
-        message: "Please configure your GEMINI_API_KEY in the backend .env file to enable the AI Writing Assistant." 
+      console.log("⚠️ GEMINI_API_KEY not set. Using rich local catalog fallback for article generation.");
+      
+      const mockTitles = [
+        "The Architecture of Silence",
+        "Chronicles of the Unseen Horizon",
+        "A Slow Monologue on Stillness",
+        "The Geography of Solitude"
+      ];
+      const mockTitle = title || mockTitles[Math.floor(Math.random() * mockTitles.length)];
+      
+      const mockBlocks = [
+        {
+          type: "heading",
+          content: "I. The Whispering Walls"
+        },
+        {
+          type: "paragraph",
+          content: `In the quiet spaces of our lives, the world continues its slow rotation. When exploring the prompt: "${prompt}", we touch upon a fundamental human longing — the search for connection in an increasingly overstimulated landscape.`
+        },
+        {
+          type: "quote",
+          content: "We do not need more information. We need more silence to understand what we already know."
+        },
+        {
+          type: "paragraph",
+          content: "To walk through the city at dawn is to observe the architecture before the noise invades it. The stones remember the stillness of the night, holding onto a clean clarity that is lost the moment the first engine starts."
+        },
+        {
+          type: "poetry",
+          content: "The leaves fall without a sound,\nmarking time upon the ground.\nWe watch the seasons come and go,\nin the slow light of the winter snow."
+        }
+      ];
+
+      const mockParallelBlocks = isParallel ? [
+        {
+          type: "paragraph",
+          content: "(The mind wanders, seeking an exit from the loop. We listen to the wind rattling the window frame, wondering if the response is enough.)"
+        },
+        {
+          type: "paragraph",
+          content: "(A memory of a quiet room in autumn. No screens, just the ticking of an old brass clock and the scent of rain.)"
+        }
+      ] : [];
+
+      return res.status(200).json({
+        title: mockTitle,
+        blocks: mockBlocks,
+        parallelBlocks: mockParallelBlocks
       });
     }
 
@@ -427,8 +474,6 @@ exports.generateArticle = async (req, res) => {
       model: "gemini-1.5-flash",
       generationConfig: { responseMimeType: "application/json" }
     });
-
-    const isParallel = generateParallel === true || generateParallel === "true";
 
     const systemPrompt = `
 You are a brilliant writer and AI co-author for a premium, high-aesthetic blog/essay platform called "FootNote".

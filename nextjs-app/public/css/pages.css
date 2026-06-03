@@ -105,7 +105,7 @@ body.deep-mode .page-header { background: var(--bg); }
 }
 .btn-subscribe:hover {
   background: var(--accent);
-  color: #0C1220;
+  color: #FFFFFF;
   border-color: var(--accent);
 }
 body.paper-mode .btn-subscribe:hover { color: #fff; }

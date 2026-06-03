@@ -1,6 +1,6 @@
 :root {
   --primary-dark: #0B1C2C;
-  --bg-warm: #F9F8F6;
+  --bg-warm: #F0E0D6; /* Warm rose-cream matching landing page background */
   --text-primary: #1A1A1A;
   --text-secondary: #7A808A;
   --border-color: #D1D4D6;
@@ -15,9 +15,25 @@
 body {
   font-family: 'DM Sans', sans-serif;
   background-color: var(--bg-warm);
+  background-image: 
+    radial-gradient(ellipse 80% 60% at 50% 50%, rgba(255, 220, 200, 0.55) 0%, rgba(200, 140, 140, 0.08) 55%, rgba(0, 0, 0, 0.08) 100%),
+    url("https://www.transparenttextures.com/patterns/crumbled-paper.png");
+  background-repeat: repeat;
   color: var(--text-primary);
   -webkit-font-smoothing: antialiased;
   overflow: hidden;
+  position: relative;
+}
+
+body::before {
+  content: '';
+  position: fixed;
+  inset: 0;
+  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' opacity='0.04'/%3E%3C/svg%3E");
+  pointer-events: none;
+  z-index: 9999;
+  opacity: 0.35;
+  mix-blend-mode: multiply;
 }
 
 .split-layout {
@@ -29,7 +45,7 @@ body {
 .panel-left {
   flex: 0 0 50%;
   position: relative;
-  background-image: url('../src/assets/images/login.jpg');
+  background-image: url('../images/login.jpg');
   background-size: cover;
   background-position: center;
   filter: saturate(0.85);
@@ -61,7 +77,7 @@ body {
   display: flex;
   align-items: center;
   justify-content: center;
-  background-color: var(--bg-warm);
+  background: transparent;
   opacity: 0;
   animation: fadeInRight 1s cubic-bezier(0.25, 0.46, 0.45, 0.94) forwards;
 }
