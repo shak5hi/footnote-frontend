@@ -1,0 +1,40 @@
+@import url('https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=DM+Mono:wght@300;400&display=swap');
+
+*, *::before, *::after {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+html {
+  /* No native smooth scroll — Lenis handles it */
+  scroll-behavior: auto;
+}
+
+body {
+  background: #F3E8E1; /* Neutral off-white with a whisper of warmth */
+  color: #111;
+
+
+  font-family: 'DM Serif Display', 'Georgia', serif;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  overscroll-behavior: none;
+}
+
+/* Placeholder section below hero */
+.below-hero {
+  height: 100vh;
+  background: #F3E8E1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.below-hero p {
+  font-family: 'DM Mono', monospace;
+  font-size: 11px;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: #888;
+}
