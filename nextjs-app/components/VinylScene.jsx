@@ -104,6 +104,9 @@ function TonearmModel({ tonearmRef, swayRef }) {
   useEffect(() => {
     if (!innerRef.current || !tonearmRef.current) return;
 
+    // Start invisible — parent will reveal after GSAP positioning
+    tonearmRef.current.visible = false;
+
     // Center geometry
     const box = new THREE.Box3().setFromObject(innerRef.current);
     const center = box.getCenter(new THREE.Vector3());
