@@ -415,11 +415,10 @@ exports.generateArticle = async (req, res) => {
       return res.status(400).json({ message: "Prompt is required" });
     }
 
+    const isParallel = generateParallel === true || generateParallel === "true";
     const apiKey = process.env.GEMINI_API_KEY;
-    if (!apiKey || apiKey.startsWith("your_gemini_api_key")) {
-      return res.status(400).json({ 
-        message: "Please configure your GEMINI_API_KEY in the backend .env file to enable the AI Writing Assistant." 
-      });
+    if (!apiKey || apiKey.startsWith("your_gemini_api_key") || apiKey === "REPLACE_WITH_YOUR_KEY") {
+      return res.status(400).json({ message: "Gemini API key is not configured properly in the backend." });
     }
 
     const genAI = new GoogleGenerativeAI(apiKey);
@@ -427,8 +426,6 @@ exports.generateArticle = async (req, res) => {
       model: "gemini-2.5-flash",
       generationConfig: { responseMimeType: "application/json" }
     });
-
-    const isParallel = generateParallel === true || generateParallel === "true";
 
     const systemPrompt = `
 You are a brilliant writer and AI co-author for a premium, high-aesthetic blog/essay platform called "FootNote".

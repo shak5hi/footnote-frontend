@@ -1,6 +1,7 @@
 const express = require("express");
 const cors = require("cors");
-require("dotenv").config();
+const path = require("path");
+require("dotenv").config({ path: path.resolve(__dirname, ".env") });
 
 const connectDB = require("./config/db");
 const authRoutes = require("./routes/authRoutes");
@@ -13,6 +14,10 @@ const { swaggerUi, swaggerSpec } = require("./config/swagger");
 const app = express();
 
 app.use(cors());
+app.use((req, res, next) => {
+  console.log(`[${new Date().toISOString()}] ${req.method} ${req.url}`);
+  next();
+});
 
 // Stripe Webhook needs raw body parsing, register it BEFORE express.json()
 app.post(
@@ -49,5 +54,8 @@ setInterval(async () => {
 
 app.listen(5001, () => {
     console.log("Server running on port 5001");
+    console.log("Loaded JWT_SECRET:", process.env.JWT_SECRET ? `Yes (length: ${process.env.JWT_SECRET.length})` : "No (undefined/missing)");
+    console.log("Resolved .env path:", path.resolve(__dirname, ".env"));
     console.log("Swagger docs available at: http://localhost:5001/api-docs");
 });
+

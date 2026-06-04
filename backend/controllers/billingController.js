@@ -1,4 +1,5 @@
-const stripe = require("stripe")(process.env.STRIPE_SECRET_KEY);
+const stripeKey = process.env.STRIPE_SECRET_KEY || "sk_test_placeholder_key_to_prevent_startup_crash";
+const stripe = require("stripe")(stripeKey);
 const User = require("../models/User");
 
 exports.createCheckoutSession = async (req, res) => {

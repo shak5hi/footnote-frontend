@@ -1,0 +1,324 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>FootNote — Subscriptions</title>
+  <link rel="stylesheet" href="../css/dashboard.css">
+  <link rel="stylesheet" href="../css/pages.css">
+  <style>
+    .sub-latest {
+      font-size: 12.5px;
+      color: var(--text-ghost);
+      font-style: italic;
+      margin-top: 4px;
+      line-height: 1.5;
+    }
+    .sub-latest a {
+      color: var(--text-secondary);
+      transition: color var(--t-fast);
+    }
+    .sub-latest a:hover { color: var(--accent); }
+    .recent-writing {
+      padding: 22px 24px;
+      background: var(--bg-card);
+      border-radius: 10px;
+      border: 1px solid var(--border);
+      margin-bottom: 12px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 16px;
+      transition: transform var(--t-slow) var(--ease), border-color var(--t-slow) ease;
+    }
+    .recent-writing:hover {
+      transform: translateY(-2px);
+      border-color: rgba(214,195,163,0.1);
+    }
+    .recent-writing-info { flex: 1; }
+    .recent-author {
+      font-size: 11px;
+      color: var(--text-ghost);
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      margin-bottom: 6px;
+    }
+    .recent-title {
+      font-family: var(--font-serif);
+      font-size: 17px;
+      font-weight: 400;
+      color: var(--text-primary);
+      line-height: 1.4;
+    }
+    
+    /* Sidebar Toggle Classes */
+    .dashboard-wrapper.sidebars-hidden .sidebar-left,
+    .dashboard-wrapper.sidebars-hidden .sidebar-right {
+      display: none !important;
+    }
+    .dashboard-wrapper.sidebars-hidden .page-main {
+      border: none;
+    }
+  </style>
+</head>
+<body>
+  <div class="cursor-dot"></div>
+  <div class="cursor-ring"></div>
+
+  <div class="dashboard-wrapper">
+
+    <!-- Left Sidebar -->
+    <aside class="sidebar-left">
+      <div class="brand-logo">FOOTNOTE</div>
+      <nav class="nav-menu">
+        <a href="dashboard.html" class="nav-item has-hover">
+          <svg class="nav-icon" viewBox="0 0 24 24"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>
+          Home
+        </a>
+        <a href="subscriptions.html" class="nav-item active has-hover">
+          <svg class="nav-icon" viewBox="0 0 24 24"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
+          Subscriptions
+        </a>
+
+        <a href="explore.html" class="nav-item has-hover">
+          <svg class="nav-icon" viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+          Explore
+        </a>
+        <a href="profile.html" class="nav-item has-hover">
+          <svg class="nav-icon" viewBox="0 0 24 24"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+          Profile
+        </a>
+        <a href="trails.html" class="nav-item has-hover">
+          <svg class="nav-icon" viewBox="0 0 24 24"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/></svg>
+          Trails
+        </a>
+      </nav>
+      <a href="create.html" class="btn-create has-hover">Create Something Worth Keeping</a>
+      <div class="sidebar-bottom">
+        <a href="#" class="nav-item has-hover" id="btn-toggle-sidebars">
+          <svg class="nav-icon" viewBox="0 0 24 24"><path d="M18 6L6 18M6 6l12 12"/></svg>
+          Hide Sidebars
+        </a>
+        <a href="#" class="nav-item has-hover">
+          <svg class="nav-icon" viewBox="0 0 24 24"><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="18" x2="21" y2="18"/></svg>
+          More
+        </a>
+      </div>
+    </aside>
+
+    <!-- Main -->
+    <main class="page-main">
+      <div class="page-header reveal-item" style="position: relative;">
+        <!-- Corner Markers -->
+        <div style="position: absolute; top:0; left:0; width: 6px; height: 6px; background: var(--text-primary);"></div>
+        <div style="position: absolute; top:0; right:0; width: 6px; height: 6px; background: var(--text-primary);"></div>
+        <div style="position: absolute; bottom:0; left:0; width: 6px; height: 6px; background: var(--text-primary);"></div>
+        <div style="position: absolute; bottom:0; right:0; width: 6px; height: 6px; background: var(--text-primary);"></div>
+
+        <h1 class="page-title" style="font-size: 140px; line-height: 0.85;">Voices</h1>
+        <div style="font-size: 12px; font-weight: 700; color: var(--text-ghost); text-transform: uppercase; letter-spacing: 0.2em; margin-top: 12px; border-left: 2px solid var(--text-primary); padding-left: 12px;">Network 04 // Subscriptions</div>
+      </div>
+
+      <div class="page-container">
+
+        <!-- Subscribed to -->
+        <div class="reveal-item">
+          <p class="section-title">Subscribed To</p>
+
+          <div id="subscriptions-container">
+             <p style="color: var(--text-ghost); font-size: 13px; font-style: italic; margin-top: 16px;">Loading subscriptions...</p>
+          </div>
+        </div>
+
+        <!-- Recent from subscriptions -->
+        <div class="reveal-item" id="recent-feed-section" style="transition-delay:0.15s; margin-top:48px; display:none;">
+          <p class="section-title">Recent from Your Subscriptions</p>
+          <div id="subscriptions-feed-container"></div>
+        </div>
+
+      </div>
+    </main>
+
+    <!-- Right Sidebar -->
+    <aside class="sidebar-right">
+      <div class="theme-toggle-row">
+        <button class="theme-toggle has-hover" id="themeToggle" title="Toggle theme">deep</button>
+      </div>
+      <div class="search-wrapper">
+        <svg class="search-icon" viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+        <input type="text" class="search-input has-hover" placeholder="Search FootNote">
+      </div>
+      <div class="right-section">
+        <div class="section-header">
+          <span class="section-label">Continue Reading</span>
+          <a href="#" class="view-all-link has-hover">See all</a>
+        </div>
+        <div class="sidebar-list">
+          <div class="sidebar-list-item has-hover">
+            <div class="item-content">
+              <span class="item-meta">Field Notes</span>
+              <h4 class="item-title">not everything that matters needs to be shared</h4>
+            </div>
+            <div class="item-thumb" style="background-image:url('../images/image3.jpg')"></div>
+          </div>
+          <div class="sidebar-list-item has-hover">
+            <div class="item-content">
+              <span class="item-meta">Slow Living</span>
+              <h4 class="item-title">you don't need a new routine, just a slower one</h4>
+            </div>
+            <div class="item-thumb" style="background-image:url('../images/image4.jpg')"></div>
+          </div>
+        </div>
+      </div>
+      <div class="right-section">
+        <div class="section-header">
+          <span class="section-label">Voices to Follow</span>
+          <a href="#" class="view-all-link has-hover">See all</a>
+        </div>
+        <div class="sidebar-list">
+          <div class="sidebar-list-item has-hover">
+            <div class="author-avatar small" style="background-image:url('../images/image2.jpg')"></div>
+            <div class="item-content">
+              <h4 class="item-title" style="font-style:normal;font-family:var(--font-sans);font-size:13px;font-weight:500">Maya Chukujama</h4>
+              <span class="item-meta" style="text-transform:none;letter-spacing:0;font-size:12px">writing to understand things I don't have words for yet</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </aside>
+
+  </div>
+
+  <script src="../js/pages.js"></script>
+  <script>
+    document.addEventListener("DOMContentLoaded", async () => {
+      const token = localStorage.getItem("token");
+      const container = document.getElementById("subscriptions-container");
+      const wrapper = document.querySelector('.dashboard-wrapper');
+
+      // Sidebar Toggle
+      const btnToggleSidebars = document.getElementById('btn-toggle-sidebars');
+      if (btnToggleSidebars && wrapper) {
+        btnToggleSidebars.addEventListener('click', (e) => {
+          e.preventDefault();
+          const isHidden = wrapper.classList.toggle('sidebars-hidden');
+          btnToggleSidebars.innerHTML = isHidden ? 
+            `<svg class="nav-icon" viewBox="0 0 24 24"><path d="M3 3h18v18H3z"/></svg> Show Sidebars` : 
+            `<svg class="nav-icon" viewBox="0 0 24 24"><path d="M18 6L6 18M6 6l12 12"/></svg> Hide Sidebars`;
+        });
+      }
+
+      if (!token) {
+        container.innerHTML = `
+          <div style="text-align:center; padding: 40px 0;">
+            <p style='color: var(--text-ghost); font-size: 13px; font-style: italic; margin-bottom: 20px;'>Please log in to see your subscriptions.</p>
+            <a href="dashboard.html" class="btn-subscribe" style="text-decoration:none; display:inline-block;">Go to Login</a>
+          </div>
+        `;
+        return;
+      }
+
+      async function loadSubscriptions() {
+        container.innerHTML = "<p style='color: var(--text-ghost); font-size: 13px; font-style: italic; margin-top: 16px;'>Loading subscriptions...</p>";
+        try {
+          const res = await fetch("http://localhost:5001/api/auth/subscriptions", {
+            headers: { "Authorization": `Bearer ${token}` }
+          });
+          
+          if (res.ok) {
+            const data = await res.json();
+            const subs = data.subscriptions || [];
+
+            if (subs.length === 0) {
+              container.innerHTML = "<p style='color: var(--text-ghost); font-size: 13px; font-style: italic; margin-top: 16px;'>You haven't subscribed to anyone yet. Go to Explore to find writers.</p>";
+              return;
+            }
+
+            container.innerHTML = "";
+            subs.forEach((sub, idx) => {
+              const html = `
+                <div class="writer-row" style="opacity:0; animation: fadeUp 0.6s var(--ease) forwards; animation-delay: ${idx * 0.1}s">
+                  <div class="writer-avatar" style="background-image:url('${sub.avatar}')"></div>
+                  <div class="writer-info">
+                    <p class="writer-name" style="color:var(--text-primary); font-weight:700;">${sub.name}</p>
+                    <p class="writer-bio" style="color:var(--text-secondary); font-size:12px;">${sub.bio}</p>
+                  </div>
+                  <button class="btn-subscribe has-hover" style="border-color:var(--border); color:var(--text-primary); font-weight:900;">SUBSCRIBED</button>
+                </div>
+              `;
+              container.innerHTML += html;
+            });
+
+            // Phase 2: Native feed matching (Mocked for now as per original)
+            const feedContainer = document.getElementById("subscriptions-feed-container");
+            const recentSection = document.getElementById("recent-feed-section");
+            
+            const mockArticlesDB = {
+              "Nicole Walters": [
+                { title: "rest is not something you earn", tone: "Self" },
+                { title: "you don't need a new routine, just a slower one", tone: "Reflection" }
+              ],
+              "Aarav Sen": [
+                { title: "your pace is allowed to be different", tone: "Personal" }
+              ],
+              "Elina Verne": [
+                { title: "not everything that matters needs to be shared", tone: "Field Note" }
+              ],
+              "Maya Chukujama": [
+                { title: "The Weight of Quiet Things", tone: "Selected Series" },
+                { title: "Presence over Proof", tone: "Observation" }
+              ]
+            };
+
+            let feedHtml = "";
+            subs.forEach(sub => {
+              const mockArticles = mockArticlesDB[sub.name] || [];
+              mockArticles.forEach((article, idx) => {
+                feedHtml += `
+                  <a href="article.html" class="recent-writing" style="display:flex;text-decoration:none; opacity:0; animation: fadeUp 0.6s var(--ease) forwards; animation-delay: ${idx * 0.15}s">
+                    <div class="recent-writing-info">
+                      <p class="recent-author">${sub.name} <span style="text-transform:none; margin-left:8px; opacity:0.5;">· ${article.tone}</span></p>
+                      <h3 class="recent-title">${article.title}</h3>
+                    </div>
+                    <span class="writing-read-link" style="flex-shrink:0">Read →</span>
+                  </a>
+                `;
+              });
+            });
+
+            if (feedHtml.length > 0) {
+              feedContainer.innerHTML = feedHtml;
+              recentSection.style.display = "block";
+            }
+
+          } else {
+            console.error("Subscription fetch failed with status:", res.status);
+            if (res.status === 401) {
+              container.innerHTML = "<p style='color: var(--text-ghost); font-size: 13px;'>Session expired. Please log in again.</p>";
+            } else {
+              container.innerHTML = `
+                <div style="padding: 20px 0;">
+                  <p style='color: var(--text-ghost); font-size: 13px; margin-bottom: 12px;'>Error loading subscriptions (Status: ${res.status}).</p>
+                  <button id="btn-retry" class="btn-subscribe" style="font-size:10px; padding:6px 16px;">RETRY</button>
+                </div>
+              `;
+              document.getElementById('btn-retry').onclick = loadSubscriptions;
+            }
+          }
+        } catch (e) {
+          console.error("Fetch error:", e);
+          container.innerHTML = `
+            <div style="padding: 20px 0;">
+              <p style='color: var(--text-ghost); font-size: 13px; margin-bottom: 12px;'>Failed to reach server.</p>
+              <button id="btn-retry-network" class="btn-subscribe" style="font-size:10px; padding:6px 16px;">RETRY</button>
+            </div>
+          `;
+          document.getElementById('btn-retry-network').onclick = loadSubscriptions;
+        }
+      }
+
+      loadSubscriptions();
+    });
+  </script>
+</body>
+</html>
