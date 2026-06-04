@@ -340,7 +340,7 @@ exports.suggestMusic = async (req, res) => {
 
     const genAI = new GoogleGenerativeAI(apiKey);
     const model = genAI.getGenerativeModel({
-      model: "gemini-1.5-flash",
+      model: "gemini-2.5-flash",
       generationConfig: { responseMimeType: "application/json" }
     });
 
@@ -417,120 +417,13 @@ exports.generateArticle = async (req, res) => {
 
     const isParallel = generateParallel === true || generateParallel === "true";
     const apiKey = process.env.GEMINI_API_KEY;
-    if (!apiKey || apiKey.startsWith("your_gemini_api_key")) {
-      console.log("⚠️ GEMINI_API_KEY not set. Using rich local catalog fallback for article generation.");
-      
-      const lowerPrompt = prompt.toLowerCase();
-      const isHorror = lowerPrompt.includes("horror") || 
-                       lowerPrompt.includes("creepy") || 
-                       lowerPrompt.includes("scary") || 
-                       lowerPrompt.includes("phone") ||
-                       lowerPrompt.includes("ghost") ||
-                       lowerPrompt.includes("dark");
-
-      if (isHorror) {
-        const mockTitle = "The Call at 2:13 AM";
-        const mockBlocks = [
-          {
-            type: "heading",
-            content: "I. The Ringing"
-          },
-          {
-            type: "paragraph",
-            content: "It started on a Tuesday. The phone on the bedside table vibrated, a low, mechanical hum that rattled the dust in the old apartment. Daniel reached for it, blinking against the darkness. The green digits on the clock read exactly 2:13 AM."
-          },
-          {
-            type: "paragraph",
-            content: "He checked the screen. The caller ID displayed his own name. And his own number. When he answered, there was only the sound of heavy, rhythmic breathing, followed by a whisper that sounded exactly like his own voice: 'Don't look at the door.'"
-          },
-          {
-            type: "quote",
-            content: "Sometimes, the voice on the other end is closer than you think."
-          },
-          {
-            type: "paragraph",
-            content: "Every night since, at precisely 2:13 AM, the phone would ring. Daniel tried turning it off, removing the SIM card, even unplugging the battery. It made no difference. The screen would glow, his own name flashing in the dark, and the whisper would grow louder, describing what he was wearing, what he was thinking."
-          },
-          {
-            type: "paragraph",
-            content: "He decided to wait outside his door one night. As 2:13 AM approached, he stood in the dim corridor, staring at his closed apartment door. Exactly on the minute, his phone buzzed in his hand. He answered. From inside the locked apartment, he heard his own voice whispering into the receiver: 'I see you standing in the hallway. Turn around.'"
-          },
-          {
-            type: "poetry",
-            content: "Who is speaking in the dark?\nLeaving such a chilling mark.\nHe who stands behind the pane,\nwhispering your name again."
-          }
-        ];
-        
-        const mockParallelBlocks = isParallel ? [
-          {
-            type: "paragraph",
-            content: "(The shadow in the corner of the room seems to shift slightly whenever the phone rings. I tell myself it's just the streetlights outside.)"
-          },
-          {
-            type: "paragraph",
-            content: "(If I pick up tonight, will I hear myself scream?)"
-          }
-        ] : [];
-
-        return res.status(200).json({
-          title: mockTitle,
-          blocks: mockBlocks,
-          parallelBlocks: mockParallelBlocks
-        });
-      }
-
-      const mockTitles = [
-        "The Architecture of Silence",
-        "Chronicles of the Unseen Horizon",
-        "A Slow Monologue on Stillness",
-        "The Geography of Solitude"
-      ];
-      const mockTitle = title || mockTitles[Math.floor(Math.random() * mockTitles.length)];
-      
-      const mockBlocks = [
-        {
-          type: "heading",
-          content: "I. The Whispering Walls"
-        },
-        {
-          type: "paragraph",
-          content: `In the quiet spaces of our lives, the world continues its slow rotation. When exploring the prompt: "${prompt}", we touch upon a fundamental human longing — the search for connection in an increasingly overstimulated landscape.`
-        },
-        {
-          type: "quote",
-          content: "We do not need more information. We need more silence to understand what we already know."
-        },
-        {
-          type: "paragraph",
-          content: "To walk through the city at dawn is to observe the architecture before the noise invades it. The stones remember the stillness of the night, holding onto a clean clarity that is lost the moment the first engine starts."
-        },
-        {
-          type: "poetry",
-          content: "The leaves fall without a sound,\nmarking time upon the ground.\nWe watch the seasons come and go,\nin the slow light of the winter snow."
-        }
-      ];
-
-      const mockParallelBlocks = isParallel ? [
-        {
-          type: "paragraph",
-          content: "(The mind wanders, seeking an exit from the loop. We listen to the wind rattling the window frame, wondering if the response is enough.)"
-        },
-        {
-          type: "paragraph",
-          content: "(A memory of a quiet room in autumn. No screens, just the ticking of an old brass clock and the scent of rain.)"
-        }
-      ] : [];
-
-      return res.status(200).json({
-        title: mockTitle,
-        blocks: mockBlocks,
-        parallelBlocks: mockParallelBlocks
-      });
+    if (!apiKey || apiKey.startsWith("your_gemini_api_key") || apiKey === "REPLACE_WITH_YOUR_KEY") {
+      return res.status(400).json({ message: "Gemini API key is not configured properly in the backend." });
     }
 
     const genAI = new GoogleGenerativeAI(apiKey);
     const model = genAI.getGenerativeModel({
-      model: "gemini-1.5-flash",
+      model: "gemini-2.5-flash",
       generationConfig: { responseMimeType: "application/json" }
     });
 
@@ -618,7 +511,7 @@ exports.suggestCovers = async (req, res) => {
 
     const genAI = new GoogleGenerativeAI(apiKey);
     const model = genAI.getGenerativeModel({
-      model: "gemini-1.5-flash",
+      model: "gemini-2.5-flash",
       generationConfig: { responseMimeType: "application/json" }
     });
 

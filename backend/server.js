@@ -14,6 +14,10 @@ const { swaggerUi, swaggerSpec } = require("./config/swagger");
 const app = express();
 
 app.use(cors());
+app.use((req, res, next) => {
+  console.log(`[${new Date().toISOString()}] ${req.method} ${req.url}`);
+  next();
+});
 
 // Stripe Webhook needs raw body parsing, register it BEFORE express.json()
 app.post(
