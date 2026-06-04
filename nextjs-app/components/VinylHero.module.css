@@ -1,0 +1,1083 @@
+.container {
+  position: relative;
+  width: 100%;
+  background-color: #F0E0D6; /* Warm rose-cream */
+  background-image: 
+    radial-gradient(ellipse 80% 60% at 50% 50%, rgba(255, 220, 200, 0.55) 0%, rgba(200, 140, 140, 0.08) 55%, rgba(0, 0, 0, 0.08) 100%),
+    url("https://www.transparenttextures.com/patterns/crumbled-paper.png");
+  background-repeat: repeat;
+}
+
+/* Grain overlay for depth */
+.container::before {
+  content: '';
+  position: fixed;
+  inset: 0;
+  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' opacity='0.04'/%3E%3C/svg%3E");
+  pointer-events: none;
+  z-index: 9999;
+  opacity: 0.35;
+  mix-blend-mode: multiply;
+}
+
+.stickyTrack {
+  position: relative;
+  height: 700vh;
+  width: 100%;
+}
+
+/* This creates the 'pinned' screen effect */
+.stickyViewport {
+  position: sticky;
+  top: 0;
+  height: 100vh;
+  width: 100%;
+  overflow: hidden;
+}
+
+/* ── Top Navigation Header ── */
+.headerBar {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: clamp(24px, 3.5vw, 40px) 8vw;
+  z-index: 100;
+  box-sizing: border-box;
+  pointer-events: auto;
+}
+
+.headerWordmark {
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+  font-size: clamp(14px, 1.2vw, 16px);
+  font-weight: 800; /* Bold uppercase wordmark */
+  letter-spacing: 0.05em;
+  color: #000000;
+  text-transform: uppercase;
+}
+
+.headerRight {
+  display: flex;
+  align-items: center;
+  gap: 20px;
+}
+
+.themeText {
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+  font-size: clamp(10px, 0.8vw, 11px);
+  font-weight: 500;
+  letter-spacing: 0.15em;
+  color: #555555;
+  text-transform: uppercase;
+  cursor: pointer;
+  transition: opacity 0.3s ease;
+}
+
+.themeText:hover {
+  opacity: 0.6;
+}
+
+.hamburgerMenu {
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  width: 22px;
+  height: 8px; /* Slightly tighter hamburger matching the screenshot */
+  cursor: pointer;
+  transition: opacity 0.3s ease;
+}
+
+.hamburgerMenu:hover {
+  opacity: 0.6;
+}
+
+.hamburgerLine {
+  width: 100%;
+  height: 2px;
+  background-color: #000000;
+}
+
+/* ── Hero Text ── */
+.heroText {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  pointer-events: none;
+  padding: 0 40px;
+  z-index: 12;
+}
+
+/* ── Vertical Side Label (left) ── */
+.heroSideLabel {
+  position: absolute;
+  left: 8vw;
+  bottom: 40px;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  z-index: 12;
+  pointer-events: none;
+}
+
+.heroSideLabelLine {
+  width: 32px;
+  height: 1px;
+  background: rgba(51, 12, 22, 0.3);
+}
+
+.heroSideLabelText {
+  font-family: 'DM Mono', 'Courier New', monospace;
+  font-size: 9px;
+  letter-spacing: 0.22em;
+  text-transform: uppercase;
+  color: rgba(51, 12, 22, 0.45);
+}
+
+/* ── Scroll Indicator ── */
+.scrollIndicator {
+  position: absolute;
+  bottom: 36px;
+  left: 50%;
+  transform: translateX(-50%);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+  z-index: 12;
+  pointer-events: none;
+  animation: scrollBounce 2s ease-in-out infinite;
+}
+
+.scrollDot {
+  width: 5px;
+  height: 5px;
+  border-radius: 50%;
+  background: rgba(51, 12, 22, 0.35);
+}
+
+.scrollLine {
+  width: 1px;
+  height: 32px;
+  background: linear-gradient(to bottom, rgba(51, 12, 22, 0.35), transparent);
+}
+
+@keyframes scrollBounce {
+  0%, 100% { transform: translateX(-50%) translateY(0); opacity: 0.6; }
+  50% { transform: translateX(-50%) translateY(6px); opacity: 1; }
+}
+
+/* ── Issue Tag (top right corner of hero) ── */
+.heroIssueBadge {
+  position: absolute;
+  right: 8vw;
+  bottom: 40px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  z-index: 12;
+  pointer-events: none;
+}
+
+.heroIssueBadgeText {
+  font-family: 'DM Mono', 'Courier New', monospace;
+  font-size: 9px;
+  letter-spacing: 0.22em;
+  text-transform: uppercase;
+  color: rgba(51, 12, 22, 0.45);
+}
+
+.heroIssueBadgeDot {
+  width: 4px;
+  height: 4px;
+  border-radius: 50%;
+  background: rgba(138, 90, 102, 0.5);
+}
+
+.eyebrow {
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+  font-size: clamp(10px, 1vw, 12px);
+  letter-spacing: 0.25em;
+  text-transform: uppercase;
+  color: #8A5A66; /* Elegant light cherry coke */
+  margin-bottom: 32px;
+}
+
+.headline {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  margin: 0;
+}
+
+.line1 {
+  display: block;
+  font-family: 'Georgia', serif;
+  font-weight: 400;
+  font-size: clamp(80px, 9vw, 128px);
+  line-height: 1.15;
+  color: #330C16; /* Deep cherry coke */
+  letter-spacing: -0.01em;
+}
+
+.line2 {
+  display: block;
+  font-family: 'Georgia', serif;
+  font-weight: 400;
+  font-style: italic;
+  font-size: clamp(80px, 9vw, 128px);
+  line-height: 1.15;
+  color: #330C16; /* Deep cherry coke */
+  letter-spacing: -0.01em;
+}
+
+.rule {
+  width: 48px;
+  height: 1px;
+  background: #330C16; /* Deep cherry coke */
+  margin: 32px auto;
+  opacity: 0.15;
+}
+
+.body {
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+  font-size: clamp(14px, 1.2vw, 17px);
+  line-height: 1.75;
+  color: #4A1A26; /* Medium cherry coke */
+  max-width: 520px;
+  text-align: center;
+  font-weight: 400;
+}
+
+.cta {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  margin-top: 40px;
+  font-family: 'DM Mono', 'Courier New', monospace;
+  font-size: clamp(10px, 0.9vw, 12px);
+  letter-spacing: 0.22em;
+  text-transform: uppercase;
+  color: #F3E8E1;
+  background: #330C16;
+  text-decoration: none;
+  padding: 14px 28px;
+  border-radius: 2px;
+  transition: background 0.35s ease, transform 0.25s ease, box-shadow 0.35s ease;
+  pointer-events: auto;
+  font-weight: 500;
+  box-shadow: 0 4px 24px rgba(51, 12, 22, 0.18);
+  position: relative;
+  overflow: hidden;
+}
+
+.cta::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(135deg, rgba(255,255,255,0.07) 0%, transparent 60%);
+  pointer-events: none;
+}
+
+.cta:hover {
+  background: #4A1A26;
+  transform: translateY(-2px);
+  box-shadow: 0 8px 32px rgba(51, 12, 22, 0.28);
+}
+
+.ctaArrow {
+  display: inline-block;
+  transition: transform 0.3s ease;
+}
+
+.cta:hover .ctaArrow {
+  transform: translateX(4px);
+}
+
+/* ── Next Text ── */
+.nextText {
+  position: absolute;
+  left: 8vw; /* Flipped to the left side per user request since vinyl settles on the right */
+  top: 50%;
+  transform: translateY(-50%);
+  max-width: 380px;
+  text-align: left;
+  z-index: 1;
+  opacity: 0; /* Starts hidden, GSAP fades it in */
+}
+
+.nextEyebrow {
+  font-family: 'DM Mono', 'Courier New', monospace;
+  font-size: 10px;
+  letter-spacing: 0.28em;
+  text-transform: uppercase;
+  color: #8A5A66; /* Cherry Coke light */
+  margin-bottom: 20px;
+}
+
+.nextHeadline {
+  font-family: 'DM Serif Display', 'Georgia', serif;
+  font-weight: 400;
+  font-size: clamp(36px, 4.5vw, 58px);
+  line-height: 1.1;
+  color: #330C16; /* Deep Cherry Coke */
+  letter-spacing: -0.01em;
+  margin: 0 0 24px 0;
+}
+
+.nextRule {
+  width: 36px;
+  height: 1px;
+  background: #330C16;
+  opacity: 0.2;
+  margin-bottom: 20px;
+}
+
+.nextBody {
+  font-family: 'DM Serif Display', 'Georgia', serif;
+  font-size: 15px;
+  line-height: 1.8;
+  color: #4A1A26; /* Cherry Coke medium */
+}
+
+/* ── Canvas Wrapper ── */
+.canvasWrap {
+  position: absolute;
+  inset: 0;
+  z-index: 10;
+  pointer-events: none;
+  opacity: 0;
+  animation: canvasFadeIn 0.01s ease forwards;
+  animation-delay: 0.4s; /* Wait for GSAP to position models before showing canvas */
+}
+
+@keyframes canvasFadeIn {
+  to { opacity: 1; }
+}
+
+/* ── Section 2: Horizontal Articles (Magazine Grid) ── */
+.magazineIssue {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100vh;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  /* Push entire section to the right with luxurious, responsive padding margins */
+  padding: 0 8vw 0 38vw; 
+  z-index: 2;
+  opacity: 0; /* Animated by GSAP */
+  pointer-events: none; /* Controlled by timeline */
+}
+
+.magazineContainer {
+  width: 100%;
+}
+
+.magazineHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-end;
+  margin-bottom: 20px;
+}
+
+.magazineTitle {
+  font-family: 'DM Serif Display', 'Georgia', serif;
+  font-weight: 400;
+  font-size: clamp(28px, 3vw, 42px); /* slightly smaller to fit perfectly */
+  line-height: 1.1;
+  color: #330C16;
+  margin: 0;
+  letter-spacing: -0.01em;
+}
+
+.magazineViewAll {
+  font-family: 'DM Mono', 'Courier New', monospace;
+  text-transform: uppercase;
+  font-size: 11px;
+  letter-spacing: 0.1em;
+  color: #330C16;
+  text-decoration: none;
+  border-bottom: 1px solid rgba(51, 12, 22, 0.25);
+  padding-bottom: 4px;
+  transition: opacity 0.3s ease;
+  pointer-events: auto;
+}
+
+.magazineViewAll:hover {
+  opacity: 0.55;
+}
+
+.magazineDivider {
+  width: 100%;
+  height: 1px;
+  background-color: rgba(51, 12, 22, 0.15);
+  margin-bottom: 40px;
+}
+
+/* New Wrapper to constrain card scrolling to the right side of the screen */
+.magazineGridWrapper {
+  width: 100%;
+  height: clamp(400px, 55vh, 520px); /* Give it a set height so absolute cards stack properly */
+  position: relative;
+  overflow: visible; /* Let them animate cleanly within the padded magazineIssue container */
+}
+
+.magazineGrid {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+}
+
+.magazineCard {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: space-between;
+  gap: clamp(60px, 8vw, 120px); /* Kinfolk-style generous breathing whitespace */
+  box-sizing: border-box;
+  cursor: pointer;
+  pointer-events: none; /* Controlled by GSAP timeline */
+  opacity: 0; /* Default starting state */
+  will-change: transform, opacity;
+}
+
+.magazineCardText {
+  flex: 1;
+  max-width: 480px; /* Perfect reading length */
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  text-align: left;
+}
+
+.magazineImgWrapper {
+  position: relative;
+  width: clamp(280px, 22vw, 380px); /* Stately horizontal weight */
+  aspect-ratio: 3 / 4;
+  overflow: hidden;
+  background-color: rgba(51, 12, 22, 0.05);
+  border-radius: 2px;
+  flex-shrink: 0;
+  /* Premium ultra-soft shadow */
+  box-shadow: 0 16px 40px rgba(51, 12, 22, 0.05), 0 2px 8px rgba(51, 12, 22, 0.02);
+}
+
+.magazineImg {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  transition: transform 1.2s cubic-bezier(0.25, 0.46, 0.45, 0.94); /* Luxurious, slow hover scale */
+}
+
+.magazineCard:hover .magazineImg {
+  transform: scale(1.04);
+}
+
+.magazineMeta {
+  font-family: 'DM Mono', 'Courier New', monospace;
+  font-weight: 400;
+  font-size: 10px;
+  letter-spacing: 0.25em; /* Extreme print-style letter spacing */
+  color: #8A5A66;
+  margin-bottom: 24px;
+  text-transform: uppercase;
+}
+
+.magazineCardTitle {
+  font-family: 'DM Serif Display', 'Georgia', serif;
+  font-weight: 400;
+  font-size: clamp(32px, 2.8vw, 48px); /* Majestic print headline scale */
+  line-height: 1.15;
+  color: #330C16;
+  text-transform: uppercase;
+  margin: 0 0 20px 0;
+}
+
+.magazineDesc {
+  font-family: 'DM Serif Display', 'Georgia', serif;
+  font-style: italic;
+  font-size: clamp(14px, 1.1vw, 16px);
+  line-height: 1.85;
+  color: #4A1A26;
+  margin: 0;
+  opacity: 0.85;
+}
+
+/* ── Section 3: Vinyl Cover Image ── */
+.vinylCoverContainer {
+  position: absolute;
+  right: 8vw;
+  bottom: 8vh;
+  width: clamp(260px, 20vw, 360px);
+  aspect-ratio: 1 / 1;
+  z-index: 12; /* Places cover higher than .canvasWrap (z-index 10) so vinyl hides behind it */
+  opacity: 0; /* Animated by GSAP */
+  pointer-events: auto;
+  border-radius: 4px;
+  overflow: hidden;
+  /* Premium tactile deep print-shadow */
+  box-shadow: 0 24px 50px rgba(51, 12, 22, 0.15), 0 6px 16px rgba(51, 12, 22, 0.06);
+}
+
+.vinylCoverImg {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+/* ── Section 3: Left Side Curation Stack ── */
+.featuresStack {
+  position: absolute;
+  left: 8vw;
+  top: 50%;
+  transform: translateY(-50%);
+  max-width: 420px;
+  text-align: left;
+  z-index: 15;
+  opacity: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 48px; /* Clean spacing that keeps all 3 pointers visible within the viewport */
+  padding-right: 20px;
+}
+
+.featureBlock {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  flex-shrink: 0; /* Prevent compression of blocks */
+  opacity: 0; /* Starts hidden to prevent FOUC before GSAP initializes */
+}
+
+.featureMicro {
+  font-family: 'DM Mono', 'Courier New', monospace;
+  font-weight: 400;
+  text-transform: uppercase;
+  font-size: 10px;
+  letter-spacing: 0.2em;
+  color: #8A5A66; /* Cherry Coke light */
+  margin-bottom: 12px;
+}
+
+.featureTitle {
+  font-family: 'DM Serif Display', 'Georgia', serif;
+  font-weight: 400;
+  font-size: clamp(28px, 2.5vw, 36px);
+  line-height: 1.15;
+  color: #330C16; /* Deep Cherry Coke */
+  margin-bottom: 12px;
+}
+
+.featureDesc {
+  font-family: 'DM Serif Display', 'Georgia', serif;
+  font-style: italic;
+  font-size: clamp(14px, 1.1vw, 15px);
+  line-height: 1.75;
+  color: #4A1A26; /* Cherry Coke medium */
+  opacity: 0.8;
+  margin-bottom: 16px;
+  max-width: 380px;
+}
+
+.featureLink {
+  font-family: 'DM Mono', 'Courier New', monospace;
+  text-transform: uppercase;
+  font-size: 10px;
+  letter-spacing: 0.1em;
+  color: #330C16;
+  text-decoration: none;
+  border-bottom: 1px solid rgba(51, 12, 22, 0.25);
+  padding-bottom: 2px;
+  transition: opacity 0.3s ease;
+}
+
+.featureLink:hover {
+  opacity: 0.55;
+}
+
+/* ── Section 3: Right Side Manifesto Overlay ── */
+.featuresManifesto {
+  position: absolute;
+  right: 8vw; /* Perfectly aligned with the cover's right edge */
+  top: 15vh; /* Positioned slightly higher */
+  max-width: 580px;
+  font-family: 'DM Serif Display', 'Georgia', serif;
+  font-weight: 400;
+  font-size: clamp(36px, 3.8vw, 54px);
+  line-height: 1.15;
+  color: #330C16;
+  letter-spacing: -0.02em;
+  word-spacing: -2px; /* Pull words closer together */
+  z-index: 15; /* Keeps text layered above any underlying meshes */
+  opacity: 0; /* Animated by GSAP */
+  pointer-events: none;
+  text-align: right;
+}
+
+.italic {
+  font-style: italic;
+}
+
+/* ── Scroll Animations ── */
+.animFadeUp {
+  opacity: 0;
+  transform: translateY(30px);
+  transition: opacity 1.2s cubic-bezier(0.25, 0.46, 0.45, 0.94),
+              transform 1.2s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+  will-change: opacity, transform;
+}
+
+.animFadeUp.isVisible {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+.animSlideRight {
+  opacity: 0;
+  transform: translateX(40px);
+  transition: opacity 1.2s cubic-bezier(0.25, 0.46, 0.45, 0.94),
+              transform 1.2s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+  will-change: opacity, transform;
+}
+
+.animSlideRight.isVisible {
+  opacity: 1;
+  transform: translateX(0);
+}
+
+/* Staggers and Delays */
+.stagger1 { transition-delay: 100ms; }
+.stagger2 { transition-delay: 200ms; }
+.stagger3 { transition-delay: 300ms; }
+.stagger4 { transition-delay: 400ms; }
+.stagger5 { transition-delay: 500ms; }
+
+.delay2 { transition-delay: 150ms; }
+
+/* ── Section 4: Atmospheres Section ── */
+.atmospheresSection {
+  padding: 80px 8vw; /* Tightened padding to bring sections closer together */
+  background-color: #F3E8E1; /* Rosy cream off-white for 3D vinyl contrast */
+  background-image: 
+    radial-gradient(circle at 50% 50%, rgba(255, 255, 255, 0.40) 0%, rgba(0, 0, 0, 0.05) 100%),
+    url("https://www.transparenttextures.com/patterns/crumbled-paper.png");
+  background-repeat: repeat;
+  position: relative;
+  z-index: 10;
+  border-top: 1px solid rgba(51, 12, 22, 0.08);
+}
+
+.atmospheresContainer {
+  max-width: 1000px;
+  margin: 0 auto;
+}
+
+.atmospheresHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-end;
+  border-bottom: 1px solid rgba(51, 12, 22, 0.15);
+  padding-bottom: 16px;
+  margin-bottom: 24px; /* Reduced margin to bring list closer to heading */
+}
+
+.atmospheresTitle {
+  font-family: 'DM Serif Display', 'Georgia', serif;
+  font-weight: 400;
+  font-size: clamp(28px, 3.5vw, 36px); /* Reduced title scale */
+  color: #330C16; /* Deep Cherry Coke */
+  margin: 0;
+}
+
+.atmospheresSubtitle {
+  font-family: 'DM Mono', 'Courier New', monospace;
+  font-weight: 400;
+  text-transform: uppercase;
+  font-size: 10px;
+  letter-spacing: 0.2em;
+  color: #8A5A66;
+}
+
+.atmospheresList {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.atmosphereRow {
+  display: grid;
+  grid-template-columns: 2fr 1fr 1fr;
+  align-items: center;
+  padding: 20px 0; /* Reduced padding from 36px to bring rows closer */
+  border-bottom: 1px solid rgba(51, 12, 22, 0.1);
+  transition: opacity 0.4s ease;
+  cursor: pointer;
+}
+
+.atmosphereRow:hover {
+  opacity: 0.55;
+}
+
+.atmosphereName {
+  font-family: 'Georgia', serif; /* Aligned with elegant system serif */
+  font-weight: 400;
+  font-size: clamp(16px, 2vw, 20px); /* Clean editorial sizing */
+  color: #330C16;
+}
+
+.atmosphereMood {
+  font-family: 'DM Mono', 'Courier New', monospace;
+  font-size: 11px;
+  color: #8A5A66;
+  text-align: center;
+  letter-spacing: 0.05em;
+}
+
+.atmosphereDuration {
+  font-family: 'DM Mono', 'Courier New', monospace;
+  font-size: 11px;
+  color: #8A5A66;
+  text-align: right;
+}
+
+.atmospheresCta {
+  text-align: center;
+  margin-top: 36px; /* Reduced vertical gap */
+}
+
+.atmospheresLink {
+  font-family: 'Georgia', serif;
+  font-weight: 400;
+  font-size: 14px; /* Scaled down link size */
+  color: #330C16;
+  text-decoration: none;
+  border-bottom: 1px solid transparent;
+  transition: border-color 0.3s ease, opacity 0.3s ease;
+}
+
+.atmospheresLink:hover {
+  border-color: #330C16;
+  opacity: 0.7;
+}
+
+/* ── Section 5: Featured Essays ── */
+.essaysSection {
+  padding: 80px 8vw; /* Reduced vertical padding from 160px */
+  background: #060a12; /* Deep Navy black */
+  position: relative;
+  z-index: 10;
+}
+
+.essaysContainer {
+  max-width: 1600px;
+  margin: 0 auto;
+}
+
+.essaysHeader {
+  margin-bottom: 32px; /* Reduced margin from 80px to bring grid closer */
+  text-align: left;
+}
+
+.essaysEyebrow {
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+  letter-spacing: 0.25em;
+  font-size: 10px;
+  color: rgba(220, 220, 230, 0.4);
+  margin-bottom: 16px;
+  display: block;
+}
+
+.essaysTitle {
+  font-family: 'Georgia', serif;
+  font-style: italic;
+  font-weight: 300;
+  font-size: clamp(28px, 4.5vw, 44px); /* Reduced title size */
+  color: rgba(250, 250, 245, 0.95);
+  line-height: 1.15;
+  margin: 0;
+}
+
+.essaysGrid {
+  display: flex;
+  gap: 24px; /* Reduced gap from 40px for a snug, print-editorial grid layout */
+  overflow-x: auto;
+  padding-bottom: 24px;
+  scroll-snap-type: x mandatory;
+  scrollbar-width: thin;
+  scrollbar-color: rgba(255, 255, 255, 0.15) rgba(255, 255, 255, 0.05);
+}
+
+.essaysGrid::-webkit-scrollbar {
+  height: 4px;
+}
+.essaysGrid::-webkit-scrollbar-track {
+  background: rgba(255, 255, 255, 0.05);
+}
+.essaysGrid::-webkit-scrollbar-thumb {
+  background: rgba(255, 255, 255, 0.15);
+  border-radius: 2px;
+}
+
+.essayCard {
+  flex: 0 0 calc((100% - 72px) / 4); /* Calculated correctly with 24px gap */
+  min-width: 280px;
+  scroll-snap-align: start;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  background: transparent;
+  border: none;
+  box-shadow: none;
+  text-align: left;
+  cursor: pointer;
+}
+
+.essayImgBox {
+  width: 100%;
+  aspect-ratio: 3 / 4;
+  height: auto;
+  overflow: hidden;
+  position: relative;
+  margin-bottom: 18px; /* Reduced from 32px to sit snug below the photo */
+  border-radius: 2px;
+  background-color: rgba(255, 255, 255, 0.03);
+}
+
+.essayImg {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  filter: grayscale(15%) contrast(1.05);
+  transition: transform 1.2s cubic-bezier(0.25, 0.46, 0.45, 0.94), filter 1.2s ease;
+}
+
+/* Dark overlay for consistency */
+.essayImgBox::after {
+  content: '';
+  position: absolute;
+  top: 0; left: 0;
+  width: 100%; height: 100%;
+  background: rgba(4, 8, 16, 0.15);
+  pointer-events: none;
+  transition: background 1.2s ease;
+}
+
+.essayCard:hover .essayImg {
+  transform: scale(1.04);
+  filter: grayscale(0%) contrast(1.05) brightness(1.05);
+}
+
+.essayCard:hover .essayImgBox::after {
+  background: rgba(4, 8, 16, 0.05);
+}
+
+.essayContent {
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  width: 100%;
+}
+
+.essayTag {
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+  text-transform: uppercase;
+  font-size: 9px;
+  letter-spacing: 0.2em;
+  color: rgba(220, 200, 180, 0.8);
+  margin-bottom: 10px; /* Reduced from 16px */
+  display: block;
+}
+
+.essayTitle {
+  font-family: 'Georgia', serif;
+  font-style: normal;
+  font-weight: 400;
+  font-size: clamp(17px, 1.8vw, 20px); /* Tighter title size to prevent unneeded wraps */
+  color: rgba(245, 245, 240, 0.95);
+  line-height: 1.35;
+  margin-bottom: 10px; /* Reduced margin */
+  margin-top: 0;
+}
+
+.essayExcerpt {
+  font-family: 'Georgia', serif;
+  font-style: italic;
+  font-size: 13px;
+  color: rgba(160, 175, 190, 0.8);
+  line-height: 1.65;
+  display: -webkit-box;
+  -webkit-line-clamp: 3;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+  font-weight: 300;
+  margin: 0;
+}
+
+/* ── Section 6: Footer ── */
+.footerSection {
+  padding: 60px 8vw; /* Reduced vertical padding from 100px */
+  background: #060e17; /* Strong, dark solid navy */
+  position: relative;
+  z-index: 10;
+  border-top: 1px solid rgba(255, 255, 255, 0.05);
+}
+
+.footerContainer {
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+.footerTop {
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 32px; /* Reduced from 60px */
+}
+
+.footerLeft {
+  width: 40%;
+}
+
+.footerWordmark {
+  font-family: 'Georgia', serif;
+  font-size: 20px; /* Scaled down wordmark */
+  color: rgba(250, 250, 245, 0.95);
+  margin-bottom: 10px; /* Reduced from 16px */
+  font-weight: 400;
+}
+
+.footerMotto {
+  font-family: 'Georgia', serif;
+  font-style: italic;
+  font-size: 12px;
+  color: rgba(160, 175, 190, 0.7);
+}
+
+.footerRight {
+  width: 60%;
+  display: flex;
+  justify-content: flex-end;
+  gap: 80px;
+}
+
+.footerCol {
+  display: flex;
+  flex-direction: column;
+  gap: 10px; /* Reduced from 16px gap */
+}
+
+.footerLink {
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+  text-transform: uppercase;
+  font-size: 9px; /* Slightly tighter link */
+  letter-spacing: 0.15em;
+  color: rgba(160, 175, 190, 0.7);
+  display: inline-flex;
+  text-decoration: none;
+  transition: color 0.3s ease;
+}
+
+.footerLink:hover {
+  color: rgba(250, 250, 245, 0.95);
+}
+
+.footerRule {
+  width: 100%;
+  height: 1px;
+  background: rgba(255, 255, 255, 0.08);
+  margin-bottom: 24px; /* Reduced from 36px */
+}
+
+.footerBottom {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.footerCopy {
+  font-family: 'DM Mono', 'Courier New', monospace;
+  font-size: 11px;
+  color: rgba(160, 175, 190, 0.5);
+}
+
+.footerLegal {
+  display: flex;
+  gap: 12px;
+  align-items: center;
+  font-family: 'DM Mono', 'Courier New', monospace;
+  font-size: 11px;
+  color: rgba(160, 175, 190, 0.5);
+}
+
+.legalLink {
+  color: rgba(160, 175, 190, 0.5);
+  text-decoration: none;
+  transition: color 0.3s ease;
+}
+
+.legalLink:hover {
+  color: rgba(250, 250, 245, 0.95);
+}
+
+.legalSep {
+  color: rgba(160, 175, 190, 0.3);
+}
+
+/* Responsive Overrides */
+@media (max-width: 768px) {
+  .atmospheresSection {
+    padding: 100px 24px 80px 24px;
+  }
+  .atmosphereRow {
+    grid-template-columns: 1fr;
+    gap: 8px;
+    padding: 24px 0;
+  }
+  .atmosphereMood, .atmosphereDuration {
+    text-align: left;
+  }
+
+  .essaysSection {
+    padding: 100px 24px;
+  }
+  .essaysHeader {
+    margin-bottom: 48px;
+  }
+  .essayCard {
+    flex: 0 0 280px;
+  }
+
+  .footerSection {
+    padding: 60px 24px;
+  }
+  .footerTop {
+    flex-direction: column;
+    gap: 40px;
+    margin-bottom: 40px;
+  }
+  .footerLeft, .footerRight {
+    width: 100%;
+  }
+  .footerRight {
+    justify-content: flex-start;
+  }
+  .footerBottom {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 16px;
+  }
+}
